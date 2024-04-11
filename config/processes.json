@@ -1,0 +1,20 @@
+{
+  "processes": [
+    {
+      "process_name": "parkingslot_detection_process",
+      "process_cfg": "parkingslot_detection_process/process.json"
+    },
+    {
+      "process_name": "location_map_process",
+      "process_cfg": "location_map_process/process.json"
+    },
+    {
+      "process_name": "apahandle_peocess",
+      "process_cfg": "apahandle_peocess/process.json"
+    },
+    {
+      "process_name": "sensorcenter_process",
+      "process_cfg": "sensorcenter_process/process.json"
+    }
+  ]
+}

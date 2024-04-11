@@ -1,0 +1,119 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package CameraProto;
+// [END declaration]
+
+import "perception_base.proto";
+
+// [START messages]
+
+enum CameraType {
+  CameraType_PinHole = 0;  // 针孔相机
+  CameraType_FishEye = 1;      // 鱼眼相机
+}
+
+message CameraValidHeight {
+  optional int32 left_y = 1;   // 相机有效高度_left
+  optional int32 right_y = 2;  // 相机有效高度_right
+}
+
+message VCSParam {
+  repeated float rotation = 1;     // rotation relative to x, y, z axis
+  repeated float translation = 2;  // translation
+}
+
+enum CameraVersion {
+  CameraVersion_CV = 0;        // 摄像头参数与旧的标定坐标系兼容,坐标系:前:z,右:x,下:y
+  CameraVersion_VCS = 1;       // 新标定坐标系下的摄像头参数,坐标系:前:x,左:y,上:z
+}
+
+enum CalibrationStatus {
+  CalibrationStatus_Default = 0;        // 标定状态默认值
+  CalibrationStatus_IntrinsicDone = 1;  // 内参标定完成
+  CalibrationStatus_ExtrinsicDone = 2;  // 外参标定完成
+}
+
+enum CalibrationType {
+  CalibrationType_Unknow = 0;       // 标定类型默认值
+  CalibrationType_EOL = 1;          // 工厂标定
+  CalibrationType_AfterSale = 2;    // 售后标定
+  CalibrationType_BackGround = 3;   // 背景式标定
+}
+
+message DistortParam {
+  repeated float param = 1;   // 畸变系数,按照k1、k2、p1、p2、k3、k4、k5、k6依次填充,其中k1、k2、k3、k4、k5、k6为径向畸变系数,p1、p2为切向畸变系数
+}
+
+message CameraRelExtrinsic {
+  optional string parent_frame = 1;       // 相对外参的参照帧
+  optional string child_frame = 2;        // 相对外参的子帧
+  optional float x = 3;                   // 相机在标定坐标系x方向上的位置, unit: m
+  optional float y = 4;                   // 相机在标定坐标系y方向上的位置, unit: m
+  optional float z = 5;                   // 相机在标定坐标系z方向上的位置, unit: m
+  optional float roll = 6;                // 相机在标定坐标系基于x轴旋转的角度, unit: rad
+  optional float pitch = 7;               // 相机在标定坐标系基于y轴旋转的角度, unit: rad
+  optional float yaw = 8;                 // 相机在标定坐标系基于z轴旋转的角度, unit: rad
+  optional float quat_w = 9;              // 相对外参四元数，校验作用
+  optional float quat_x = 10;             // 相对外参四元数，校验作用
+  optional float quat_y = 11;             // 相对外参四元数，校验作用
+  optional float quat_z = 12;             // 相对外参四元数，校验作用
+  optional int32 base_calib_done = 13;    // 0 无基础标定; 1 eol标定完成; 2 售后标定完成, 对应relative_extrinsic.json中的base_calib_done
+  optional int32 calib_src = 14;          // 0: 未知; 1: EOL; 2:售后标定; 3:背景式标定
+  optional int64 calib_done_ts = 15;      // 相对外参的标定落盘时间, 从UTC 1970年1月1日开始所经过的毫秒数
+}
+
+// Camera Parameters
+message CameraParam {
+  optional float focal_u = 1;     // 镜头水平焦距, unit: pixel
+  optional float focal_v = 2;     // 镜头垂直焦距, unit: pixel
+  optional float center_u = 3;    // 光轴中心点沿图像传感器水平的像素偏移值, unit: pixel
+  optional float center_v = 4;    // 光轴中心点沿图像传感器垂直的像素偏移值, unit: pixel
+  optional float camera_x = 5;    // 相机在标定坐标系x方向上的位置, unit: m
+  optional float camera_y = 6;    // 相机在标定坐标系y方向上的位置, unit: m
+  optional float camera_z = 7;    // 相机在标定坐标系z方向上的位置, unit: m
+  optional float pitch = 8;       // 相机在标定坐标系基于y轴旋转的角度, unit: rad
+  optional float yaw = 9;         // 相机在标定坐标系基于z轴旋转的角度, unit: rad
+  optional float roll = 10;       // 相机在标定坐标系基于x轴旋转的角度, unit: rad
+  
+  optional int32 type = 11;       // 相机类型, 默认为0, 枚举类型详细可见CameraType
+  optional float fov = 12;                      // 相机水平视场角, 例如:60,120等, unit: degree
+  // version
+  // 0: old camera, front:z, right:x, down:y
+  // 1: new camera, front:x, left: y, up: z
+  optional int32 version = 13;    // 标定坐标系版本号, 目前输出新标定坐标系, 枚举类型详细可见CameraVersion
+  optional CalibrationStatus cali_status = 14;  // 标定状态, 枚举类型详细可见CalibrationStatus
+  optional CameraValidHeight valid_height = 15; // 基于图像像素坐标系, 图像高度方向上的有效像素(图像底部可能被遮挡), 详细可见CameraValidHeight, unit: pixel
+  optional DistortParam distort = 20;           // 畸变系数, 详细可见DistortParam
+  optional VCSParam vcs = 21;                   // 相机外参标定坐标系相对于VCS的位移/旋转角信息, 详细可见VCSParam
+
+  optional PerceptionBaseProto.CameraMatrix mat = 30;	// 相机矩阵转换信息, 详细可见PerceptionBaseProto.CameraMatrix
+
+  optional string vendor = 50;               // 地平线自定义的相机编码, 用于区分相机型号, 例如:ar0820
+  optional int64 time_stamp = 60;            // unix时间戳, unit: ms
+  optional int32 cam_id = 61;                // 相机索引id, 前视默认为0
+  optional int32 frame_id = 62;              // 图像帧索引id
+
+  optional int32 image_height = 63;          // 图像高度
+  optional int32 image_width = 64;           // 图像宽度
+
+  optional int32 base_calib_done = 65;       //0 无基础标定; 1 eol标定完成; 2 售后标定完成, 对应json中的base_calib_done
+  optional int64 calib_done_ts = 66;         // 标定落盘时间, 从UTC 1970年1月1日开始所经过的毫秒数 
+  optional string sensor_desc = 67;          // camera方位等信息
+  optional CalibrationType calib_src = 68;   // 0: 未知; 1: EOL; 2:售后标定; 3:背景式标定
+  optional int32 reserve_ori_scale_map = 69;     // 保留原始映射
+  optional CameraRelExtrinsic relative_extrinsic = 70;        // 相机相对外参
+}
+
+message CameraParams {
+  repeated CameraParam cam_params = 1;	     // 相机参数
+}
+
+// [END messages]

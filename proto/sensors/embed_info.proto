@@ -1,0 +1,32 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package EmbedInfoProto;
+// [END declaration]
+
+// [START messages]
+
+
+/**
+ * @brief   Image Emb Information
+ * @author  ronglin.chen
+ * @date    2023.09.13
+ */
+
+message EmbedInfo {
+  optional uint32 port = 1;         // 传感器的接入顺序，在VIO配置里设定
+  optional uint32 dev_port = 2;     // 是isp控制sensor ae awb的顺序，正常情况dev_port = port
+  optional uint32 frame_count = 3;  // 硬件模组内部的帧计数
+  optional uint32 frame_id = 4;     // cim的帧计数，和image和camera_frame中的frame_id含义一致
+  optional int64 time_stamp = 5;    // unix时间戳，unit:ms
+  repeated uint32 line = 6;         // 曝光行数，包括:dcg_line, spd_line,vs_line
+  optional uint32 num_temp = 7;     // temperature的数量
+  repeated int32 temperatures = 8;  // 模组内部温度, 部分模组会存在两个温度信息
+}

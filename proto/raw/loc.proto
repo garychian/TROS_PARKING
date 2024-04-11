@@ -1,0 +1,143 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package loc;
+// [END declaration]
+
+
+// [START messages]
+
+message Point3D{
+  optional double x = 1;
+  optional double y = 2;
+  optional double z = 3;
+}
+
+message padPoint{
+  optional int32 x = 1;
+  optional int32 y = 2;
+}
+
+enum LocStatusType{
+  LOCSTS_NULL = 0;
+  LOCSTS_SEARCHING = 1;
+  LOCSTS_PARKING = 2;
+  LOCSTS_STANDBY = 3;
+}
+
+message padVehiclePose{
+  optional padPoint coord = 1;
+  optional float yaw = 2;
+  optional uint32 status = 3;
+  optional uint64 timeStamp = 4;
+
+}
+
+message VehiclePos{
+  optional float x = 1;
+  optional float y = 2;
+  optional float yaw = 3;
+}
+
+
+message App2emap_DR{
+  optional float x = 1;
+  optional float y = 2;
+  optional float canAng = 3;
+  optional uint32 DRStatus = 4;
+  optional uint64 timeStamp = 5;
+
+}
+message parkingSlots{
+  optional uint64 id = 1;
+  optional uint32 psType = 2;
+  optional double width = 3;
+  optional double length = 4;
+  optional Point3D center = 5;
+  optional Point3D wideDirection = 6;
+  optional Point3D longDirection = 7;
+  optional bool isOccupancy = 8;
+}
+
+message laneLines{
+  optional uint32 lineType = 1;
+  repeated Point3D points = 2;
+}
+
+
+message stopLines{
+  optional uint64 id = 1;
+  optional Point3D startPt = 2;
+  optional Point3D endPt = 3;
+}
+
+
+message bumps{
+  optional uint64 id = 1;
+  optional double halfWidth = 2;
+  optional double length = 3;
+  optional Point3D endPt = 4;
+  optional Point3D wideDirection = 5;
+  optional Point3D longDirection = 6;
+
+}
+
+message arrows{
+  optional uint64 id = 1;
+  repeated uint32 arrowType = 2;
+  repeated Point3D points = 3;
+}
+
+message crossWalks{
+  optional uint64 id = 1;
+  optional float halfWidth = 2;
+  optional float length = 3;
+  optional Point3D endPt = 4;
+  optional Point3D wideDirection = 5;
+  optional Point3D longDirection = 6;
+}
+
+
+message MapInfo{
+  optional uint64 timeStamp = 1;
+  repeated parkingSlots ParkingSlot =2;
+  repeated laneLines LaneLine = 3;
+  repeated stopLines StopLine = 4;
+  repeated bumps Bump = 5;
+  repeated crossWalks CrossWalk = 6;
+  repeated arrows Arrow = 7;
+  repeated parkingSlots parkingSlotsOptimize = 8;
+  optional uint64 mapId = 9;
+}
+
+message LocStatus{
+  optional LocStatusType locstatus = 1;
+}
+
+message padRealTimeLocation{
+  optional LocStatusType LocWorkingStatus = 1;
+  optional uint32 flag_SlotWidthUpdate = 2;
+  optional uint32 updatedSlotWidth = 3;
+  optional uint32 flag_SlotDepthUpdate = 4;
+  optional uint32 updatedSlotDepth = 5;
+  optional VehiclePos vehLocation = 6;
+  optional VehiclePos locCorrection = 7;
+  optional uint64 timeStamp = 8;
+  optional uint32 reserve = 9;
+
+}
+
+
+
+
+
+
+
+// [END messages]

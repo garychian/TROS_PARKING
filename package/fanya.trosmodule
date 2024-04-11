@@ -1,0 +1,346 @@
+{
+  "pkg_version": "",
+  "modules": [
+    {
+      "class_name": "ApaHandleModule",
+      "module_type": 0,
+      "inputs": [
+        {
+          "id": "sub_slot_label",
+          "msg_type": 0,
+          "msg_src": "raw/fsm",
+          "message": "fsm::Slotlabel"
+        },
+        {
+          "id": "sub_apa_status_req",
+          "msg_type": 0,
+          "msg_src": "raw/fsm",
+          "message": "fsm::Apastatusreq"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "pub_apa_status",
+          "msg_type": 0,
+          "msg_src": "raw/aph",
+          "message": "aph::apa_status"
+        },
+        {
+          "id": "pub_target_slot",
+          "msg_type": 0,
+          "msg_src": "raw/aph",
+          "message": "aph::target_slot"
+        }
+      ],
+      "procs": [
+        {
+          "id": "MsgCenterProc",
+          "type": "MsgCondTriggerProc",
+          "inputs": [
+            "sub_slot_label",
+            "sub_apa_status_req"
+          ],
+          "outputs": [
+            "pub_apa_status",
+            "pub_target_slot"
+          ]
+        }
+      ]
+    },
+    {
+      "class_name": "LocationMapModule",
+      "module_type": 0,
+      "inputs": [
+        {
+          "id": "sub_vehicleio_data",
+          "msg_type": 0,
+          "msg_src": "sensors/vehicleiostate",
+          "message": "vehicleiostate::CanSignalUnit"
+        },
+        {
+          "id": "sub_apa_status",
+          "msg_type": 0,
+          "msg_src": "raw/aph",
+          "message": "aph::apa_status"
+        },
+        {
+          "id": "sub_target_slot",
+          "msg_type": 0,
+          "msg_src": "raw/aph",
+          "message": "aph::target_slot"
+        },
+        {
+          "id": "sub_imu_data",
+          "msg_type": 0,
+          "msg_src": "raw/sen",
+          "message": "sen::IMUData"
+        },
+        {
+          "id": "sub_gnss_data",
+          "msg_type": 0,
+          "msg_src": "raw/sen",
+          "message": "sen::GNSSData"
+        },
+        {
+          "id": "sub_ins_data",
+          "msg_type": 0,
+          "msg_src": "raw/sen",
+          "message": "sen::INSData"
+        },
+        {
+          "id": "sub_dual_antenna_data",
+          "msg_type": 0,
+          "msg_src": "raw/sen",
+          "message": "sen::DualAntennaData"
+        },
+        {
+          "id": "sub_psd_image",
+          "msg_type": 0,
+          "msg_src": "raw/psd",
+          "message": "psd::Image"
+        },
+        {
+          "id": "sub_camera_frame_array",
+          "msg_type": 0,
+          "msg_src": "sensors/camera_frame",
+          "message": "camera_frame::CameraFrameArray"
+        },
+        {
+          "id": "sub_apa_ps_info",
+          "msg_type": 0,
+          "msg_src": "raw/psd",
+          "message": "psd::SApaPSInfo"
+        },
+        {
+          "id": "sub_apa_ps_rect",
+          "msg_type": 0,
+          "msg_src": "raw/psd",
+          "message": "psd::SApaPSRect"
+        },
+        {
+          "id": "sub_apa_pointI",
+          "msg_type": 0,
+          "msg_src": "raw/psd",
+          "message": "psd::SApaPoint_I"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "pub_pad_realtime_loc",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::padRealTimeLocation"
+        },
+        {
+          "id": "pub_loc_status",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::LocStatus"
+        },
+        {
+          "id": "pub_vehicle_pose",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::VehiclePos"
+        },
+        {
+          "id": "pub_app2emap",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::App2emap_DR"
+        },
+        {
+          "id": "pub_pad_point",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::padPoint"
+        },
+        {
+          "id": "pub_pad_vehicleio_pose",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::padVehiclePose"
+        },
+        {
+          "id": "pub_map_info",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::MapInfo"
+        },
+        {
+          "id": "pub_parking_slot",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::parkingSlots"
+        },
+        {
+          "id": "pub_stio_lane_lines",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::laneLines"
+        },
+        {
+          "id": "pub_stop_lines",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::stopLines"
+        },
+        {
+          "id": "pub_bumps",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::bumps"
+        },
+        {
+          "id": "pub_crosswalks",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::crossWalks"
+        },
+        {
+          "id": "pub_arrows",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::arrows"
+        }
+      ],
+      "procs": [
+        {
+          "id": "MsgCenterProc",
+          "type": "MsgCondTriggerProc",
+          "inputs": [
+            "sub_vehicleio_data",
+            "sub_apa_status",
+            "sub_target_slot",
+            "sub_imu_data",
+            "sub_gnss_data",
+            "sub_ins_data",
+            "sub_dual_antenna_data",
+            "sub_psd_image",
+            "sub_camera_frame_array",
+            "sub_apa_ps_info",
+            "sub_apa_ps_rect",
+            "sub_apa_pointI"
+          ],
+          "outputs": [
+            "pub_pad_realtime_loc",
+            "pub_loc_status",
+            "pub_vehicle_pose",
+            "pub_app2emap",
+            "pub_pad_point",
+            "pub_map_info",
+            "pub_parking_slot",
+            "pub_stio_lane_lines",
+            "pub_stop_lines",
+            "pub_bumps",
+            "pub_crosswalks",
+            "pub_arrows",
+            "pub_pad_vehicleio_pose"
+          ]
+        }
+      ]
+    },
+    {
+      "class_name": "ParkingslotDetectMoudle",
+      "module_type": 0,
+      "inputs": [
+        {
+          "id": "sub_apa_status",
+          "msg_type": 0,
+          "msg_src": "raw/aph",
+          "message": "aph::apa_status"
+        },
+        {
+          "id": "sub_pad_point",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::padPoint"
+        },
+        {
+          "id": "sub_pad_vehicle_pose",
+          "msg_type": 0,
+          "msg_src": "raw/loc",
+          "message": "loc::padVehiclePose"
+        },
+        {
+          "id": "sub_camera_frame_array",
+          "msg_type": 0,
+          "msg_src": "sensors/camera_frame",
+          "message": "camera_frame::CameraFrameArray"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "pub_apa_ps_info",
+          "msg_type": 0,
+          "msg_src": "raw/psd",
+          "message": "psd::SApaPSInfo"
+        },
+        {
+          "id": "pub_apa_ps_rect",
+          "msg_type": 0,
+          "msg_src": "raw/psd",
+          "message": "psd::SApaPSRect"
+        },
+        {
+          "id": "pub_apa_pointI",
+          "msg_type": 0,
+          "msg_src": "raw/psd",
+          "message": "psd::SApaPoint_I"
+        },
+        {
+          "id": "pub_psd_image",
+          "msg_type": 0,
+          "msg_src": "raw/psd",
+          "message": "psd::Image"
+        }
+      ],
+      "procs": [
+        {
+          "id": "MsgCenterProc",
+          "type": "MsgCondTriggerProc",
+          "inputs": [
+            "sub_apa_status",
+            "sub_pad_point",
+            "sub_pad_vehicle_pose",
+            "sub_camera_frame_array"
+          ],
+          "outputs": [
+            "pub_apa_ps_rect",
+            "pub_apa_ps_info",
+            "pub_apa_pointI",
+            "pub_psd_image"
+          ]
+        }
+      ]
+    },
+    {
+      "class_name": "ObjectDetectMoudle",
+      "module_type": 0,
+      "inputs": [],
+      "outputs": [],
+      "procs": [
+        {
+          "id": "Proc_1",
+          "type": "ResidentProc",
+          "inputs": [],
+          "outputs": []
+        }
+      ]
+    },
+    {
+      "class_name": "FreespaceModule",
+      "module_type": 0,
+      "inputs": [],
+      "outputs": [],
+      "procs": [
+        {
+          "id": "Proc_1",
+          "type": "ResidentProc",
+          "inputs": [],
+          "outputs": []
+        }
+      ]
+    }
+  ]
+}

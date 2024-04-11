@@ -1,0 +1,165 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package ISPParamProto;
+// [END declaration]
+
+// [START messages]
+
+
+message CalcAWB {
+  optional int64 ts = 1;               // 时间戳
+  optional uint32 cct = 2;             // 色温
+}
+
+message CalcAE {
+  optional int64  ts  = 1;             // 时间戳
+  optional uint32 cur_luma = 2;        // 亮度
+  optional uint32 cur_lux = 3;         // 照度
+  optional uint32 cur_target = 4;      // 目标值
+  optional uint32 cur_index = 5;
+  optional uint32 frame_length = 6;    // 帧长度
+}
+
+message AWB {
+  optional float rg_gain = 1;          // 红色通道增益
+  optional float bg_gain = 2;          // 蓝色通道增益
+  optional uint32 cct = 3;             // 校验值
+}
+
+message AE {
+  optional uint32 line = 1;
+  optional uint32 gain = 2;            // AE增益
+  optional uint32 frame_length = 3;    // 帧长度
+  optional uint32 cur_luma = 4;        // 亮度
+  optional uint32 cur_target = 5;      // 目标值
+  optional uint32 cur_index = 6;
+  optional float cur_lux =  7;         // 当前照度
+  optional int32 analog_gain = 8;      // 模拟增益
+  optional int32 digital_gain = 9;     // 数字增益
+  optional int32 isp_gain = 10;        // isp增益
+  optional int32 sys_exposure = 11;    // 系统曝光
+  optional int32 status_info_exp_log2 = 12;
+}
+
+message IspVersion {
+  optional uint32 isp = 1;
+  optional string version_3a = 2;
+  optional string tunning = 3;
+  optional string isp_ver = 4;          // isp驱动版本
+  optional string algo_ver = 5;         // 算法版本
+  optional string calib_ver = 6;        // 标定版本
+}
+
+message CameraParam {
+  optional uint32 frame_lenth = 1;
+  optional uint32 line_lenth = 2;
+  optional uint32 width = 3;
+  optional uint32 height = 4;
+  optional uint32 fps = 5;
+  optional uint32 pclk = 6;
+  optional float exp_num =  7;
+}
+
+message StfSfeCfg {
+  optional uint32 grid_ofst_h = 1;
+  optional uint32 grid_ofst_v = 2;
+  optional uint32 grid_size_h = 3;
+  optional uint32 grid_size_v = 4;
+  optional uint32 grid_cont_h = 5;
+  optional uint32 grid_cont_v = 6;
+  optional uint32 grid_thr_h  = 7;
+  optional uint32 grid_thr_l  = 8;
+  optional uint32 grid_clip_s = 9;
+  optional uint32 grid_clip_l = 10;
+  optional uint32 grid_clip_h = 11;
+  optional uint32 tile_ofst_h = 12;
+  optional uint32 tile_ofst_v = 13;
+  optional uint32 tile_size_h = 14;
+  optional uint32 tile_size_v = 15;
+  optional uint32 tile_cont_h = 16;
+  optional uint32 tile_cont_v = 17;
+  optional uint32 tile_bins   = 18;
+  optional uint32 tile_clip_s = 19;
+  optional uint32 tile_clip_l = 20;
+  optional uint32 tile_clip_h = 21;
+  optional uint32 hist_ofst_h = 22;
+  optional uint32 hist_ofst_v = 23;
+  optional uint32 hist_size_h = 24;
+  optional uint32 hist_size_v = 25;
+  optional uint32 hist_bins   = 26;
+  optional uint32 hist_clip_s = 27;
+  optional uint32 hist_clip_l = 28;
+  optional uint32 hist_clip_h = 29;
+  optional uint32 rsum_ofst_h = 30;
+  optional uint32 rsum_ofst_v = 31;
+  optional uint32 rsum_size_h = 32;
+  optional uint32 rsum_cont_v = 33;
+  optional uint32 rsum_clip_s = 34;
+  optional uint32 rsum_clip_l = 35;
+  optional uint32 rsum_clip_h = 36;
+}
+
+message RegBaseCfg {
+  optional uint32 cdr_h = 1;
+  optional uint32 cdr_v = 2;
+  optional uint32 cdr_bins = 3;
+  optional uint32 grid_h = 4;
+  optional uint32 grid_v = 5;
+  optional uint32 tile_h = 6;
+  optional uint32 tile_v = 7;
+  optional uint32 tile_bins = 8;
+  optional uint32 hist_bins = 9;
+  optional uint32 rsum_v = 10;
+};
+
+message IspContext {
+  optional uint32 frame_id = 1;        // 帧id
+  optional uint64 time_stamp = 2;      // 时间戳
+  optional uint32 isp_crc = 3;         // 校验值
+  optional uint32 data_len = 4;        // 数据长度
+  optional uint32 data_offset = 5;     // 统计信息存储地址偏移
+};
+
+message ISPParam {                     // 仅针对isp tuning者使用，普通开发者可以不关注
+  optional int32  version = 1;         // 版本
+  optional int64  time_stamp = 2;      // 时间戳
+  optional int64  counter = 3;
+  optional string camera_type = 4;     // 相机类型
+  optional string isp_type = 5;        // isp类型
+  repeated int32  ccm = 6;             // size [12]
+  repeated int32  gmalut = 7;          // size [3][31]
+  repeated int32  cdr = 8;             // size int16 [4][4][128]
+  optional CalcAWB  calc_awb = 9;      // calc AWB AE message only available at version1.0.1
+  optional CalcAE   calc_ae = 10;      // don't ask me why , detail info for system sotware engineer
+  optional AWB  awb = 11;              // 自动白平衡状态信息, 增益等
+  optional AE ae = 12;                 // 自动曝光状态信息, 增益等
+  optional float exposure_time = 13;   // 曝光时间
+  optional StfSfeCfg stf_sfe_cfg = 14;
+  optional bool bayer_valid = 15;          // 是否bayer格式
+  optional IspVersion isp_version = 16;    // isp 驱动版本
+  optional CameraParam camera_param = 17;  // 相机参数
+  optional RegBaseCfg reg_base_cfg = 18;
+  optional int32 frame_id = 19;            // 帧id
+  optional IspContext isp_context = 20;    // isp统计分量
+  optional uint64 ae_data_offset = 21;     // 自动曝光 存储统计信息偏移地址
+  optional uint64 ae_data_len = 22;        // 统计信息长度
+  optional uint64 ae_5bin_data_offset = 23;   // ae5bin存储统计信息偏移地址
+  optional uint64 ae_5bin_data_len = 24;      // 统计信息长度
+  optional uint64 lumvar_data_offset = 25;    //	亮度 存储统计信息偏移地址
+  optional uint64 lumvar_data_len = 26;       // 统计信息长度
+  optional uint64 awb_data_offset = 27;       // 自动白平衡 存储统计信息偏移地址
+  optional uint64 awb_data_len = 28;          // 统计信息长度
+  optional uint64 af_data_offset = 29;        // 自动对焦 存储统计信息偏移地址
+  optional uint64 af_data_len = 30;           // 统计信息长度
+  optional bytes rawdata = 31;                // isp raw data
+}
+
+// [END   messages]

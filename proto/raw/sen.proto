@@ -1,0 +1,56 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package sen;
+// [END declaration]
+
+
+// [START messages]
+
+message Point3D{
+  optional double x = 1;
+  optional double y = 2;
+  optional double z = 3;
+}
+
+message IMUData{
+  optional Point3D acc = 1;
+  optional Point3D gyro = 2;
+}
+
+message GNSSData{
+  optional double lat = 1;
+  optional double lon = 2;
+  optional double height = 3;
+  optional int32 quality = 4;
+  optional Point3D std = 5;
+}
+
+message INSData{
+  optional int32 quality = 1;
+  optional double lat = 2;
+  optional double lon = 3;
+  optional double alt = 4;
+  optional Point3D euler_rpy = 5;
+  optional Point3D velocity = 6;
+}
+
+message DualAntennaData{
+  optional double heading = 1;
+  optional double heading_std = 2;
+  optional int32 quality = 3;
+
+}
+
+
+
+
+
+// [END messages]

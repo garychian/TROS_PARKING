@@ -1,0 +1,33 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package can;
+// [END declaration]
+
+message VehicleCanData{
+    optional float VehicleSpeed = 1;
+    optional int32 GearStatus = 2;
+    optional int32 WheelDirection = 3;
+    optional int32 WheelAngle = 4;
+    optional int32 YawRateDirection = 5;
+    optional int32 YawRate = 6;
+    optional int32 LateralAcce = 7;
+    optional int32 LongitAcce = 8;
+    optional int32 FLWheelSpeedInkph = 9;
+    optional int32 FRwheelSpeedInkph = 10;
+    optional int32 RLwheelSpeedInkph = 11;
+    optional int32 RRwheelSpeedInkph = 12;
+    optional int32 FLWheelSpeedPulse = 13;
+    optional int32 FRwheelSpeedPulse = 14;
+    optional int32 RLwheelSpeedPulse = 15;
+    optional int32 RRwheelSpeedPulse = 16;
+}
+
+// [START messages]

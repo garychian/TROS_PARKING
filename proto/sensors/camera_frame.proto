@@ -1,0 +1,81 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package camera_frame;
+// [END declaration]
+import "sensor_common.proto";
+import "camera.proto";
+import "isp_param.proto";
+// [START messages]
+
+message YuvAddrInfo{
+  optional int32 width   = 1;           // 图像有效宽度
+  optional int32 height  = 2;           // 图像有效高度
+  optional int32 step    = 3;           // 图像跨距
+  optional uint64 y_paddr = 4;          // y分量物理地址
+  optional uint64 c_paddr = 5;          // 色度分量物理地址
+  optional uint64 y_vaddr = 6;          // y分量虚拟地址
+  optional uint64 c_vaddr = 7;          // 色度分量虚拟地址
+  optional uint64 com_buf_y_offset = 8; // reserved, y分量com_buffer偏移地址
+  optional uint64 com_buf_c_offset = 9; // reserved, 色度分量com_buffer偏移地址
+}
+message PymImage{
+  optional string frame_format    = 1;  // 图像帧格式,NV12
+  optional int64  frame_seq       = 2;  // 图像帧序号
+  optional int32  frame_fps       = 3;  // 帧率
+  optional int32  up_scale_num    = 4;  // 金字塔放大层数
+  optional int32  down_scale_num  = 5;  // 金字塔缩小层数
+  optional int32  base_scale_num  = 6;  // 金字塔基本层数
+  optional int32  gs_layer_num    = 7;  // 金字塔高斯层
+  optional int32  bl_layer_num    = 8;  // 金字塔双线性层数
+  repeated YuvAddrInfo down_scale = 9;  // 金字塔缩小层内结构
+  repeated YuvAddrInfo up_scale   = 10; // 金字塔放大层内结构
+  repeated YuvAddrInfo base_layer = 11; // 金字塔基本层内结构
+  repeated YuvAddrInfo gs_layer   = 12; // 金字塔高斯层内结构
+  repeated YuvAddrInfo bl_layer   = 13; // 金字塔双线性层内结构
+}
+
+message IpuLayerInfo{
+  optional int64  frame_seq      = 1;  // IPU 图像帧序号
+  repeated YuvAddrInfo ipu_layer = 2;  // IPU 层图像信息,从ds0-ds4及us数据
+}
+
+message GdcFrameInfo{
+  optional int64  frame_seq      = 1;  // Gdc 帧序号
+  repeated YuvAddrInfo gdc_frame = 2;  // Gdc 帧信息
+}
+
+// Camera Frame
+message CameraFrame {
+  optional SensorCommonProto.Header header = 1;    // 消息头, 包含时间戳, 帧序号
+  optional int64 vio_ts = 2;                       // VIO时间戳, millisecond with vio
+  optional string cam_id = 3;                      // 相机id
+  optional string frame_type = 4;                  // 帧数据类型, YUV
+  optional PymImage pym_img_info = 5;              // 金字塔图像信息
+  // default camera parameters
+  optional CameraProto.CameraParam camera_param = 6;  // 相机参数
+  optional uint32  isp_cap = 7;                       // 图像信号处理能力控制: bit[2]-ispinfo(ctx ae awb),bit[1]-ae,bit[0]-awb, 1-able, 0-disable
+  optional ISPParamProto.ISPParam isp_param = 8; // 图像信号处理参数
+  optional int32 com_buf_mode = 9;                    // Indicates whether to enable HBMEM
+  optional int64 vio_us = 10;                         // microseconds with vio
+  // dynamic camera parameters
+  optional CameraProto.CameraParam camera_param_runtime = 11;
+  optional IpuLayerInfo ipu_layer_info = 12;
+  optional uint32 frame_state = 13; // 帧状态，0-正常状态，1-补帧
+  optional GdcFrameInfo gdc_frame_info = 14; // Gdc 图像信息
+}
+
+message CameraFrameArray {
+  repeated camera_frame.CameraFrame camera_frame= 1;   // 组包用
+  repeated YuvAddrInfo gdc_frame = 2;  // Gdc IPM帧信息
+  optional int64 gdc_vio_ts = 3;  // gdc VIO时间戳, millisecond with vio
+}
+
+// [END messages]

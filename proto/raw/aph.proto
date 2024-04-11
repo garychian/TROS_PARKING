@@ -1,0 +1,41 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package aph;
+// [END declaration]
+
+
+// [START messages]
+
+enum ApaStatusType{
+  APA_STATUS_OFF = 0;
+  APA_STATUS_STANDBY = 1;
+  APA_STATUS_SEARCHING = 2;
+  APA_STATUS_EXIT_PARK = 3;
+  APA_STATUS_ENABLE = 4;
+  APA_STATUS_GUIDANCE = 5;
+  APA_STATUS_FINISH = 6;
+  APA_STATUS_ERROR = 7;
+  APA_STATUS_PARKING = 8;
+  APA_STATUS_RESERVED = 9;
+}
+
+message apa_status{
+  optional ApaStatusType m_current_apa_status = 1;
+}
+
+
+message target_slot{
+  optional int32 m_user_select_slot_label_idx=1;
+
+}
+
+
+// [END messages]

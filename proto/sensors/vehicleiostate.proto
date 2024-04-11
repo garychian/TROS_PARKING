@@ -1,0 +1,71 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package vehicleiostate;
+// [END declaration]
+
+/**
+ * @brief For usr to check type in CanSignalUnit
+ */
+enum CANValueType {
+  CAN_VALUE_TYPE_NONE = 0;        // to check value type: NONE
+  CAN_VALUE_TYPE_INT = 1;         // to check value type: INT
+  CAN_VALUE_TYPE_UINT = 2;        // to check value type: UINT
+  CAN_VALUE_TYPE_FLOAT = 3;       // to check value type: FLOAT
+  CAN_VALUE_TYPE_DOUBLE = 4;      // to check value type: DOUBLE
+}
+
+/**
+ * @brief Transform union for value
+ */
+message CanSignalUnit {
+  optional CANValueType type = 1; // to check value type
+  optional int32 i32 = 2;         // int32 value
+  optional uint32 u32 = 3;        // uint32 value
+  optional float f32 = 4;         // float32 value
+  optional double f64 = 5;        // double value
+}
+
+/**
+ * @brief Physical value stored in union
+ */
+message VehicleIOStateFrame {
+  optional int64 time_stamp = 1;            // can frame timestamp
+  repeated CanSignalUnit cansignalunit = 2; // can signal data
+  repeated uint32 arrayindex = 3;           // can signal index
+  repeated int64 signal_timestamp = 4;      // can mcu timestamp
+  repeated int64 soc_timestamp = 5;         // can soc timestamp
+}
+
+/**
+ * @brief single suspension msg value
+ */
+message SuspensionMsgValue {
+  optional float front_left = 1;   // unit is mm
+  optional float front_right = 2;  // unit is mm
+  optional float rear_left = 3;    // unit is mm
+  optional float rear_right = 4;   // unit is mm
+  optional uint32 sus_dmpr_ctrl_flt_sts = 5;
+  optional uint32 sus_hght_ctrl_flt_sts = 6;
+  optional uint32 height_level_changing_status = 7;
+  optional uint32 height_level_reason = 8;
+  optional uint32 sus_road_mod = 9;
+  optional uint32 sus_act_hight_lvl_sts = 10;
+  optional uint32 sus_trg_hight_lvl_sts = 11;
+}
+
+/**
+ * @brief suspension msg
+ */
+message SuspensionMsg {
+  repeated SuspensionMsgValue suspension_msg = 1;  // suspension msg
+}
+
+// [END messages]

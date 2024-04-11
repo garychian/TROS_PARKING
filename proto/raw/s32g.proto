@@ -1,0 +1,38 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package s32g;
+// [END declaration]
+
+
+// [START messages]
+
+message slotlabel{
+  optional int32 targetSlotLabel = 1;
+}
+
+enum apaStatusReq{
+  off = 0;
+  standby = 1;
+  Search_phase = 2;
+  Exit_park = 3;
+  enable = 4;
+  Guidance = 5;
+  Finish = 6;
+  error =7;
+}
+
+message apastatusreqMessage{
+  optional apaStatusReq apastatusreq = 1;
+}
+
+
+
+// [END messages]

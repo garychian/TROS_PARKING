@@ -1,0 +1,59 @@
+{
+  "domain_id": 0,
+  "communication_config": "communication.json",
+  "runtime_context": "runtime_context.json",
+  "schedule_config": "schedule.json",
+  "process_name": "sensorcenter_process",
+  "log": {
+    "log_level": "info",
+    "rotate_number": 128,
+    "max_size": 256,
+    "log_path": "../../log/sensors/"
+  },
+  "time": {
+    "clock_type": 0,
+    "clock_topic": "/Clock",
+    "sub_paitipant": 6,
+    "sub_domain_id": 0,
+    "pub_paitipant_list": [],
+    "pub_domain_id": 0
+  },
+  "monitor": {
+    "enable_diagnose": false,
+    "enable_event": false,
+    "interval": 50,
+    "topic": "/bole/dataflow/event",
+    "interval_diagnose_repeat_report": false,
+    "diagnose_check_interval": 1000,
+    "enable_dag_check": false,
+    "dag_check_interval": 1000
+  },
+  "dag_information": {
+    "enable": false,
+    "topic": "/bole/dataflow/dag",
+    "interval": 200,
+    "enable_module": false
+  },
+  "profiling": {
+    "summary_stat_period": 10,
+    "summary_stat_topic": "/bole/dataflow/statistics",
+    "enable_task_statistics": false,
+    "enable_message_statistics": false
+  },
+  "trace": {
+    "enable": false,
+    "trace_topic": "/bole/dataflow/trace",
+    "trace_protocol": "intra",
+    "flush_timeout_threshold": 1000,
+    "frame_id_type": 1,
+    "disable_trace_ids": []
+  },
+  "perfetto": {
+    "init_perfetto": false,
+    "backend": "system"
+  },
+  "running_threshold": {
+    "module_init": 3000000,
+    "module_reset": 3000000
+  }
+}

@@ -1,0 +1,5 @@
+//目的：本目录用于归档架构设相关文件，满足工程规范中架构设计的可追溯性要求。默认支持drawio以及mmd文件格式，支持UML图形化建模。
+//使用方式：在vscode中打开文件，根据右下角弹框提示安装Draw.io或者Mermaid Editor 插件后，直接打开文件文件即可。
+//参考：
+//    https://www.drawio.com/
+//    https://mermaid.js.org/

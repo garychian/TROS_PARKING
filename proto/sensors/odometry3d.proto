@@ -1,0 +1,41 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package Odometry3dProto;
+// [END declaration]
+
+// [START messages]
+message Vector3D {
+  optional double x = 1;                 // 3D point position x
+  optional double y = 2;                 // 3D point position y
+  optional double z = 3;                 // 3D point position z
+}
+
+message Quaternion4D {
+  optional double x = 1;                 // Quaternion x
+  optional double y = 2;                 // Quaternion y
+  optional double z = 3;                 // Quaternion z
+  optional double w = 4;                 // Quaternion w
+}
+
+message Odometry3DFramePb {
+  optional int64 time_stamp = 1;          // time stamp
+  optional string frame_id = 2;           // frame id
+  optional string child_frame_id = 3;     // child frame id
+  optional Vector3D position = 4;         // position
+  optional Quaternion4D quaternion = 5;   // quaternion
+  optional float pose_cov = 6;            // position covariance
+  optional Vector3D linear_velocity = 7;  // linear velocity
+  optional Vector3D angular_velocity = 8; // angular velocity
+  optional float twist_cov = 9;           // twist (linear and angular velocity) covariance
+  optional string version = 10;           // version
+}
+
+// [END messages]

@@ -1,0 +1,58 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package SensorCommonProto;
+// [END declaration]
+
+message Header {
+  optional int64  stamp = 1;                // 时间戳
+  optional int64  seq = 2;                  // 序列
+  optional string frame_id = 3;             // 帧id
+  optional int32 version = 4;               // 版本
+  optional int64 monotonic_raw_ts = 5;     // monotonic raw timestamp
+}
+
+message Vector2F {
+  optional float x = 1;   // 二维点float坐标x
+  optional float y = 2;   // 二维点float坐标y
+}
+
+message Vector3D {
+  optional double x = 1;  // 三维点double坐标x
+  optional double y = 2;  // 三维点double坐标y
+  optional double z = 3;  // 三维点double坐标z
+}
+
+message Vector3F {
+  optional float x = 1;   // 三维点float坐标x
+  optional float y = 2;   // 三维点float坐标y
+  optional float z = 3;   // 三维点float坐标z
+}
+
+message Vector4D {
+  optional double x = 1;  // 四维点double坐标x
+  optional double y = 2;  // 四维点double坐标y
+  optional double z = 3;  // 四维点double坐标z
+  optional double w = 4;  // 四维点double坐标w
+}
+
+message Vector4F {
+  optional float x = 1;   // 四维点float坐标x
+  optional float y = 2;   // 四维点float坐标y
+  optional float z = 3;   // 四维点float坐标z
+  optional float w = 4;   // 四维点float坐标w
+}
+
+message ChannelFloat32 {
+  optional string name = 1;  // channel name
+  repeated float values = 2;  // The values array should be 1-1 with the elements of the associated PointCloud
+}
+
+// [END messages]

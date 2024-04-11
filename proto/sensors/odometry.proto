@@ -1,0 +1,150 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package OdometryProto;
+// [END declaration]
+
+// [START messages]
+
+// Odometry的计算来源
+enum OdometrySource{
+  ODOMETRY_SOURCE_UNSPECIFIED = 0;
+  OdometrySource_TWOWHEEL = 1;          // Mode， two wheels odo (1 << 0)
+  OdometrySource_FOURWHEEL = 2;         // Mode， four wheels odo (1 << 1)
+
+  OdometrySource_SPEED = 64;            // Used Signal, speed (1 << 6)
+  OdometrySource_YAWRATE = 128;         // Used Signal，yawrate (1 << 7)
+  OdometrySource_STEERING_ANGLE = 256;  // Used Signal，steering angle (1 << 8)
+  OdometrySource_WHEEL_SPEED = 512;     // Used Signal，wheel speed (1 << 9)
+  OdometrySource_WHEEL_PULSE = 1024;    // Used Signal，wheel pulse (1 << 10)
+  OdometrySource_GEAR = 2048;           // Used Signal，gear (1 << 11)
+}
+
+// 行驶方向
+enum DriveDirection {
+  DRIVE_DIRECTION_UNKNOWN = 0;
+  DRIVE_DIRECTION_FORWARD = 1;        // 前进
+  DRIVE_DIRECTION_BACKWARD = 2;       // 后退
+  DRIVE_DIRECTION_STANDSTILL = 3;     // 静止
+}
+
+// Odometry种类
+enum OdometryType {
+  OdometryType_CAN_ODOM = 0;          // can 位姿
+  OdometryType_OFFLINE_OPT_ODOM = 1;  // 离线优化位姿
+  OdometryType_ONLINE_INS_ODOM = 2;   // 在线组合导航位姿
+}
+
+// Odometry状态
+enum OdometryStatue {
+  OdometryStatue_NORMAL = 0;      // Odom 正常
+  OdometryStatue_UNNORMAL = 1;    // Odom 不正常
+  OdometryStatue_ODOM_RESET = 2;  // Odom Reset
+}
+
+// 角速度零偏估计状态
+enum YawrateBiasEstimateState {
+  YawrateBiasEstimateState_NORMAL = 0;             // 正在估计过程中，没有异常
+  YawrateBiasEstimateState_STATIC_UPDATE = 1;      // 基于静止状态更新bias
+  YawrateBiasEstimateState_LANE_UPDATE = 2;        // 基于车道线更新bias
+  YawrateBiasEstimateState_ON_CURVE = 3;           // 估计失败，该片段在曲率较大区域
+  YawrateBiasEstimateState_LANE_NOT_SATISFIED = 4; // 该片段满足估计条件的车道线出现次数过少
+}
+
+// Odometry错误状态
+enum OdometryErrorCode {
+  OdometryErrorCode_NO_ERROR = 0;                  // 没有错误
+  OdometryErrorCode_ERROR_CAN_TIMEOUT = 1;         // can数据超时
+  OdometryErrorCode_ERROR_CAN_ODOM_OUTRANGE = 2;   // odom超出范围
+  OdometryErrorCode_ERROR_CAN_HUGE_DIFF = 3;       // can数据跳变
+  OdometryErrorCode_ERROR_CAN_ABNORMAL_VALUE = 4;  // can数据异常
+  OdometryErrorCode_ERROR_NO_IMU = 5;              // 无imu数据
+  OdometryErrorCode_ERROR_NO_GNSS = 6;             // 无gnss数据
+  OdometryErrorCode_ERROR_NO_CAN = 7;              // 无can数据
+  OdometryErrorCode_ERROR_NO_IMAGE = 8;            // 无图像数据
+  OdometryErrorCode_ERROR_GNSS_LOST = 9;           // 长时间无GNSS数据
+  OdometryErrorCode_ERROR_IMAGE_TIMESTAMP = 10;    // 图像时间戳异常
+}
+
+// 挡位类型
+enum GearType {
+  GEAR_TYPE_N = 0;        // N挡
+  GEAR_TYPE_P = 1;        // P挡
+  GEAR_TYPE_R = 2;        // R挡
+  GEAR_TYPE_D = 3;        // D挡
+  GEAR_TYPE_INVALID = 4;  // 无效挡位
+}
+
+message StablePitch {
+  optional float pitch = 1;            // pitch估计值 rad
+  optional bool is_valid = 2;          // 有效位
+  optional bool is_jitter = 3;         // 颠簸标志位
+}
+
+message OdometryFrame {
+  optional float x = 1;                // x坐标 m
+  optional float y = 2;                // y坐标 m
+  optional float z = 7;                // z坐标 m
+  optional float roll = 8;             // 横滚角 rad
+  optional float pitch = 9;            // 俯仰角 rad
+  optional float yaw = 3;              // 偏航角 rad
+  optional float speed = 4;            // 速度 m/s 计算odometry所用speed，非底盘原始speed
+                                       // 使用底盘速度乘上speed scale或通过轮速脉冲计算得到
+  optional float yaw_rate = 5;         // 角速度 rad/s 计算odometry所用yawrate，非底盘原始yaw_rate
+                                       // 已经加上yawrate_bias和滤波处理
+  optional int64 time_stamp = 6;       // 时间戳 ms
+  optional int32 source = 10;          // 计算来源
+  optional float ax = 11;              // 纵向加速度 m/s^2
+  optional float ay = 12;              // 横向加速度 m/s^2
+  optional float wheel_angle = 13;     // 方向盘转角 deg
+  optional int32 gear = 14;            // 挡位 0:N 1:P 2:R 3:D
+  optional GearType gear_type = 33;    // 挡位类型
+  optional StablePitch stable_pitch = 15;   // pitch估计值
+  optional int32 frame_id = 16;        // 帧id
+  optional float yawrate_bias = 17;    // 角速度零偏 rad/s
+  optional float speed_scale = 18;     // 速度比例尺
+  optional float slope = 19;           // 自车坡度 rad
+  optional OdometryType odom_type = 20;     // odom种类
+  optional OdometryStatue state = 21;  // odom状态
+  optional OdometryErrorCode error_code = 22;   // Odometry错误状态
+  repeated double cov_translation = 23; 	      // 3 covariances of translation (x,y,z) [m]]
+  repeated double cov_eular_angle = 24; 	      // 3 covariances of rotation (order: roll, pitch, yaw) [rad]]
+  optional uint32 diagnostic_code = 25;         // 诊断码
+  optional YawrateBiasEstimateState yawrate_bias_estimate_state = 26;   // 角速度零偏估计状态
+  optional double xh = 27;             // double类型x m
+  optional double yh = 28;             // double类型y m
+  optional double zh = 29;             // double类型z m
+  optional float slope_conf = 30;      // 坡度置信度 0~1
+  optional int32 slope_availability = 31;       // 坡度是否可用 -1:不可用 1:可用
+  optional DriveDirection drive_dir = 32;       // 行驶方向
+  optional string version = 34;        // odom版本
+}
+
+message EgomotionDebug {
+  optional float proc_time_spend = 1;
+  optional OdometryStatue state = 2;
+  optional uint32 diagnostic_code = 3;
+  optional uint32 last_diagnostic_code = 4;
+  optional YawrateBiasEstimateState yawrate_bias_estimate_state = 5;
+}
+
+message DynamicCalibDebug {
+  optional uint32 flow_num = 1;
+  optional float flow_res = 2;
+}
+
+message OdometryDebug {
+  optional float virtual_mem_usage = 1;
+  optional float physical_mem_usage = 2;
+  optional float cpu_usage = 3;
+  optional float proc_time_spend = 4;
+}
+
+// [END messages]
