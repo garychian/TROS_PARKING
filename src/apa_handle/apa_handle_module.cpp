@@ -17,9 +17,10 @@
 
 #include "communication/common/types.h"
 #include "message/proto/proto_serializer.hpp"
+#include "proto_message/proto_msg_all.h"
 
-#include "proto/raw/aph_idl_wrapper.h"
-#include "proto/raw/fsm_idl_wrapper.h"
+#include "fanya_protocol/aph_idl_wrapper.h"
+#include "fanya_protocol/fsm_idl_wrapper.h"
 
 #include "dataflow/module/port.h"
 #include "dataflow/module_loader/register_module_macro.h"

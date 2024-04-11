@@ -74,9 +74,9 @@ if("${isSystemDir}" STREQUAL "-1")
 endif("${isSystemDir}" STREQUAL "-1")
 
 # install directory
-set(TROS_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/output/fanya_parking)
-set(TROS_INSTALL_BIN ${CMAKE_BINARY_DIR}/output/fanya_parking/bin)
-set(TROS_INSTALL_LIB ${CMAKE_BINARY_DIR}/output/fanya_parking/lib)
+set(TROS_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/output/parking)
+set(TROS_INSTALL_BIN ${CMAKE_SOURCE_DIR}/output/parking/bin)
+set(TROS_INSTALL_LIB ${CMAKE_SOURCE_DIR}/output/parking/lib)
 
 add_subdirectory(src)
 
@@ -87,3 +87,8 @@ endif()
 if(EXISTS ${CMAKE_SOURCE_DIR}/test/CMakeLists.txt)
   add_subdirectory(test)
 endif()
+
+# add_subdirectory(proto)
+
+
+#install

@@ -1,0 +1,36 @@
+{
+  "modules": [
+    {
+      "class_name": "ApaHandleModule",
+      "module_id": "ApaHandleModule",
+      "package": "../../lib/libaph.so",
+      "inputs": [
+        {
+          "port_id": "sub_slot_label",
+          "topic": "/fsm/slot_label"
+        },
+        {
+          "port_id": "sub_apa_status_req",
+          "topic": "/fsm/apa_status_req"
+        }
+      ],
+      "outputs": [
+        {
+          "port_id": "pub_apa_status",
+          "topic": "/aph/apa_status"
+        },
+        {
+          "port_id": "pub_target_slot",
+          "topic": "/aph/target_slot"
+        }
+      ],
+      "procs": [
+        {
+          "proc_id": "MsgCenterProc",
+          "proc_type": "MsgCondTriggerProc",
+          "disable": false
+        }
+      ]
+    }
+  ]
+}

@@ -9,8 +9,8 @@
       "process_cfg": "location_map_process/process.json"
     },
     {
-      "process_name": "apahandle_peocess",
-      "process_cfg": "apahandle_peocess/process.json"
+      "process_name": "apahandle_process",
+      "process_cfg": "apahandle_process/process.json"
     },
     {
       "process_name": "sensorcenter_process",

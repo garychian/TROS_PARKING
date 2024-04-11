@@ -1,0 +1,45 @@
+{
+  "cam_index": 0,
+  "pipeline_id": 6,
+  "cam_cfg_file": "1920_1376/hb_camera.json",
+  "vio_cfg_file": "1920_1376/hb_vio.json",
+  "isp_cap" : 0,
+  "isp_cap_commit" : "bit[2]-ispinfo(ctx ae awb),bit[1]-ae,bit[0]-awb, 1-able, 0-disable",
+  "camera_type" : 0,
+  "camera_type_commit" : " 0 - normal camera, 1 - TOF camera",
+  "raw_able" : false,
+  "raw_able_commit" : "true: grab camera raw data",
+  "conditional": false,
+  "conditional_com": "true - Get the latest frame from Pym, false = Get the oldest frame from Pym",
+  "calibation_file": "./config/sensor_center/camera/calibation.json",
+  "gdc_cfg" : [
+    {
+      "gdc_name" : "ipm",
+      "gdc_id" : 0,
+      "gdc_cfg" : "solo_1920_1536/gdc_bin/camera_1_gdc.bin",
+      "input_from_module": 1,
+      "input_from_module_commits": "0-sif, 1-ipu, 2-pym",
+      "input_with": 1920,
+      "input_height": 1376,
+      "output_width": 896,
+      "output_height": 304,
+      "output_stride": 896,
+      "output_coordinate" : [0, 592, 896, 304],
+      "output_coordinate_commit" : "[x, y, width, height]",
+      "enable" : false
+    },
+    {
+      "gdc_name" : "semi_cyl",
+      "gdc_id" : 0,
+      "gdc_cfg" : "1920_1376/gdc_bin/camera_1_gdc.bin",
+      "input_from_module": 2,
+      "input_from_module_commits": "0-sif, 1-ipu, 2-pym",
+      "input_with": 1920,
+      "input_height": 1376,
+      "output_width": 704,
+      "output_height": 576,
+      "output_stride": 704,
+      "enable" : false
+    }
+  ]
+}

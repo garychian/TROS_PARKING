@@ -1,0 +1,8 @@
+首先需自行编译proto文件，导入conan数据缓存
+后续proto文件有修改，需要再次编译
+
+parking 进程编译
+
+直接运行scripts下 build.sh脚本即可
+
+./scripts/build.sh

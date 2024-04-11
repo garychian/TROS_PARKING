@@ -1,0 +1,52 @@
+{
+  "modules": [
+    {
+      "class_name": "ParkingslotDetectMoudle",
+      "module_id": "ParkingslotDetectMoudle",
+      "package": "../../lib/libpsd.so",
+      "inputs": [
+        {
+          "port_id": "sub_apa_status",
+          "topic": "/aph/apa_status"
+        },
+        {
+          "port_id": "sub_pad_point",
+          "topic": "/loc/pad_point"
+        },
+        {
+          "port_id": "sub_pad_vehicle_pose",
+          "topic": "/loc/pad_vehicle_pose"
+        },
+        {
+          "port_id": "sub_camera_frame_array",
+          "topic": "/sec/camera_frame_array"
+        }
+      ],
+      "outputs": [
+        {
+          "port_id": "pub_apa_ps_info",
+          "topic": "/psd/apa_ps_info"
+        },
+        {
+          "port_id": "pub_apa_ps_rect",
+          "topic": "/psd/apa_ps_rect"
+        },
+        {
+          "port_id": "pub_apa_pointI",
+          "topic": "/psd/apa_pointI"
+        },
+        {
+          "port_id": "pub_psd_image",
+          "topic": "/psd/image"
+        }
+      ],
+      "procs": [
+        {
+          "proc_id": "MsgCenterProc",
+          "proc_type": "MsgCondTriggerProc",
+          "disable": false
+        }
+      ]
+    }
+  ]
+}

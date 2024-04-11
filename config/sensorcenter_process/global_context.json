@@ -1,0 +1,35 @@
+{
+  "full_ipm_infer_input": {
+    "enable": true
+  },
+  "fisheye_infer_input": {
+    "enable": false,
+    "layer_type": "ds",
+    "layer_id": 0
+  },
+  "cylinder_infer_input": {
+    "enable": true,
+    "layer_type": "gdc",
+    "layer_id": 0
+  },
+  "pyramid_base_encode_input": {
+    "enable": true,
+    "layer_type": "base",
+    "layer_id": 0
+  },
+  "log": [
+    {
+      "module":"communication",
+      "log_level": "critical"
+    },
+    {
+      "module":"dataflow",
+      "log_level": "critical"
+    },
+    {
+      "module":"apa",
+      "log_level": "info"
+    }
+  ],
+  "log_comment": "log_level: trace, debug, info, warn, err, critical, never "
+}

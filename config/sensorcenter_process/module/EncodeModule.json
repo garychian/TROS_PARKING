@@ -1,0 +1,24 @@
+{
+    "full_ipm_encode": {
+        "enable": true
+    },
+    "pyramid_base_encode": {
+        "enable": true,
+        "layer_type": "base",
+        "layer_id": 0
+    },
+    "pyramid_ds_encode": {
+        "enable": false,
+        "layer_type": "ds",
+        "layer_id": 0
+    },
+    "cylinder_encode": {
+        "enable": true,
+        "layer_type": "gdc",
+        "layer_id": 0
+    },
+    "follow_context": 1,
+    "follow_context_comment": "if follow context is set to 1, then pyramid_layer_type and pyramid_layer_id defined in this file do not work.",
+    "encode_dst_fmt": "jpeg",
+    "encode_dst_fmt_comment": "only support h265 and jpeg"
+}

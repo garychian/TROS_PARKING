@@ -1,7 +1,7 @@
 {
   "threadpool_scheduler": [
     {
-      "scheduler_name": "APA_LOC",
+      "scheduler_name": "PARKING_LOC",
       "thread_num": 4,
       "configuration": {
         "scheduler_type": "Fair",

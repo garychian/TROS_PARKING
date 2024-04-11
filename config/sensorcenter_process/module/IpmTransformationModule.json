@@ -1,0 +1,9 @@
+{
+    "process_mode": 0,
+    "process_mode_comment": "0: stitch_by_gdc, 1: stitch_by_stitch",
+    "gdc_stitch_config": "ipm_transformation/1920_1376/stitch_by_stitch.json",
+    "enable_vio_init": 0,
+    "pyramid_layer_type": "base",
+    "pyramid_layer_id": 0,
+    "gdc_process_start_pipe": 6
+}

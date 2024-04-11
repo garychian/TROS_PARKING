@@ -515,7 +515,7 @@
   ],
   "graphlet": [],
   "process": {
-    "apahandle_peocess": [
+    "apahandle_process": [
       {
         "type": "module",
         "module_type": 0,
@@ -543,8 +543,8 @@
   "styles": {
     "ZIrUDXaYTGHqoFuGYT_-7": {
       "position": {
-        "x": 217,
-        "y": 54
+        "x": 210,
+        "y": 60
       },
       "size": {
         "width": 381,
@@ -1406,8 +1406,8 @@
     },
     "F42Fgbghcuqq5Hl-4BtWw": {
       "position": {
-        "x": 357,
-        "y": 108
+        "x": 350,
+        "y": 114
       },
       "size": {
         "width": 101,
@@ -1480,7 +1480,107 @@
       },
       "id": "F42Fgbghcuqq5Hl-4BtWw",
       "parent": "ZIrUDXaYTGHqoFuGYT_-7",
-      "zIndex": 13
+      "zIndex": 13,
+      "data": {
+        "refator": {
+          "id": "ApaHandleModule",
+          "class_name": "ApaHandleModule",
+          "module_type": 0,
+          "inputs": [
+            {
+              "id": "sub_slot_label",
+              "message": "fsm::Slotlabel",
+              "msg_src": "raw/fsm",
+              "msg_type": 0,
+              "topic": "/fsm/slot_label",
+              "enable": true,
+              "paintId": "u93D0xK0vQPaQvt0qMIgC",
+              "bindProc": [
+                {
+                  "id": "MsgCenterProc",
+                  "paintId": "F42Fgbghcuqq5Hl-4BtWw"
+                }
+              ]
+            },
+            {
+              "id": "sub_apa_status_req",
+              "message": "fsm::Apastatusreq",
+              "msg_src": "raw/fsm",
+              "msg_type": 0,
+              "topic": "/fsm/apa_status_req",
+              "enable": true,
+              "paintId": "BvDBIKYkr4IKRxwBsKJLN",
+              "bindProc": [
+                {
+                  "id": "MsgCenterProc",
+                  "paintId": "F42Fgbghcuqq5Hl-4BtWw"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "pub_apa_status",
+              "message": "aph::apa_status",
+              "msg_src": "raw/aph",
+              "msg_type": 0,
+              "topic": "/aph/apa_status",
+              "enable": true,
+              "paintId": "RO3QxM4miIXj2lBTQwtbB",
+              "bindProc": [
+                {
+                  "id": "MsgCenterProc",
+                  "paintId": "F42Fgbghcuqq5Hl-4BtWw"
+                }
+              ]
+            },
+            {
+              "id": "pub_target_slot",
+              "message": "aph::target_slot",
+              "msg_src": "raw/aph",
+              "msg_type": 0,
+              "topic": "/aph/target_slot",
+              "enable": true,
+              "paintId": "gge31adnug5vH398DmbQW",
+              "bindProc": [
+                {
+                  "id": "MsgCenterProc",
+                  "paintId": "F42Fgbghcuqq5Hl-4BtWw"
+                }
+              ]
+            }
+          ],
+          "procs": [
+            {
+              "id": "MsgCenterProc",
+              "type": "MsgCondTriggerProc",
+              "inputAndPaint": [
+                {
+                  "id": "sub_slot_label",
+                  "paintId": "u93D0xK0vQPaQvt0qMIgC"
+                },
+                {
+                  "id": "sub_apa_status_req",
+                  "paintId": "BvDBIKYkr4IKRxwBsKJLN"
+                }
+              ],
+              "outputAndPaint": [
+                {
+                  "id": "pub_apa_status",
+                  "paintId": "RO3QxM4miIXj2lBTQwtbB"
+                },
+                {
+                  "id": "pub_target_slot",
+                  "paintId": "gge31adnug5vH398DmbQW"
+                }
+              ],
+              "enable": true,
+              "paintId": "F42Fgbghcuqq5Hl-4BtWw"
+            }
+          ],
+          "package": "../../lib/libaph.so"
+        }
+      }
     },
     "gu6WqBTsI223bRbcSqE2r": {
       "shape": "edge-proc",
@@ -1491,7 +1591,7 @@
         }
       },
       "router": {
-        "name": "",
+        "name": "manhattan",
         "args": {
           "startDirections": [
             "right"
@@ -1519,16 +1619,7 @@
         "cell": "F42Fgbghcuqq5Hl-4BtWw",
         "port": "xQGIFR_CZ1D8fuaKVLkt4"
       },
-      "vertices": [
-        {
-          "x": 317,
-          "y": 138.5
-        },
-        {
-          "x": 317,
-          "y": 128
-        }
-      ]
+      "vertices": []
     },
     "o6jweHxlZ4uu5nUefZx3y": {
       "shape": "edge-proc",
@@ -1539,7 +1630,7 @@
         }
       },
       "router": {
-        "name": "",
+        "name": "manhattan",
         "args": {
           "startDirections": [
             "right"
@@ -1567,16 +1658,7 @@
         "cell": "F42Fgbghcuqq5Hl-4BtWw",
         "port": "xQGIFR_CZ1D8fuaKVLkt4"
       },
-      "vertices": [
-        {
-          "x": 317,
-          "y": 117.5
-        },
-        {
-          "x": 317,
-          "y": 128
-        }
-      ]
+      "vertices": []
     },
     "T1i2ZmFOwrdH4seGucyXA": {
       "shape": "edge-proc",
@@ -1587,7 +1669,7 @@
         }
       },
       "router": {
-        "name": "",
+        "name": "manhattan",
         "args": {
           "startDirections": [
             "right"
@@ -1615,16 +1697,7 @@
         "cell": "ZIrUDXaYTGHqoFuGYT_-7",
         "port": "RO3QxM4miIXj2lBTQwtbB"
       },
-      "vertices": [
-        {
-          "x": 498,
-          "y": 128
-        },
-        {
-          "x": 498,
-          "y": 138.5
-        }
-      ]
+      "vertices": []
     },
     "rdPc0HaWV6_hSNR4_ZExm": {
       "shape": "edge-proc",
@@ -1635,7 +1708,7 @@
         }
       },
       "router": {
-        "name": "",
+        "name": "manhattan",
         "args": {
           "startDirections": [
             "right"
@@ -1663,16 +1736,7 @@
         "cell": "ZIrUDXaYTGHqoFuGYT_-7",
         "port": "gge31adnug5vH398DmbQW"
       },
-      "vertices": [
-        {
-          "x": 498,
-          "y": 128
-        },
-        {
-          "x": 498,
-          "y": 117.5
-        }
-      ]
+      "vertices": []
     },
     "M2qSvlObO7KQLeeX5vRPv": {
       "position": {
@@ -2097,7 +2161,7 @@
         }
       },
       "router": {
-        "name": "",
+        "name": "manhattan",
         "args": {
           "startDirections": [
             "right"
@@ -2124,16 +2188,7 @@
         "cell": "ZjanZ7r5AqKZzUM3dWU_M",
         "port": "1njzH5A5tOfPit8-Z3t7F"
       },
-      "vertices": [
-        {
-          "x": 784,
-          "y": 138.5
-        },
-        {
-          "x": 784,
-          "y": 285.25
-        }
-      ]
+      "vertices": []
     },
     "462901ba-1b8c-4ea0-9c9f-ba13f4bf3999": {
       "shape": "edge-module",

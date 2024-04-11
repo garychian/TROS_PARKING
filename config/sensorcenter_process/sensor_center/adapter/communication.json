@@ -1,0 +1,23 @@
+{
+  "discovery_pattern": 1,
+  "discovery_option": {
+    "discovery_enable": 0,
+    "cross_different_subnets": 0,
+    "default_eth": "",
+    "port_range": "10100-10200",
+    "multicast_domain": "apa"
+  },
+  "loglevel": 5,
+  "supported_protocols": [
+    {
+      "enable": 1,
+      "protocol_type": 2,
+      "protocol_name": "zmq_tcp",
+      "is_in_hybrid": 1,
+      "plugin_file": "libplugin-zmq"
+    }
+  ],
+  "comment": "the fields shown above do not work in dataflow mode.",
+  "participants_comment": "All the following participants are configured for sensor center. participant 1 for diag, participant 2 for command, participant 3~6 for remote fillback.",
+  "participants": []
+}

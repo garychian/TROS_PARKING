@@ -1,7 +1,7 @@
 {
   "threadpool_scheduler": [
     {
-      "scheduler_name": "PARKING_PSD",
+      "scheduler_name": "PARKING_APH",
       "thread_num": 4,
       "configuration": {
         "scheduler_type": "Fair",

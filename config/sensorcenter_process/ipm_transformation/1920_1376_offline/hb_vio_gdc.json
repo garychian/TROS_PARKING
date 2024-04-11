@@ -1,0 +1,42 @@
+{
+    "pipeline6": {
+        "gdc": {
+            "input_width": 1920,
+            "input_height": 1536,
+            "output_width": 448,
+            "output_height": 448,
+            "buf_num": 10,
+            "fb_buf_num": 10
+        }
+    },
+    "pipeline7": {
+        "gdc": {
+            "input_width": 1920,
+            "input_height": 1536,
+            "output_width": 448,
+            "output_height": 448,
+            "buf_num": 10,
+            "fb_buf_num": 10
+        }
+    },
+    "pipeline8": {
+        "gdc": {
+            "input_width": 1920,
+            "input_height": 1536,
+            "output_width": 448,
+            "output_height": 448,
+            "buf_num": 10,
+            "fb_buf_num": 10
+        }
+    },
+    "pipeline9": {
+        "gdc": {
+            "input_width": 1920,
+            "input_height": 1536,
+            "output_width": 448,
+            "output_height": 448,
+            "buf_num": 10,
+            "fb_buf_num": 10
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+  "discovery_option": {
+    "discovery_enable": 0,
+    "cross_different_subnets": 0,
+    "default_eth": "",
+    "port_range": "10100-10200",
+    "multicast_domain": ""
+  },
+  "shm_option": {
+    "shm_size": "100M",
+    "block_size": "1M"
+  },
+  "supported_protocols": [
+    {
+      "enable": 1,
+      "protocol_type": 2,
+      "protocol_name": "zmq_tcp",
+      "is_in_hybrid": 1,
+      "plugin_file": "libplugin-zmq"
+    },
+    {
+      "enable": 1,
+      "protocol_type": 3,
+      "protocol_name": "zmq_epgm",
+      "is_in_hybrid": 0,
+      "plugin_file": "libplugin-zmq"
+    },
+    {
+      "enable": 1,
+      "protocol_type": 4,
+      "protocol_name": "zmq_ipc",
+      "is_in_hybrid": 0,
+      "plugin_file": "libplugin-zmq"
+    }
+  ],
+  "tool_switch": 0,
+  "log_level": "info",
+  "participants": []
+}

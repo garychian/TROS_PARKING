@@ -1,0 +1,178 @@
+{
+  "adapter_message": [
+    {
+      "adapter_name": "/bole/event/sensors",
+      "enable": true,
+      "topic_name": "/bole/event/sensors",
+      "enable_pub": true,
+      "enable_sub": false,
+      "enable_client": false,
+      "enable_service": false,
+      "messagedomainid": 0,
+      "messagetrantype": 2,
+      "messagetrantype_comment": "0:hybrid,1:intra,2:zmq_tcp,3:zmp_epgm,4:zmp_ipc,5:dds,6:shm,7:sdio,8:pcie",
+      "messagenum": 20,
+      "participantattr": 1,
+      "participantattr_comment": "-1:without participantattr, >=0:messagetrantype is 2,3,4,7,8"
+    },
+    {
+      "adapter_name": "/bole/command/sensors",
+      "enable": true,
+      "topic_name": "/bole/command/sensors",
+      "enable_pub": false,
+      "enable_sub": false,
+      "enable_client": false,
+      "enable_service": true,
+      "messagedomainid": 0,
+      "messagetrantype": 2,
+      "messagetrantype_comment": "0:hybrid,1:intra,2:zmq_tcp,3:zmp_epgm,4:zmp_ipc,5:dds,6:shm,7:sdio,8:pcie",
+      "messagenum": 20,
+      "participantattr": 2,
+      "participantattr_comment": "-1:without participantattr, >=0:messagetrantype is 2,3,4,7,8"
+    },
+    {
+      "adapter_name": "camera_0",
+      "enable": true,
+      "enable_pub": true,
+      "enable_sub": true,
+      "enable_client": false,
+      "enable_service": false,
+      "topic_name": "camera_0",
+      "messagedomainid": 0,
+      "messagetrantype": 6,
+      "messagetrantype_comment": "0:hybrid,1:intra,2:zmq_tcp,3:zmp_epgm,4:zmp_ipc,5:dds,6:shm,7:sdio,8:pcie",
+      "messagenum": 1,
+      "participantattr": -1,
+      "participantattr_comment": "-1:without participantattr, >=0:messagetrantype is 2,3,4,7,8",
+      "plugin_info": {
+        "class_name": "hobot::sensors::Adapter<CameraProtoSerializer>"
+      }
+    },
+    {
+      "adapter_name": "camera_1",
+      "enable": true,
+      "enable_pub": true,
+      "enable_sub": true,
+      "enable_client": false,
+      "enable_service": false,
+      "topic_name": "camera_1",
+      "messagedomainid": 0,
+      "messagetrantype": 6,
+      "messagetrantype_comment": "0:hybrid,1:intra,2:zmq_tcp,3:zmp_epgm,4:zmp_ipc,5:dds,6:shm,7:sdio,8:pcie",
+      "messagenum": 1,
+      "participantattr": -1,
+      "participantattr_comment": "-1:without participantattr, >=0:messagetrantype is 2,3,4,7,8",
+      "plugin_info": {
+        "class_name": "hobot::sensors::Adapter<CameraProtoSerializer>"
+      }
+    },
+    {
+      "adapter_name": "camera_2",
+      "enable": true,
+      "enable_pub": true,
+      "enable_sub": true,
+      "enable_client": false,
+      "enable_service": false,
+      "topic_name": "camera_2",
+      "messagedomainid": 0,
+      "messagetrantype": 6,
+      "messagetrantype_comment": "0:hybrid,1:intra,2:zmq_tcp,3:zmp_epgm,4:zmp_ipc,5:dds,6:shm,7:sdio,8:pcie",
+      "messagenum": 1,
+      "participantattr": -1,
+      "participantattr_comment": "-1:without participantattr, >=0:messagetrantype is 2,3,4,7,8",
+      "plugin_info": {
+        "class_name": "hobot::sensors::Adapter<CameraProtoSerializer>"
+      }
+    },
+    {
+      "adapter_name": "camera_3",
+      "enable": true,
+      "enable_pub": true,
+      "enable_sub": true,
+      "enable_client": false,
+      "enable_service": false,
+      "topic_name": "camera_3",
+      "messagedomainid": 0,
+      "messagetrantype": 6,
+      "messagetrantype_comment": "0:hybrid,1:intra,2:zmq_tcp,3:zmp_epgm,4:zmp_ipc,5:dds,6:shm,7:sdio,8:pcie",
+      "messagenum": 1,
+      "participantattr": -1,
+      "participantattr_comment": "-1:without participantattr, >=0:messagetrantype is 2,3,4,7,8",
+      "plugin_info": {
+        "class_name": "hobot::sensors::Adapter<CameraProtoSerializer>"
+      }
+    },
+    {
+      "adapter_name": "camera_image_0",
+      "enable": true,
+      "enable_pub": false,
+      "enable_sub": true,
+      "enable_client": false,
+      "enable_service": false,
+      "topic_name": "camera_image_0#0",
+      "messagedomainid": 0,
+      "messagetrantype": 1,
+      "messagetrantype_comment": "0:hybrid,1:intra,2:zmq_tcp,3:zmp_epgm,4:zmp_ipc,5:dds,6:shm,7:sdio,8:pcie",
+      "messagenum": 20,
+      "participantattr": -1,
+      "participantattr_comment": "-1:without participantattr, >=0:messagetrantype is 2,3,4,7,8",
+      "plugin_info": {
+        "class_name": "hobot::sensors::Adapter<ImageProtoSerializer>"
+      }
+    },
+    {
+      "adapter_name": "camera_image_1",
+      "enable": true,
+      "enable_pub": false,
+      "enable_sub": true,
+      "enable_client": false,
+      "enable_service": false,
+      "topic_name": "camera_image_1#0",
+      "messagedomainid": 0,
+      "messagetrantype": 1,
+      "messagetrantype_comment": "0:hybrid,1:intra,2:zmq_tcp,3:zmp_epgm,4:zmp_ipc,5:dds,6:shm,7:sdio,8:pcie",
+      "messagenum": 20,
+      "participantattr": -1,
+      "participantattr_comment": "-1:without participantattr, >=0:messagetrantype is 2,3,4,7,8",
+      "plugin_info": {
+        "class_name": "hobot::sensors::Adapter<ImageProtoSerializer>"
+      }
+    },
+    {
+      "adapter_name": "camera_image_2",
+      "enable": true,
+      "enable_pub": false,
+      "enable_sub": true,
+      "enable_client": false,
+      "enable_service": false,
+      "topic_name": "camera_image_2#0",
+      "messagedomainid": 0,
+      "messagetrantype": 1,
+      "messagetrantype_comment": "0:hybrid,1:intra,2:zmq_tcp,3:zmp_epgm,4:zmp_ipc,5:dds,6:shm,7:sdio,8:pcie",
+      "messagenum": 20,
+      "participantattr": -1,
+      "participantattr_comment": "-1:without participantattr, >=0:messagetrantype is 2,3,4,7,8",
+      "plugin_info": {
+        "class_name": "hobot::sensors::Adapter<ImageProtoSerializer>"
+      }
+    },
+    {
+      "adapter_name": "camera_image_3",
+      "enable": true,
+      "enable_pub": false,
+      "enable_sub": true,
+      "enable_client": false,
+      "enable_service": false,
+      "topic_name": "camera_image_3#0",
+      "messagedomainid": 0,
+      "messagetrantype": 1,
+      "messagetrantype_comment": "0:hybrid,1:intra,2:zmq_tcp,3:zmp_epgm,4:zmp_ipc,5:dds,6:shm,7:sdio,8:pcie",
+      "messagenum": 20,
+      "participantattr": -1,
+      "participantattr_comment": "-1:without participantattr, >=0:messagetrantype is 2,3,4,7,8",
+      "plugin_info": {
+        "class_name": "hobot::sensors::Adapter<ImageProtoSerializer>"
+      }
+    }
+  ]
+}

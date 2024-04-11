@@ -1,0 +1,120 @@
+{
+  "modules": [
+    {
+      "class_name": "LocationMapModule",
+      "module_id": "LocationMapModule",
+      "package": "../../lib/libloc.so",
+      "inputs": [
+        {
+          "port_id": "sub_vehicleio_data",
+          "topic": "/vec/vehicleio_data"
+        },
+        {
+          "port_id": "sub_apa_status",
+          "topic": "/aph/apa_status"
+        },
+        {
+          "port_id": "sub_target_slot",
+          "topic": "/aph/target_slot"
+        },
+        {
+          "port_id": "sub_imu_data",
+          "topic": "/sen/imu_data"
+        },
+        {
+          "port_id": "sub_gnss_data",
+          "topic": "/sen/gnss_data"
+        },
+        {
+          "port_id": "sub_ins_data",
+          "topic": "/sen/ins_data"
+        },
+        {
+          "port_id": "sub_dual_antenna_data",
+          "topic": "/sen/dual_antenna_data"
+        },
+        {
+          "port_id": "sub_psd_image",
+          "topic": "/psd/image"
+        },
+        {
+          "port_id": "sub_camera_frame_array",
+          "topic": "/sec/camera_frame_array"
+        },
+        {
+          "port_id": "sub_apa_ps_info",
+          "topic": "/psd/apa_ps_info"
+        },
+        {
+          "port_id": "sub_apa_ps_rect",
+          "topic": "/psd/apa_ps_rect"
+        },
+        {
+          "port_id": "sub_apa_pointI",
+          "topic": "/psd/apa_pointI"
+        }
+      ],
+      "outputs": [
+        {
+          "port_id": "pub_pad_realtime_loc",
+          "topic": "/loc/pad_realtime_loc"
+        },
+        {
+          "port_id": "pub_loc_status",
+          "topic": "/loc/loc_status"
+        },
+        {
+          "port_id": "pub_vehicle_pose",
+          "topic": "/loc/vehicle_pose"
+        },
+        {
+          "port_id": "pub_app2emap",
+          "topic": "/loc/app2emap"
+        },
+        {
+          "port_id": "pub_pad_point",
+          "topic": "/loc/pad_point"
+        },
+        {
+          "port_id": "pub_map_info",
+          "topic": "/loc/map_info"
+        },
+        {
+          "port_id": "pub_parking_slot",
+          "topic": "/loc/parking_slot"
+        },
+        {
+          "port_id": "pub_stio_lane_lines",
+          "topic": "/loc/stio_lane_lines"
+        },
+        {
+          "port_id": "pub_stop_lines",
+          "topic": "/loc/stop_lines"
+        },
+        {
+          "port_id": "pub_bumps",
+          "topic": "/loc/bumps"
+        },
+        {
+          "port_id": "pub_crosswalks",
+          "topic": "/loc/crosswalks"
+        },
+        {
+          "port_id": "pub_arrows",
+          "topic": "/loc/arrows"
+        },
+        {
+          "port_id": "pub_pad_vehicleio_pose",
+          "topic": "/loc/pad_vehicle_pose"
+        }
+      ],
+      "procs": [
+        {
+          "proc_id": "MsgCenterProc",
+          "proc_type": "MsgCondTriggerProc",
+          "disable": false
+        }
+      ]
+    }
+  ]
+}

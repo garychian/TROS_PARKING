@@ -1,0 +1,57 @@
+{
+  "domain_id": 0,
+  "global_user_config": "global_context.json",
+  "schedule_config": "schedule.json",
+  "runtime_context": "runtime_context.json",
+  "process_name": "apa_sc",
+  "communication_config": "communication.json",
+  "ignore_config": ["case1.rtignore"],
+  "log": {
+    "log_level": "info",
+    "rotate_number": 128,
+    "max_size": 8192
+  },
+  "time": {
+    "clock_type": "steady_time",
+    "clock_topic": "/Clock",
+    "sub_paitipant": 6,
+    "sub_domain_id": 0,
+    "pub_paitipant": 7,
+    "pub_domain_id": 0
+  },
+  "monitor": {
+    "enable_diagnose": false,
+    "enable_event": false,
+    "interval": 50,
+    "topic": "/bole/dataflow/event",
+    "diagnose_check_interval": 1000
+  },
+  "dag_information": {
+    "enable": false,
+    "topic": "/bole/dataflow/dag",
+    "interval": 200,
+    "enable_module": false
+  },
+  "profiling": {
+    "enable_task": false,
+    "enable_inner_task": false,
+    "enable_message": false,
+    "enable_custom": false,
+    "interval": 50,
+    "topic": "/bole/dataflow/profiling",
+    "summary_stat_period": 10,
+    "summary_stat_topic": "/bole/dataflow/statistics",
+    "enable_task_statistics": false,
+    "enable_message_statistics": false
+  },
+  "soc": {
+    "enable": false,
+    "collector_interval": 50,
+    "pub_interval": 1000,
+    "topic": "/bole/dataflow/soc"
+  },
+  "running_threshold": {
+    "module_init": 3000000,
+    "module_reset": 3000000
+  }
+}
