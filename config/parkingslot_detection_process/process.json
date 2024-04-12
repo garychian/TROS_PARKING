@@ -4,7 +4,7 @@
   "ignore_config": [],
   "runtime_context": "runtime_context.json",
   "schedule_config": "schedule.json",
-  "process_name": "parkingslot_detection_process",
+  "process_name": "parking_psd",
   "log": {
     "log_level": "info",
     "rotate_number": 128,

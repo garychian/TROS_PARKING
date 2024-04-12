@@ -10,14 +10,14 @@
 // ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
-#include "./location_map_module.h"
+#include "location_map/location_map_module.h"
 #include <functional>
 #include <vector>
 #include <string>
 
 #include "communication/common/types.h"
 #include "message/proto/proto_serializer.hpp"
-#include "proto_message/proto_msg_all.h"
+#include "common/proto_msg_all.h"
 
 // #include "proto/sensors/camera_frame_idl_wrapper.h"
 #include "fanya_protocol/psd_idl_wrapper.h"

@@ -4,7 +4,7 @@
       "sensor_name": "camera_0",
       "plugin_info": {
         "libraries": [
-          "./libs/libcamera.so"
+          "./tros_common_lib/libcamera.so"
         ],
         "property_file": "../sensor_center/camera/camera_0.json",
         "class_name": "Camera"
@@ -46,7 +46,7 @@
       "sensor_name": "camera_1",
       "plugin_info": {
         "libraries": [
-          "./libs/libcamera.so"
+          "./tros_common_lib/libcamera.so"
         ],
         "property_file": "../sensor_center/camera/camera_1.json",
         "class_name": "Camera"
@@ -82,7 +82,7 @@
       "sensor_name": "camera_2",
       "plugin_info": {
         "libraries": [
-          "./libs/libcamera.so"
+          "./tros_common_lib/libcamera.so"
         ],
         "property_file": "../sensor_center/camera/camera_2.json",
         "class_name": "Camera"
@@ -118,7 +118,7 @@
       "sensor_name": "camera_3",
       "plugin_info": {
         "libraries": [
-          "./libs/libcamera.so"
+          "./tros_common_lib/libcamera.so"
         ],
         "property_file": "../sensor_center/camera/camera_3.json",
         "class_name": "Camera"
@@ -166,13 +166,13 @@
       10
     ]
   },
-  "diag_adapter_name": "/bole/event/sensors",
+  "+diag_adapter_name": "/bole/event/sensors",
   "command_adapter_name": "/bole/command/sensors",
   "adapter_path": "../sensor_center/adapter/adapter_fillback.json",
   "adapter_path_comment": "absolute path for adapter.json",
-  "communication_path": "../sensor_center/adapter/communication.json",
+  "communication_path": "../communication.json",
   "customized_field": "../sensor_center/empty.json",
   "time_cost_en": false,
-  "log_file_save_path": "./log.txt",
+  "log_path": "../../log/sensors/",
   "log_level": 5
 }

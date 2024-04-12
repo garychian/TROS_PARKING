@@ -10,14 +10,14 @@
 // ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
-#include "./apa_handle_module.h"
+#include "apa_handle/apa_handle_module.h"
 #include <functional>
 #include <vector>
 #include <string>
 
 #include "communication/common/types.h"
 #include "message/proto/proto_serializer.hpp"
-#include "proto_message/proto_msg_all.h"
+#include "common/proto_msg_all.h"
 
 #include "fanya_protocol/aph_idl_wrapper.h"
 #include "fanya_protocol/fsm_idl_wrapper.h"

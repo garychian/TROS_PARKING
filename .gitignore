@@ -1,4 +1,4 @@
 build
-outputs
 output
+deploy_path
 *.zip

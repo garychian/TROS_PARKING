@@ -29,6 +29,8 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     ${PROTO})
 else()
   target_link_libraries(psd
+    hobot-bole-protocol
+    fanya_protocol
     dataflow
     communication
     time

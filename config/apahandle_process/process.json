@@ -3,7 +3,7 @@
   "communication_config": "communication.json",
   "runtime_context": "runtime_context.json",
   "schedule_config": "schedule.json",
-  "process_name": "apahandle_process",
+  "process_name": "parking_aph",
   "log": {
     "log_level": "info",
     "rotate_number": 128,

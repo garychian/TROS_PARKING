@@ -87,8 +87,3 @@ endif()
 if(EXISTS ${CMAKE_SOURCE_DIR}/test/CMakeLists.txt)
   add_subdirectory(test)
 endif()
-
-# add_subdirectory(proto)
-
-
-#install

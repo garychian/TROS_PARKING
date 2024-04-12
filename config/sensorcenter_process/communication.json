@@ -1,4 +1,6 @@
 {
+  "tool_switch": 0,
+  "discovery_pattern": 1,
   "discovery_option": {
     "discovery_enable": 0,
     "cross_different_subnets": 0,
@@ -6,17 +8,23 @@
     "port_range": "10100-10200",
     "multicast_domain": ""
   },
-  "log_level": "info",
-  "tool_switch": 0,
+  "log_level": "critical",
   "supported_protocols": [
     {
       "enable": 1,
       "protocol_type": 2,
       "protocol_name": "zmq_tcp",
-      "is_in_hybrid": 0,
+      "is_in_hybrid": 1,
       "plugin_file": "libplugin-zmq"
     }
   ],
+  "shm_option" : {
+    "shm_size":"100M",
+    "block_size":"1M",
+    "hbmem_hold_com_buf": 5,
+    "hbmem_hold_timout_ms" : 100,
+    "simple_mode": 0
+  },
   "participants": [
     {
       "id": 1,
@@ -33,76 +41,32 @@
     {
       "id": 3,
       "protocol": "zmq_tcp",
-      "link_info": "0.0.0.0:5580",
+      "link_info": "0.0.0.0:15580",
       "link_type": "bind"
     },
     {
       "id": 4,
       "protocol": "zmq_tcp",
-      "link_info": "0.0.0.0:5581",
+      "link_info": "0.0.0.0:15581",
       "link_type": "bind"
     },
     {
       "id": 5,
       "protocol": "zmq_tcp",
-      "link_info": "0.0.0.0:5582",
+      "link_info": "0.0.0.0:15582",
       "link_type": "bind"
     },
     {
       "id": 6,
       "protocol": "zmq_tcp",
-      "link_info": "0.0.0.0:5583",
+      "link_info": "0.0.0.0:15583",
       "link_type": "bind"
     },
-	{
-      "id": 10,
-      "protocol": "zmq_tcp",
-      "link_info": "0.0.0.0:5570",
-      "link_type": "",
-      "link_options": {
-        "ZMQ_SNDHWM": 15,
-        "ZMQ_RCVHWM": 15
-      }
-    },
     {
-      "id": 11,
+      "id": 7,
       "protocol": "zmq_tcp",
-      "link_info": "0.0.0.0:5571",
-      "link_type": "",
-      "link_options": {
-        "ZMQ_SNDHWM": 15,
-        "ZMQ_RCVHWM": 15
-      }
-    },
-    {
-      "id": 12,
-      "protocol": "zmq_tcp",
-      "link_info": "0.0.0.0:5572",
-      "link_type": "",
-      "link_options": {
-        "ZMQ_SNDHWM": 15,
-        "ZMQ_RCVHWM": 15
-      }
-    },
-    {
-      "id": 13,
-      "protocol": "zmq_tcp",
-      "link_info": "0.0.0.0:5573",
-      "link_type": "",
-      "link_options": {
-        "ZMQ_SNDHWM": 15,
-        "ZMQ_RCVHWM": 15
-      }
-    },
-    {
-      "id": 14,
-      "protocol": "zmq_tcp",
-      "link_info": "0.0.0.0:5574",
-      "link_type": "",
-      "link_options": {
-        "ZMQ_SNDHWM": 15,
-        "ZMQ_RCVHWM": 15
-      }
+      "link_info": "0.0.0.0:18888",
+      "link_type": "bind"
     }
   ]
 }

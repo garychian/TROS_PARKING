@@ -99,6 +99,8 @@ class PackageConanFile(ConanFile):
                           "lib")
             self.copy("libsm_client.so*", "package/%s/tros_common_lib" % target,
                           "lib")
+            self.copy("libfanya*", "package/%s/tros_common_lib" % target,
+                          "lib")                        
 
 
             # if self.options.soc == "j3":

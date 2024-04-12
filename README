@@ -1,8 +1,15 @@
-首先需自行编译proto文件，导入conan数据缓存
-后续proto文件有修改，需要再次编译
+编译环境
+ubuntu 20
 
-parking 进程编译
 
-直接运行scripts下 build.sh脚本即可
+工程包括parking进程，以及与parking进程相关的proto
 
-./scripts/build.sh
+首次编译可执行
+
+bash build .sh all
+
+完成proto、parking进程的编译
+
+后续编译只需编译parking进程即可，运行
+
+bash build.sh

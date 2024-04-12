@@ -10,7 +10,7 @@
 // ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
-#include "./freespace_module.h"
+#include "freespace/freespace_module.h"
 #include <functional>
 #include <vector>
 #include <string>

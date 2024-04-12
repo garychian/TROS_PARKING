@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo ""
-echo "parking."
+echo "parking app."
 
 show_usage() {
   echo "Usage: sh $0 [opt] [arg]"
@@ -32,10 +32,10 @@ while getopts "m:t:h" opt; do
   esac
 done
 
-PROCESS_SENSOR_CENTER="apa_sc"
-PROCESS_DETECTION="parkingslot_detection_process"
-PROCESS_LOCATION="location_map_process"
-PROCESS_APAHANDLE="apahandle_process"
+PROCESS_SENSOR_CENTER="parking_sc"
+PROCESS_DETECTION="parking_psd"
+PROCESS_LOCATION="parking_loc"
+PROCESS_APAHANDLE="parking_aph"
 # kill before run
 PID_SENSOR_CENTER=$(ps | grep $PROCESS_SENSOR_CENTER | grep -v grep | awk '{print $1}')
 PID_DETECTION=$(ps | grep $PROCESS_DETECTION | grep -v grep | awk '{print $1}')
@@ -49,6 +49,8 @@ if [[ "$TARGET" == "0" ]];then
   kill -9 $PID_APAHANDLE
 elif [[ "$TARGET" == "1" ]];then
   kill -9 $PID_SENSOR_CENTER
+elif [[ "$TARGET" == "2" ]];then
+  kill -9 $PID_DETECTION
 else
   echo "invalid mode = $MODE, exit!"
   exit 1
@@ -59,7 +61,7 @@ echo TARGET=$TARGET
 
 # dataflow require mainboard2 in PATH, when run program by launch2.
 export PATH=.:$PATH
-export LD_LIBRARY_PATH=libs:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=tros_common_lib:$LD_LIBRARY_PATH
 export HB_DNN_LOG_LEVEL=3
 export HB_EASY_DNN_LOG_LEVEL=3
 
@@ -78,7 +80,9 @@ chmod +x $LAUNCH
 if [[ "$TARGET" == "0" ]];then
   ./$LAUNCH -c processes.json -w config
 elif [[ "$TARGET" == "1" ]];then
-  ./$MAINBOARD -c process.json -w config/$PROCESS_SENSOR_CENTER
+  ./$MAINBOARD -c process.json -w config/sensorcenter_process
+elif [[ "$TARGET" == "2" ]];then
+  ./$MAINBOARD -c process.json -w config/parkingslot_detection_process
 else
   echo "invalid mode = $MODE, exit!"
   exit 1

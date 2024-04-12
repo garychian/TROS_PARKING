@@ -10,7 +10,7 @@
 // ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
-#include "./object_detect_moudle.h"
+#include "object_detect/object_detect_moudle.h"
 #include <functional>
 #include <vector>
 #include <string>
