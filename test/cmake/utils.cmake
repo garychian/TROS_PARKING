@@ -1,0 +1,335 @@
+cmake_minimum_required(VERSION 3.15)
+
+set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
+set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
+
+option(CONAN_ENABLE "use conan" ON)
+if(CONAN_ENABLE)
+  find_package(fmt REQUIRED)
+  if(fmt_FOUND)
+      include_directories(SYSTEM ${fmt_INCLUDE_DIRS})
+  endif()
+  list(APPEND LINK_SEARCH_PATH ${fmt_LIB_DIRS})
+
+
+  find_package(protobuf REQUIRED)
+
+  if(protobuf_FOUND)
+    include_directories(SYSTEM ${protobuf_INCLUDE_DIRS})
+  endif()
+
+  list(APPEND LINK_SEARCH_PATH ${protobuf_LIB_DIRS})
+
+
+  if (${ENABLE_PERFETTO})
+    message(STATUS "[example][cmake][utils] enable perfetto")
+    find_package(perfetto REQUIRED)
+    set(perfetto_LIBS ${perfetto_LIBRARY_LIST})
+    if(perfetto_FOUND)
+        message(STATUS "[example][cmake][utils] perfetto found")
+        # update link directoies
+        list(APPEND LINK_SEARCH_PATH ${perfetto_LIB_DIRS})
+        # Specify target library
+        set(PERFETTO_SHARED_LIB ${perfetto_LIBS})
+        # Specify gcc/g++ feature macro
+        add_definitions(-DENABLE_PERFETTO)
+    else()
+        message(FATAL_ERROR "[example][cmake][utils] perfetto not found")
+    endif()
+  else()
+    message(STATUS "[example][cmake][utils] not enable perfetto")
+  endif()
+
+
+  find_package(zeromq REQUIRED)
+
+  if(zeromq_FOUND)
+    include_directories(SYSTEM ${zeromq_INCLUDE_DIRS})
+  endif()
+
+  list(APPEND LINK_SEARCH_PATH ${zeromq_LIB_DIRS})
+
+  find_package(hlog REQUIRED)
+  if(hlog_FOUND)
+      include_directories(SYSTEM ${hlog_INCLUDE_DIRS})
+  endif()
+  list(APPEND LINK_SEARCH_PATH ${hlog_LIB_DIRS})
+
+  find_package(schedulegroup REQUIRED)
+  if(schedulegroup_FOUND)
+      include_directories(SYSTEM ${schedulegroup_INCLUDE_DIRS})
+  endif()
+  list(APPEND LINK_SEARCH_PATH ${schedulegroup_LIB_DIRS})
+
+  find_package(communication REQUIRED)
+  if(communication_FOUND)
+      include_directories(SYSTEM ${communication_INCLUDE_DIRS})
+  endif()
+  list(APPEND LINK_SEARCH_PATH ${communication_LIB_DIRS})
+
+  if(DDS_ENABLE OR BENCHMARK_FASTDDS)
+    find_package(fast-dds REQUIRED)
+      if(fast-dds_FOUND)
+          include_directories(SYSTEM ${fast-dds_INCLUDE_DIRS})
+      endif()
+    list(APPEND LINK_SEARCH_PATH ${fast-dds_LIB_DIRS})
+  endif()
+
+  find_package(message REQUIRED)
+  if(message_FOUND)
+      include_directories(SYSTEM ${message_INCLUDE_DIRS})
+  endif()
+  list(APPEND LINK_SEARCH_PATH ${message_LIB_DIRS})
+
+  find_package(nlohmann_json REQUIRED)
+  if(nlohmann_json_FOUND)
+      include_directories(SYSTEM ${nlohmann_json_INCLUDE_DIRS})
+  endif()
+  list(APPEND LINK_SEARCH_PATH ${nlohmann_json_LIB_DIRS})
+
+  if(AARCH_J3)
+      find_package(j3dvb_system REQUIRED)
+      if(j3dvb_system_FOUND)
+          include_directories(SYSTEM ${j3dvb_system_INCLUDE_DIRS})
+      endif()
+      list(APPEND LINK_SEARCH_PATH ${j3dvb_system_LIB_DIRS})
+  elseif(AARCH_J5)
+      find_package(j5dvb_system REQUIRED)
+      if(j5dvb_system_FOUND)
+          include_directories(SYSTEM ${j5dvb_system_INCLUDE_DIRS})
+      endif()
+      list(APPEND LINK_SEARCH_PATH ${j5dvb_system_LIB_DIRS})
+  elseif(S32G)
+    find_package(s32g_system REQUIRED)
+    if(s32g_system_FOUND)
+        include_directories(SYSTEM ${s32g_system_INCLUDE_DIRS})
+    endif()
+    list(APPEND LINK_SEARCH_PATH ${s32g_system_LIB_DIRS})
+  endif()
+  if(AARCH_x86_HBMEM_ENABLE)
+    find_package(pac_system_x86 REQUIRED)
+    if(pac_system_x86_FOUND)
+      include_directories(SYSTEM ${pac_system_x86_INCLUDE_DIRS})
+    endif()
+    list(APPEND LINK_SEARCH_PATH ${pac_system_x86_LIB_DIRS})
+  endif()
+  link_directories(${LINK_SEARCH_PATH})
+  message("LINK_SEARCH_PATH:${LINK_SEARCH_PATH}")
+else()
+  include(cmake/tros_sdk.cmake)
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(DEBUG_POSTFIX "d")
+  set(CMAKE_DEBUG_POSTFIX ${DEBUG_POSTFIX})
+  message(STATUS "CMAKE_BUILD_TYPE: Debug")
+else()
+  message(STATUS "CMAKE_BUILD_TYPE: Release")
+endif()
+
+
+if(DEPS_GLOG)
+  add_definitions(-DDEPS_GLOG=1)
+else()
+  add_definitions(-DDEPS_GLOG=0)
+endif()
+
+# options : pcie sido hbmem zmq dds
+# default value
+
+if(AARCH_J5 OR S32G OR AARCH_x86_HBMEM_ENABLE)
+  set(PCIE_SUPPORT TRUE)
+  add_definitions(-DSUPPORT_PCIE)
+  message(STATUS "support pcie")
+else()
+  message(STATUS "unsupport pcie")
+endif()
+
+if(SDIO_SUPPORT)
+  message(STATUS "support sdio ")
+else()
+  message(STATUS "unsupport sdio")
+endif()
+
+if((AARCH_J5 OR S32G OR AARCH_J3 OR AARCH_x86_HBMEM_ENABLE) AND HBMEM_ENABLE)
+  set(HBMEM_SUPPORT TRUE)
+  add_definitions(-DSUPPORT_HBMEM)
+  message(STATUS "support hbmem ")
+else()
+  message(STATUS "unsupport hbmem")
+endif()
+
+if(DDS_ENABLE)
+  set(DDS_SUPPORT TRUE)
+  add_definitions(-DSUPPORT_DDS)
+  message(STATUS "support dds ")
+else()
+  message(STATUS "unsupport dds ")
+endif()
+
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(SHARED_LIB communicationd)
+else()
+  set(SHARED_LIB communication)
+endif()
+
+
+set(SHM_SHARED_LIB shm)
+
+set(DDS_STATIC_LIB fastrtps fastcdr)
+
+if(APPLE)
+    # set(DDS_SHARED_LIB libfastrtps.2.dylib libfastcdr.1.dylib)
+    set(DDS_DEPENDENCE_LIB
+        foonathan_memory-0.7.3 dl pthread)
+elseif(ANDROID)
+    set(DDS_STATIC_LIB fastcdr fastrtps)
+    set(DDS_DEPENDENCE_LIB foonathan_memory-0.7.3 dl)
+elseif(MSVC)
+    set(DDS_STATIC_LIB libfastcdr-1.0 libfastrtps-2.10)
+    # set(DDS_SHARED_LIB libfastcdr-1.0 libfastrtps-2.1)
+    set(DDS_DEPENDENCE_LIB foonathan_memory-0.7.3 iphlpapi Shlwapi)
+
+    # if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    #     set(DDS_STATIC_LIB libfastcdrd-1.0 libfastrtpsd-2.1)
+    #     set(DDS_SHARED_LIB libfastcdrd-1.0 libfastrtpsd-2.1)
+    #     set(DDS_DEPENDENCE_LIB foonathan_memory-0.6.2-dbg tinyxml2d iphlpapi Shlwapi)
+    # endif()
+else()
+    # set(DDS_SHARED_LIB libfastrtps.so.2.1.1 libfastcdr.so.1.0.21)
+    set(DDS_DEPENDENCE_LIB
+        foonathan_memory-0.7.3 rt dl pthread)
+endif()
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+
+if(MSVC)
+    SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CMAKE_CXX_FLAGS} -Od /MDd ")
+    SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CMAKE_CXX_FLAGS} -O2 ")
+    SET(CMAKE_C_FLAGS_DEBUG "$ENV{CMAKE_C_FLAGS} -Od /MDd ")
+    SET(CMAKE_C_FLAGS_RELEASE "$ENV{CMAKE_C_FLAGS} -O2 ")
+else()
+    SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CMAKE_CXX_FLAGS} -O0 -g3 -ggdb ")
+    SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CMAKE_CXX_FLAGS} -O3  ")
+    SET(CMAKE_C_FLAGS_DEBUG "$ENV{CMAKE_C_FLAGS} -O0 -g3 -ggdb ")
+    SET(CMAKE_C_FLAGS_RELEASE "$ENV{CMAKE_C_FLAGS} -O3  ")
+endif()
+
+if(MSVC)
+    add_definitions(-DHR_WIN)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+    add_definitions(-DWIN32)
+    add_definitions(-DUNSUPORT_SDIO)
+    add_definitions(-DZMQ_STATIC)
+elseif(ANDROID)
+    message("compile for andorid")
+    set(STRIP "${CMAKE_STRIP}")
+elseif(APPLE)
+    message("complie on mac")
+    add_definitions(-DUNSUPORT_SDIO)
+elseif(UNIX)
+    add_definitions(-DHR_LINUX)
+    add_definitions(-DLINUX_X86)
+else()
+endif()
+
+add_definitions(-DHR_POSIX)
+add_definitions(-DDISABLE_SSE3)
+add_definitions(-DGOOGLE_GLOG_DLL_DECL=)
+
+if(MSVC)
+    set(ZMQ libzmq)
+    set(SYS ws2_32 winmm)
+    set(PROTO debug libprotobufd optimized libprotobuf)
+    set(PGM libpgm)
+
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+        set(GLOG hlogd)
+        set(FMT fmtd)
+        set(SCHEDULE_GROUP schedulegroupd)
+    else()
+        set(GLOG hlog)
+        set(FMT fmt)
+        set(SCHEDULE_GROUP schedulegroup)
+    endif()
+
+    if(${DEPS_GLOG} STREQUAL "1")
+        set(GLOG debug libglog_staticd optimized libglog_static)
+    endif()
+
+    add_compile_options(-bigobj)
+    add_compile_options(/MP)
+else()
+    if(ANDROID)
+        set(ZMQ zmq)
+        set(SYS log dl m)
+        set(PROTO libprotobuf.a log)
+    else()
+        set(ZMQ zmq)
+        set(SYS pthread dl rt)
+        set(PROTO libprotobuf.a)
+    endif()
+
+
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+        set(GLOG hlogd)
+        set(SCHEDULE_GROUP schedulegroupd)
+    else()
+        set(GLOG hlog)
+        set(SCHEDULE_GROUP schedulegroup)
+    endif()
+
+    set(FMT fmt)
+
+    if(APPLE)
+        set(ZMQ ${ZMQ})
+        find_library(CORE_FOUNDATION CoreFoundation)
+        find_library(FOUNDATION Foundation)
+        set(SYS ${SYS} ${CORE_FOUNDATION} ${FOUNDATION})
+    endif()
+endif()
+
+set(HBIPC hbipc)
+set(HBMEM hbmem)
+set(HBION ion)
+set(ALOG alog)
+
+
+list(APPEND SHARED_LIB ${PROTO} ${GLOG} ${FMT} ${SCHEDULE_GROUP})
+
+if(HBMEM_SUPPORT)
+  list(APPEND SHARED_LIB ${HBMEM} ${HBION} ${ALOG})
+endif()
+
+if(DDS_SUPPORT)
+  list(APPEND SHARED_LIB ${DDS_STATIC_LIB} ${DDS_DEPENDENCE_LIB})
+endif()
+
+if(S32G)
+  list(APPEND SHARED_LIB m z)
+endif()
+
+if((NOT MSVC) AND (NOT APPLE))
+  list(APPEND SHARED_LIB ${SYS})
+endif()
+
+function(hobot_link_libraries)
+  foreach (lib ${ARGN})
+    link_libraries(debug "${lib}${DEBUG_POSTFIX}" optimized ${lib})
+  endforeach ()
+endfunction()
+
+function(hobot_target_link_libraries target)
+  foreach (lib ${ARGN})
+    target_link_libraries(${target} debug "${lib}${DEBUG_POSTFIX}" optimized ${lib})
+  endforeach ()
+endfunction()
+# show dependency tree
+add_custom_target(deps
+    COMMAND ${GRADLE_CMD} --daemon ${GRADLE_DEFINE} dependencies --configuration compile
+
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
