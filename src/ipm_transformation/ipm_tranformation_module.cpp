@@ -32,11 +32,11 @@
 #include "common/timestamp.h"
 
 #define UNUSED(x) static_cast<void>(x)
+namespace fanya {
+namespace parking {
 
 using hobot::communication::DataRef;
 
-// namespace fanya {
-// namespace parking {
 
 IpmTransformationModule::IpmTransformationModule(
     const hobot::dataflow::ModuleOption &module_option)
@@ -273,5 +273,5 @@ void IpmTransformationModule::TransformToIpmProc(
 
 DATAFLOW_REGISTER_MODULE(IpmTransformationModule)
 
-// }  // namespace parking
-// }  // namespace fanya
+}  // namespace parking
+}  // namespace fanya

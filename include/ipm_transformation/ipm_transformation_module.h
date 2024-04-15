@@ -25,8 +25,8 @@
 #include "common/utils.h"
 #include "convert_assistant/gdc_stitch_assistant.h"
 
-// namespace fanya {
-// namespace parking {
+namespace fanya {
+namespace parking {
 class IpmTransformationModule : public hobot::dataflow::Module {
 public:
   explicit IpmTransformationModule(
@@ -64,5 +64,5 @@ private:
   int32_t gdc_process_start_pipe_{0};
 };
 
-// }  // namespace parking
-// }  // namespace fanya
+}  // namespace parking
+}  // namespace fanya

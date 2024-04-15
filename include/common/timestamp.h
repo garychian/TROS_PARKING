@@ -16,8 +16,8 @@
 
 #include <chrono>
 
-// namespace fanya {
-// namespace parking {
+namespace fanya {
+namespace parking {
 
 static inline uint64_t GetTimeStamp() {
   auto time_now = std::chrono::system_clock::now();
@@ -49,5 +49,5 @@ static inline uint64_t GetThreadTimeUs() {
   return (time_thread.tv_sec * 1000000) + (time_thread.tv_nsec / 1000);
 }
 
-// }  // namespace parking
-// }  // namespace fanya
+}  // namespace parking
+}  // namespace fanya

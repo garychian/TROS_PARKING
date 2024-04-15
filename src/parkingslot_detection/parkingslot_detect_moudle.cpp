@@ -19,11 +19,6 @@
 #include "message/proto/proto_serializer.hpp"
 #include "common/proto_msg_all.h"
 
-// #include "fanya_protocol/psd_idl_wrapper.h"
-// // #include "proto/sensors/camera_frame_idl_wrapper.h"
-// #include "fanya_protocol/aph_idl_wrapper.h"
-// #include "fanya_protocol/loc_idl_wrapper.h"
-
 #include "dataflow/module/port.h"
 #include "dataflow/module_loader/register_module_macro.h"
 
@@ -33,8 +28,8 @@
  */
 #define UNUSED(x) (void)x
 
-// namespace fanya {
-// namespace parking {
+namespace fanya {
+namespace parking {
 
 ParkingslotDetectMoudle::ParkingslotDetectMoudle(
   const hobot::dataflow::ModuleOption &module_option):
@@ -163,5 +158,5 @@ void ParkingslotDetectMoudle::MsgCenterProc(
 
 DATAFLOW_REGISTER_MODULE(ParkingslotDetectMoudle)
 
-// }  // namespace parking
-// }  // namespace fanya
+}  // namespace parking
+}  // namespace fanya

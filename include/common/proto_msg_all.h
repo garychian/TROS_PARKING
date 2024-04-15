@@ -35,9 +35,9 @@
 #include "fanya_protocol/s32g.pb.h"
 #include "fanya_protocol/sen.pb.h"
 
-// namespace fanya {
+namespace fanya {
 
-// namespace parking {
+namespace parking {
 
 using ImageProtoMsg = hobot::message::ProtoMsg<ImageProto::Image>;
 using spImageProtoMsg = std::shared_ptr<ImageProtoMsg>;
@@ -56,5 +56,5 @@ using spTargetSlotMsg = std::shared_ptr<TargetSlotMsg>;
 using SlotlabelMsg = hobot::message::ProtoMsg<fsm::Slotlabel>;
 using spSlotlabelMsg = std::shared_ptr<SlotlabelMsg>;
 
-//} // namespace parking
-//} // namespace fanya
+} // namespace parking
+} // namespace fanya

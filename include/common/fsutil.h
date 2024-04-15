@@ -17,8 +17,8 @@
 #include <string>
 #include <vector>
 
-// namespace fanya {
-// namespace parking {
+namespace fanya {
+namespace parking {
 
 static inline void GetSubFiles(const std::string& path,
                                std::vector<std::string>& vec_files) {
@@ -69,5 +69,5 @@ static inline void LoadFile(const std::string& file_path,
   file.read(reinterpret_cast<char*>(content.data()), size);
 }
 
-// }  // namespace parking
-// }  // namespace fanya
+}  // namespace parking
+}  // namespace fanya

@@ -17,8 +17,8 @@
 #include "dataflow/module/module_option.h"
 #include "dataflow/module/proc.h"
 
-// namespace fanya {
-// namespace parking {
+namespace fanya {
+namespace parking {
 
 class ApaHandleModule:
   public hobot::dataflow::Module{
@@ -38,5 +38,5 @@ class ApaHandleModule:
   int32_t Init() override;
 };
 
-// }  // namespace parking
-// }  // namespace fanya
+}  // namespace parking
+}  // namespace fanya

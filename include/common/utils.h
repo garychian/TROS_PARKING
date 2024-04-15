@@ -18,8 +18,8 @@
 
 #include <cstdint>
 #include <mutex>
-// namespace fanya {
-// namespace parking {
+namespace fanya {
+namespace parking {
 
 struct FpsConfig{
   std::mutex fps_mutex;
@@ -39,5 +39,5 @@ int32_t FillArrayMsgToIpmBuffer(spImageProtoMsg &out_msg,
                             const spCameraFrameArrayProtoMsg &msg);
 void ReportFps(std::string module_name, std::string port_id, std::string topic,
                 std::shared_ptr<FpsConfig> fps_config);
-// } // namespace parking
-// } // namespace fanya
+} // namespace parking
+} // namespace fanya

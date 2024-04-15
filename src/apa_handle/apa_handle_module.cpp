@@ -20,9 +20,6 @@
 #include "common/proto_msg_all.h"
 #include "common/timestamp.h"
 
-// #include "fanya_protocol/aph_idl_wrapper.h"
-// #include "fanya_protocol/fsm_idl_wrapper.h"
-
 #include "dataflow/module/port.h"
 #include "dataflow/module_loader/register_module_macro.h"
 
@@ -32,8 +29,8 @@
  */
 #define UNUSED(x) (void)x
 
-// namespace fanya {
-// namespace parking {
+namespace fanya {
+namespace parking {
 
 namespace{
   constexpr char kPubApaStatus[] = "pub_apa_status";
@@ -156,5 +153,5 @@ void ApaHandleModule::MsgCenterProc(
 
 DATAFLOW_REGISTER_MODULE(ApaHandleModule)
 
-// }  // namespace parking
-// }  // namespace fanya
+}  // namespace parking
+}  // namespace fanya

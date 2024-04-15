@@ -18,8 +18,8 @@
 
 #include "nlohmann_json/json.hpp"
 
-// namespace fanya {
-// namespace parking {
+namespace fanya {
+namespace parking {
 
 typedef uint64_t TimeStamp;
 
@@ -54,5 +54,5 @@ class JSONUtil {
   }
 };
 
-// }  // namespace parking
-// }  // namespace fanya
+}  // namespace parking
+}  // namespace fanya
