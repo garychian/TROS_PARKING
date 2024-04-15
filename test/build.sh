@@ -2,7 +2,7 @@
 
 rm -rf build output
 
-ARCH="j5"
+ARCH="linux"
 
 usage() {
   echo "usage: bash package.sh [j3|j5|linux] [release|debug|clean]"

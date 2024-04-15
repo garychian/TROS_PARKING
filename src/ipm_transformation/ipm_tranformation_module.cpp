@@ -35,8 +35,8 @@
 
 using hobot::communication::DataRef;
 
-namespace hobot {
-namespace samples {
+// namespace fanya {
+// namespace parking {
 
 IpmTransformationModule::IpmTransformationModule(
     const hobot::dataflow::ModuleOption &module_option)
@@ -55,7 +55,7 @@ int32_t IpmTransformationModule::Init() {
   auto ts_start = GetTimeStamp();
   LOGD("Init [{}] with: {}", module_option_.instance_id,
        module_option_.config_file);
-  auto work_dir = dataflow::GlobalContext::Instance()->GetAppContext().work_dir;
+  auto work_dir = hobot::dataflow::GlobalContext::Instance()->GetAppContext().work_dir;
   auto correct_path = work_dir + module_option_.config_file;
 
   for (auto &output : module_option_.outputs) {
@@ -115,7 +115,7 @@ int32_t IpmTransformationModule::Init() {
     }
     for (auto &iter : gdc_stitch_cfg_.gdc_cfg_prop) {
 
-      std::shared_ptr<gdc_stitch_assistant::GdcCfgProperties> &prop =
+      std::shared_ptr<hobot::gdc_stitch_assistant::GdcCfgProperties> &prop =
           iter.second;
       uint32_t pipeline_id = prop->pipeline;
       LOGD("running hb_vio_start_pipeline({}) "
@@ -132,7 +132,7 @@ int32_t IpmTransformationModule::Init() {
   }
   LOGD("constructing GdcStitchAssistant....");
   gdc_stitch_assistant_ =
-      std::make_shared<gdc_stitch_assistant::GdcStitchAssistant>(
+      std::make_shared<hobot::gdc_stitch_assistant::GdcStitchAssistant>(
           &gdc_stitch_cfg_, process_mode_, nullptr);
 
   LOGD("Initializing GdcStitchAssistant....");
@@ -167,7 +167,7 @@ int32_t IpmTransformationModule::DeInit() {
 
 int32_t IpmTransformationModule::CollectSourceImages(
     const spCameraFrameArrayProtoMsg &camera_array_msg,
-    gdc_stitch_assistant::VioBufferList &src_images,
+    hobot::gdc_stitch_assistant::VioBufferList &src_images,
     std::vector<hb_vio_buffer_t> &vio_buf_holder, int64_t &vio_ts,
     int64_t &vio_us, int64_t &frame_id) {
   // get image.
@@ -215,7 +215,7 @@ int32_t IpmTransformationModule::CollectSourceImages(
 
 int32_t
 IpmTransformationModule::UpdateIpmProto(spCameraFrameArrayProtoMsg &camera_array_msg,
-                                      gdc_stitch_assistant::spWrapVioImage &out) {
+                                      hobot::gdc_stitch_assistant::spWrapVioImage &out) {
   auto ipm = camera_array_msg->proto.add_gdc_frame();
   ipm->set_width(
           static_cast<int32_t>(out->GetVioBuffer()->img_addr.width));
@@ -244,7 +244,7 @@ void IpmTransformationModule::TransformToIpmProc(
   int64_t vio_ts = -1;
   int64_t vio_us = -1;
   int64_t frame_id = -1;
-  gdc_stitch_assistant::VioBufferList src_images;
+  hobot::gdc_stitch_assistant::VioBufferList src_images;
   auto camera_array_msg = std::dynamic_pointer_cast<CameraFrameArrayProtoMsg>(msgs[0]->at(0));
   if (!camera_array_msg) {
     LOGE("Empty camera array frame");
@@ -257,7 +257,7 @@ void IpmTransformationModule::TransformToIpmProc(
     LOGW("Run CollectSourceImages failed, Dropped!  src_images_size = {}", src_images.size());
     return;
   }
-  std::vector<gdc_stitch_assistant::spWrapVioImage> out;
+  std::vector<hobot::gdc_stitch_assistant::spWrapVioImage> out;
   ret = gdc_stitch_assistant_->Process(src_images, out);
   UpdateIpmProto(camera_array_msg, out[0]);
   auto output_port = GetOutputPort("pub_camera_array");
@@ -272,5 +272,6 @@ void IpmTransformationModule::TransformToIpmProc(
 }
 
 DATAFLOW_REGISTER_MODULE(IpmTransformationModule)
-} // namespace samples
-} // namespace hobot
+
+// }  // namespace parking
+// }  // namespace fanya

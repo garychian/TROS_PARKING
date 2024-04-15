@@ -7,28 +7,64 @@
       "inputs": [
         {
           "port_id": "sub_slot_label",
-          "topic": "/fsm/slot_label"
+          "topic": "/fsm/slot_label",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 1
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "sub_apa_status_req",
-          "topic": "/fsm/apa_status_req"
+          "topic": "/fsm/apa_status_req",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         }
       ],
       "outputs": [
         {
           "port_id": "pub_apa_status",
-          "topic": "/aph/apa_status"
+          "topic": "/aph/apa_status",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         },
         {
           "port_id": "pub_target_slot",
-          "topic": "/aph/target_slot"
+          "topic": "/aph/target_slot",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         }
       ],
       "procs": [
         {
           "proc_id": "MsgCenterProc",
           "proc_type": "MsgCondTriggerProc",
-          "disable": false
+          "disable": false,
+          "proc_option": {
+            "expression": "sub_slot_label[-1] && sub_apa_status_req[-1]"
+          },
+          "schedule_group": {
+            "scheduler_name": "TP_APH"
+          }
         }
       ]
     }

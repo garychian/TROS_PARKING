@@ -2,6 +2,6 @@
 pwd=$(pwd)
 current_path=$(dirname "$(readlink -f "$0")")
 cd ${current_path}
-rm -rf build ouput
-python tools/build.py  aarch64_gcc9.3
+rm -rf build output
+python tools/build.py  s32g
 cd ${pwd}

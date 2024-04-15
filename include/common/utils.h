@@ -11,17 +11,15 @@
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
 
-#ifndef SAMPLES_UTILS_H_
-#define SAMPLES_UTILS_H_
-
+#pragma once
 #include "common/proto_msg_all.h"
 #include "vio/hb_vio_interface.h"
 
 
 #include <cstdint>
 #include <mutex>
-namespace hobot {
-namespace samples {
+// namespace fanya {
+// namespace parking {
 
 struct FpsConfig{
   std::mutex fps_mutex;
@@ -41,6 +39,5 @@ int32_t FillArrayMsgToIpmBuffer(spImageProtoMsg &out_msg,
                             const spCameraFrameArrayProtoMsg &msg);
 void ReportFps(std::string module_name, std::string port_id, std::string topic,
                 std::shared_ptr<FpsConfig> fps_config);
-} // namespace samples
-} // namespace hobot
-#endif // SAMPLES_UTILS_H_
+// } // namespace parking
+// } // namespace fanya

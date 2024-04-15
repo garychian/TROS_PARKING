@@ -11,15 +11,13 @@
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
 
-#ifndef SAMPLES_TIMESTAMP_H_
-#define SAMPLES_TIMESTAMP_H_
-
+#pragma once
 #include <time.h>
 
 #include <chrono>
 
-namespace hobot {
-namespace samples {
+// namespace fanya {
+// namespace parking {
 
 static inline uint64_t GetTimeStamp() {
   auto time_now = std::chrono::system_clock::now();
@@ -51,7 +49,5 @@ static inline uint64_t GetThreadTimeUs() {
   return (time_thread.tv_sec * 1000000) + (time_thread.tv_nsec / 1000);
 }
 
-}  // namespace samples
-}  // namespace hobot
-
-#endif  // SAMPLES_TIMESTAMP_H_
+// }  // namespace parking
+// }  // namespace fanya

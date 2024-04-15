@@ -248,6 +248,7 @@ int main(int argc, char** argv) {
 
 
   while (true){
+    
     {
       auto gen_ts = GetTimeStamp();
       auto msg = std::make_shared<SlotlabelMsg>();

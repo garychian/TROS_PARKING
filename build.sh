@@ -2,7 +2,6 @@
 time=$(date "+%Y%m%d%H%M%S")
 work_dir=$(pwd)
 
-#!/bin/bash
 usage() {
   echo "usage: bash package.sh [all|proto|apa|clean] [release|debug] [deploy]"
   exit 1

@@ -18,6 +18,7 @@
 #include "communication/common/types.h"
 #include "message/proto/proto_serializer.hpp"
 #include "common/proto_msg_all.h"
+#include "common/timestamp.h"
 
 #include "fanya_protocol/aph_idl_wrapper.h"
 #include "fanya_protocol/fsm_idl_wrapper.h"
@@ -30,6 +31,16 @@
  * the marco after variables actually used.
  */
 #define UNUSED(x) (void)x
+
+// namespace fanya {
+// namespace parking {
+
+namespace{
+  constexpr char kPubApaStatus[] = "pub_apa_status";
+  constexpr char kPubTargetSlot[] = "pub_target_slot";
+
+}
+
 
 ApaHandleModule::ApaHandleModule(
   const hobot::dataflow::ModuleOption &module_option):
@@ -44,10 +55,10 @@ void ApaHandleModule::InitPortsAndProcs() {
     "sub_apa_status_req",
     fsm::Apastatusreq);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
-    "pub_apa_status",
+    kPubApaStatus,
     aph::apa_status);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
-    "pub_target_slot",
+    kPubTargetSlot,
     aph::target_slot);
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
     "MsgCenterProc",
@@ -55,7 +66,7 @@ void ApaHandleModule::InitPortsAndProcs() {
     MsgCenterProc,
     hobot::dataflow::ProcType::DF_MSG_COND_PROC,
     DF_VECTOR("sub_slot_label", "sub_apa_status_req"),
-    DF_VECTOR("pub_apa_status", "pub_target_slot"));
+    DF_VECTOR(kPubApaStatus, kPubTargetSlot));
 }
 
 int32_t ApaHandleModule::Init() {
@@ -81,15 +92,21 @@ int32_t ApaHandleModule::DeInit() {
 void ApaHandleModule::MsgCenterProc(
   hobot::dataflow::spMsgResourceProc proc,
   const hobot::dataflow::MessageLists &msgs) {
+  auto gen_ts = GetTimeStamp();
   auto &sub_slot_label_msgs
     = msgs[proc->GetResultIndex("sub_slot_label")];
   for (auto &msg : *(sub_slot_label_msgs.get())) {
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_slot_label msg timestamp: {}",
+    DFHLOG_I("sub_slot_label msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_slot_label
+    auto slot_label = std::dynamic_pointer_cast<SlotlabelMsg>(sub_slot_label_msgs->at(0));
+    if (slot_label && slot_label->proto.has_targetslotlabel()){
+      DFHLOG_I("sub_apa_status msg timestamp: {}, slot lable = {}",
+        msg->GetGenTimestamp(), slot_label->proto.targetslotlabel());
+    }
   }
   auto &sub_apa_status_req_msgs
     = msgs[proc->GetResultIndex("sub_apa_status_req")];
@@ -97,18 +114,47 @@ void ApaHandleModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_apa_status_req msg timestamp: {}",
+    DFHLOG_I("sub_apa_status_req msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_apa_status_req
   }
-  auto pub_apa_status_port
-    = proc->GetOutputPort("pub_apa_status");
-  // do something with output port pub_apa_status
-  UNUSED(pub_apa_status_port);
-  auto pub_target_slot_port
-    = proc->GetOutputPort("pub_target_slot");
-  // do something with output port pub_target_slot
-  UNUSED(pub_target_slot_port);
+  {// do something with output port pub_apa_status
+    // fill proto
+    auto apa_status = std::make_shared<ApaStatusMsg>();
+    apa_status->proto.set_m_current_apa_status(aph::ApaStatusType::APA_STATUS_ENABLE);
+    apa_status->SetGenTimestamp(gen_ts);
+    // pub msg
+    auto pub_apa_status_port
+      = proc->GetOutputPort(kPubApaStatus);
+    if (!pub_apa_status_port) {
+      DFHLOG_E("failed to get output port of {}", kPubApaStatus);
+      return;
+    }
+    pub_apa_status_port->Send(apa_status);
+    DFHLOG_I("pub apa_status info, apa_status = {}", 
+                          apa_status->proto.m_current_apa_status());
+  }
+
+  {// do something with output port pub_target_slot
+    // fill proto
+    auto target_slot = std::make_shared<TargetSlotMsg>();
+    target_slot->proto.set_m_user_select_slot_label_idx(88);
+    target_slot->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_target_slot_port = proc->GetOutputPort(kPubTargetSlot);
+    if (!pub_target_slot_port) {
+      DFHLOG_E("failed to get output port of {}", kPubTargetSlot);
+      return;
+    }
+    pub_target_slot_port->Send(target_slot);
+    DFHLOG_I("pub target_slot_port info, target slot = {}",
+                          target_slot->proto.m_user_select_slot_label_idx());
+  }
+
+
 }
 
 DATAFLOW_REGISTER_MODULE(ApaHandleModule)
+
+// }  // namespace parking
+// }  // namespace fanya

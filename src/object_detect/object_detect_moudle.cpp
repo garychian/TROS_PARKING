@@ -28,6 +28,9 @@
  */
 #define UNUSED(x) (void)x
 
+// namespace fanya {
+// namespace parking {
+
 ObjectDetectMoudle::ObjectDetectMoudle(
   const hobot::dataflow::ModuleOption &module_option):
     hobot::dataflow::Module(module_option) {

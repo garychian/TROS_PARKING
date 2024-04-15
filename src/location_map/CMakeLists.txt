@@ -29,6 +29,7 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     ${PROTO})
 else()
   target_link_libraries(loc
+    fanya_protocol
     dataflow
     communication
     time

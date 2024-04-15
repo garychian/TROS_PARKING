@@ -16,8 +16,8 @@
 #include "common/timestamp.h"
 #include "hb_mem_mgr.h"
 
-namespace hobot {
-namespace samples {
+// namespace fanya {
+// namespace parking {
 using hobot::communication::DataRef;
 namespace{
   constexpr int32_t KYuvPlaneCount = 2;
@@ -132,5 +132,5 @@ void ReportFps(std::string module_name, std::string port_id, std::string topic,
     }
 }
 
-} // namespace samples
-} // namespace hobot
+// }  // namespace parking
+// }  // namespace fanya

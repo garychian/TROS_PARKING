@@ -10,6 +10,8 @@
 // ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
+// namespace fanya {
+// namespace parking {
 
 #pragma once
 #include "dataflow/callback/callback.h"
@@ -35,3 +37,5 @@ class ParkingslotDetectMoudle:
   int32_t Init() override;
 };
 
+// }  // namespace parking
+// }  // namespace fanya

@@ -79,11 +79,3 @@ set(TROS_INSTALL_BIN ${CMAKE_SOURCE_DIR}/output/parking/bin)
 set(TROS_INSTALL_LIB ${CMAKE_SOURCE_DIR}/output/parking/lib)
 
 add_subdirectory(src)
-
-if(EXISTS ${CMAKE_SOURCE_DIR}/example/CMakeLists.txt)
-  add_subdirectory(example)
-endif()
-
-if(EXISTS ${CMAKE_SOURCE_DIR}/test/CMakeLists.txt)
-  add_subdirectory(test)
-endif()

@@ -11,9 +11,7 @@
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
 
-#ifndef SAMPLES_MESSAGE_PROTO_MSG_ALL_H_
-#define SAMPLES_MESSAGE_PROTO_MSG_ALL_H_
-
+#pragma once
 #include <memory>
 #include <string>
 #include <utility>
@@ -29,9 +27,12 @@
 #include "protocol/image.pb.h"
 #include "protocol/target_message.pb.h"
 
-namespace hobot {
+#include "fanya_protocol/aph.pb.h"
+#include "fanya_protocol/fsm.pb.h"
 
-namespace samples {
+// namespace fanya {
+
+// namespace parking {
 
 using ImageProtoMsg = hobot::message::ProtoMsg<ImageProto::Image>;
 using spImageProtoMsg = std::shared_ptr<ImageProtoMsg>;
@@ -41,8 +42,14 @@ using spCameraProtoMsg = std::shared_ptr<CameraProtoMsg>;
 
 using spCameraFrameArrayProtoMsg = std::shared_ptr<CameraFrameArrayProtoMsg>;
 
+using ApaStatusMsg = hobot::message::ProtoMsg<aph::apa_status>;
+using spApaStatusMsg = std::shared_ptr<ApaStatusMsg>;
 
-} // namespace samples
-} // namespace hobot
+using TargetSlotMsg = hobot::message::ProtoMsg<aph::target_slot>;
+using spTargetSlotMsg = std::shared_ptr<TargetSlotMsg>;
 
-#endif // SAMPLES_MESSAGE_PROTO_MSG_ALL_H_
+using SlotlabelMsg = hobot::message::ProtoMsg<fsm::Slotlabel>;
+using spSlotlabelMsg = std::shared_ptr<SlotlabelMsg>;
+
+//} // namespace parking
+//} // namespace fanya

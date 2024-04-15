@@ -26,6 +26,8 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     hlogd
     schedulegroupd
     fmt
+    protobuf
+    fanya_protocol
     ${PROTO})
 else()
   target_link_libraries(aph
@@ -35,6 +37,8 @@ else()
     hlog
     schedulegroup
     fmt
+    protobuf
+    fanya_protocol
     ${PROTO})
 endif()
 

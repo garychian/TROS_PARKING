@@ -11,9 +11,7 @@
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
 
-#ifndef SAMPLES_LOG_H_
-#define SAMPLES_LOG_H_
-
+#pragma once
 #include <syscall.h>
 #include <unistd.h>
 
@@ -107,5 +105,3 @@
     APA_LOG_CHECK(CONDITION, APA_ERROR, MESSAGE, ##__VA_ARGS__)
 #define APA_LOGC_CHECK(CONDITION, MESSAGE, ...) \
     APA_LOG_CHECK(CONDITION, APA_CRITICAL, MESSAGE, ##__VA_ARGS__)
-
-#endif  // SAMPLES_LOG_H_

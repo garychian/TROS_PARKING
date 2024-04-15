@@ -18,17 +18,7 @@ target_include_directories(psd
     ${PROJECT_SOURCE_DIR}/src
     ${TROS_MESSAGE_DIR})
 
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-  target_link_libraries(psd
-    dataflowd
-    communicationd
-    timed
-    hlogd
-    schedulegroupd
-    fmt
-    ${PROTO})
-else()
-  target_link_libraries(psd
+target_link_libraries(psd
     hobot-bole-protocol
     fanya_protocol
     dataflow
@@ -38,7 +28,6 @@ else()
     schedulegroup
     fmt
     ${PROTO})
-endif()
 
 # install stage
 #   binary should be installed into ${TROS_INSTALL_BIN}

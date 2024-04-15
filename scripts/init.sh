@@ -50,7 +50,11 @@ if [[ "$TARGET" == "0" ]];then
 elif [[ "$TARGET" == "1" ]];then
   kill -9 $PID_SENSOR_CENTER
 elif [[ "$TARGET" == "2" ]];then
+  kill -9 $PID_APAHANDLE
+elif [[ "$TARGET" == "3" ]];then
   kill -9 $PID_DETECTION
+elif [[ "$TARGET" == "4" ]];then
+  kill -9 $PID_LOCATION
 else
   echo "invalid mode = $MODE, exit!"
   exit 1
@@ -82,12 +86,12 @@ if [[ "$TARGET" == "0" ]];then
 elif [[ "$TARGET" == "1" ]];then
   ./$MAINBOARD -c process.json -w config/sensorcenter_process
 elif [[ "$TARGET" == "2" ]];then
+  ./$MAINBOARD -c process.json -w config/apahandle_process
+elif [[ "$TARGET" == "3" ]];then
   ./$MAINBOARD -c process.json -w config/parkingslot_detection_process
+elif [[ "$TARGET" == "4" ]];then
+  ./$MAINBOARD -c process.json -w config/location_map_process
 else
   echo "invalid mode = $MODE, exit!"
   exit 1
 fi
-
-
-
-

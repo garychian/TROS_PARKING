@@ -11,17 +11,14 @@
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
 
-#ifndef SAMPLES_FSUTIL_H_
-#define SAMPLES_FSUTIL_H_
-
+#pragma once
 #include <dirent.h>
-
 #include <fstream>
 #include <string>
 #include <vector>
 
-namespace hobot {
-namespace samples {
+// namespace fanya {
+// namespace parking {
 
 static inline void GetSubFiles(const std::string& path,
                                std::vector<std::string>& vec_files) {
@@ -72,7 +69,5 @@ static inline void LoadFile(const std::string& file_path,
   file.read(reinterpret_cast<char*>(content.data()), size);
 }
 
-}  // namespace samples
-}  // namespace hobot
-
-#endif  // SAMPLES_FSUTIL_H_
+// }  // namespace parking
+// }  // namespace fanya

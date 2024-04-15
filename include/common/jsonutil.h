@@ -11,17 +11,15 @@
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
 
-#ifndef SAMPLES_JSONUTIL_H_
-#define SAMPLES_JSONUTIL_H_
-
+#pragma once
 #include <fstream>
 #include <iostream>
 #include <string>
 
 #include "nlohmann_json/json.hpp"
 
-namespace hobot {
-namespace samples {
+// namespace fanya {
+// namespace parking {
 
 typedef uint64_t TimeStamp;
 
@@ -56,7 +54,5 @@ class JSONUtil {
   }
 };
 
-}  // namespace samples
-}  // namespace hobot
-
-#endif  // SAMPLES_JSONUTIL_H_
+// }  // namespace parking
+// }  // namespace fanya

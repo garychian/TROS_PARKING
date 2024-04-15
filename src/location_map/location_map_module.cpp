@@ -35,6 +35,9 @@
  */
 #define UNUSED(x) (void)x
 
+// namespace fanya {
+// namespace parking {
+
 LocationMapModule::LocationMapModule(
   const hobot::dataflow::ModuleOption &module_option):
     hobot::dataflow::Module(module_option) {
@@ -167,6 +170,11 @@ void LocationMapModule::MsgCenterProc(
     DFHLOG_D("sub_apa_status msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_apa_status
+    auto apa_status = std::dynamic_pointer_cast<ApaStatusMsg>(sub_apa_status_msgs->at(0));
+    if (apa_status && apa_status->proto.has_m_current_apa_status()){
+      DFHLOG_I("sub_apa_status msg timestamp: {}, apa_status = {}",
+        msg->GetGenTimestamp(), apa_status->proto.m_current_apa_status());
+    }
   }
   auto &sub_target_slot_msgs
     = msgs[proc->GetResultIndex("sub_target_slot")];
@@ -177,6 +185,11 @@ void LocationMapModule::MsgCenterProc(
     DFHLOG_D("sub_target_slot msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_target_slot
+    auto target_slot = std::dynamic_pointer_cast<TargetSlotMsg>(sub_target_slot_msgs->at(0));
+    if (target_slot && target_slot->proto.has_m_user_select_slot_label_idx()){
+      DFHLOG_I("sub_target_slot msg timestamp: {}, apa_status = {}",
+        msg->GetGenTimestamp(), target_slot->proto.m_user_select_slot_label_idx());
+    }
   }
   auto &sub_imu_data_msgs
     = msgs[proc->GetResultIndex("sub_imu_data")];
@@ -323,3 +336,6 @@ void LocationMapModule::MsgCenterProc(
 }
 
 DATAFLOW_REGISTER_MODULE(LocationMapModule)
+
+// }  // namespace parking
+// }  // namespace fanya

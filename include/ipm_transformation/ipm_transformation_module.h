@@ -11,9 +11,8 @@
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
 
-#ifndef SAMPLES_IPM_TRANSFORMATION_MODULE_H_
-#define SAMPLES_IPM_TRANSFORMATION_MODULE_H_
 
+#pragma once
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -26,8 +25,8 @@
 #include "common/utils.h"
 #include "convert_assistant/gdc_stitch_assistant.h"
 
-namespace hobot {
-namespace samples {
+// namespace fanya {
+// namespace parking {
 class IpmTransformationModule : public hobot::dataflow::Module {
 public:
   explicit IpmTransformationModule(
@@ -41,12 +40,12 @@ public:
   void TransformToIpmProc(hobot::dataflow::spMsgResourceProc proc,
                           const hobot::dataflow::MessageLists &msgs);
   int32_t CollectSourceImages(const spCameraFrameArrayProtoMsg &camera_array_msg,
-                              gdc_stitch_assistant::VioBufferList &src_images,
+                              hobot::gdc_stitch_assistant::VioBufferList &src_images,
                               std::vector<hb_vio_buffer_t> &vio_buf_holder,
                               int64_t &vio_ts, int64_t &vio_us,
                               int64_t &frame_id);
 int32_t UpdateIpmProto(spCameraFrameArrayProtoMsg &camera_array_msg,
-                      gdc_stitch_assistant::spWrapVioImage &out);                   
+                      hobot::gdc_stitch_assistant::spWrapVioImage &out);                   
 
 protected:
   int32_t Init() override;
@@ -54,18 +53,16 @@ protected:
 private:
   // std::vector<Target> targets_;
   int32_t process_mode_;
-  gdc_stitch_assistant::GdcStitchCfg gdc_stitch_cfg_;
+  hobot::gdc_stitch_assistant::GdcStitchCfg gdc_stitch_cfg_;
   bool enable_init_vio_;
   std::string gdc_stitch_cfg_file_;
   std::string pyramid_layer_type_;
   std::int32_t pyramid_layer_id_;
-  std::shared_ptr<gdc_stitch_assistant::GdcStitchAssistant>
+  std::shared_ptr<hobot::gdc_stitch_assistant::GdcStitchAssistant>
       gdc_stitch_assistant_;
   std::map<std::string, std::shared_ptr<FpsConfig>> fps_;
   int32_t gdc_process_start_pipe_{0};
 };
 
-} // namespace samples
-} // namespace hobot
-
-#endif // SAMPLES_IPM_TRANSFORMATION_MODULE_H_
+// }  // namespace parking
+// }  // namespace fanya
