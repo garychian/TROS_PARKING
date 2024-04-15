@@ -12,6 +12,7 @@ usage() {
 #   usage
 # fi
 
+ALL="parking"
 ARCH="j5"
 COMPILE_MODE="Release"
 DEPLOY_PATH=$(cat "deploy_path")
@@ -25,31 +26,19 @@ function build_clean() {
   rm -rf *.zip
 }
 
-while [ $# -ne 0 ]
-do
-  if [ x$1 == x"all" ]; then
-    echo "build all"
-    sh ${work_dir}/proto/fanya_proto/build.sh
-  elif [ x$1 == x"proto" ]; then
-    echo "build proto file only"
-    echo "begin build proto"
-    sh ${work_dir}/proto/fanya_proto/build.sh
-    exit 0
-  elif [ x$1 == x"release" ]; then
-    COMPILE_MODE="Release"
-  elif [ x$1 == x"debug" ]; then
-    COMPILE_MODE="Debug"
-  elif [ x$1 == x"clean" ]; then
-    build_clean
-    exit
-  fi
-  shift
-done
+function build_proto(){
+  echo "fanya proto build begin"
+  bash ${work_dir}/proto/fanya_proto/build.sh ${ARCH}
+  echo "fanya proto build end"
+}
 
 function build_project(){
     echo ${ARCH}_conan
     echo  ${COMPILE_MODE}
+    echo ${ALL}
+
     python3 scripts/build.py --config ${ARCH}_conan --build_type ${COMPILE_MODE}
+
     if [ $? -ne 0 ]; then
         echo "build failed"
         exit 1
@@ -112,4 +101,33 @@ package() {
   compress_package
 }
 
+
+while [ $# -ne 0 ]
+do
+  if [ x$1 == x"all" ]; then
+    ALL="all"
+    echo "build all"
+  elif [ x$1 == x"proto" ]; then
+    echo "build proto file only"
+    echo "begin build proto"
+    ALL="proto"
+  elif [ x$1 == x"release" ]; then
+    COMPILE_MODE="Release"
+  elif [ x$1 == x"debug" ]; then
+    COMPILE_MODE="Debug"
+  elif [ x$1 == x"clean" ]; then
+    build_clean
+    exit
+  fi
+  shift
+done
+
+if [[ ${ALL} == "all" ]]; then
+    build_proto
+fi
+
+if [[ ${ALL} == "proto" ]]; then
+    build_proto
+    exit 0
+fi
 build_project

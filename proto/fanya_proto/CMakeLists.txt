@@ -62,7 +62,7 @@ endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(PROTOC_PATH ${BIGREPO_PROTOC_PATH})
-set(USE_BOLEIDLC true)
+# set(USE_BOLEIDLC true)
 
 if(MSVC)
     set(PROTOC_CMD ${PROTOC_PATH}/protoc.exe)

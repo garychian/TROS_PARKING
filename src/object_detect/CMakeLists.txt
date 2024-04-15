@@ -18,35 +18,7 @@ target_include_directories(odt
     ${PROJECT_SOURCE_DIR}/src
     ${TROS_MESSAGE_DIR})
 
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-  target_link_libraries(odt
-    dataflowd
-    communicationd
-    timed
-    hlogd
-    schedulegroupd
-    fmt
-    ${PROTO})
-else()
-  target_link_libraries(odt
-    dataflow
-    communication
-    time
-    hlog
-    schedulegroup
-    fmt
-    ${PROTO})
-endif()
+target_link_libraries(odt ${COMMON_LIB} ${FANYA_PROTO_LIB} ${PROTO})
 
 # install stage
-#   binary should be installed into ${TROS_INSTALL_BIN}
-#   library should be installed into ${TROS_INSTALL_LIB}
 install(TARGETS odt  DESTINATION ${TROS_INSTALL_LIB})
-
-
-# this required by tros package manager pack command, THIS CAN NOT BE DELTED
-# install(DIRECTORY ${PROJECT_SOURCE_DIR}/include DESTINATION ${TROS_INSTALL_PREFIX})
-# install(DIRECTORY ${PROJECT_SOURCE_DIR}/config DESTINATION ${TROS_INSTALL_PREFIX})
-
-# set(INIT_FILE "${CMAKE_SOURCE_DIR}/config/init.sh")
-# install(FILES ${INIT_FILE} DESTINATION ${CMAKE_SOURCE_DIR}/output/odt)
