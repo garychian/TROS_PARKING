@@ -32,13 +32,6 @@
 namespace fanya {
 namespace parking {
 
-namespace{
-  constexpr char kPubApaStatus[] = "pub_apa_status";
-  constexpr char kPubTargetSlot[] = "pub_target_slot";
-
-}
-
-
 ApaHandleModule::ApaHandleModule(
   const hobot::dataflow::ModuleOption &module_option):
     hobot::dataflow::Module(module_option) {
@@ -52,10 +45,10 @@ void ApaHandleModule::InitPortsAndProcs() {
     "sub_apa_status_req",
     fsm::Apastatusreq);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
-    kPubApaStatus,
+    "pub_apa_status",
     aph::apa_status);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
-    kPubTargetSlot,
+    "pub_target_slot",
     aph::target_slot);
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
     "MsgCenterProc",
@@ -63,7 +56,14 @@ void ApaHandleModule::InitPortsAndProcs() {
     MsgCenterProc,
     hobot::dataflow::ProcType::DF_MSG_COND_PROC,
     DF_VECTOR("sub_slot_label", "sub_apa_status_req"),
-    DF_VECTOR(kPubApaStatus, kPubTargetSlot));
+    DF_VECTOR());
+  DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
+    "TimerProc",
+    ApaHandleModule,
+    TimerProc,
+    hobot::dataflow::ProcType::DF_MSG_TIMER_PROC,
+    DF_VECTOR(),
+    DF_VECTOR("pub_apa_status", "pub_target_slot"));
 }
 
 int32_t ApaHandleModule::Init() {
@@ -89,7 +89,7 @@ int32_t ApaHandleModule::DeInit() {
 void ApaHandleModule::MsgCenterProc(
   hobot::dataflow::spMsgResourceProc proc,
   const hobot::dataflow::MessageLists &msgs) {
-  auto gen_ts = GetTimeStamp();
+
   auto &sub_slot_label_msgs
     = msgs[proc->GetResultIndex("sub_slot_label")];
   for (auto &msg : *(sub_slot_label_msgs.get())) {
@@ -115,39 +115,52 @@ void ApaHandleModule::MsgCenterProc(
       msg->GetGenTimestamp());
     // process msg of sub_apa_status_req
   }
-  {// do something with output port pub_apa_status
+
+}
+
+void ApaHandleModule::TimerProc(
+  hobot::dataflow::spMsgResourceProc proc,
+  const hobot::dataflow::MessageLists &msgs) {
+  UNUSED(msgs);
+  auto gen_ts = GetTimeStamp();
+  // apa_status
+  {
     // fill proto
     auto apa_status = std::make_shared<ApaStatusMsg>();
     apa_status->proto.set_m_current_apa_status(aph::ApaStatusType::APA_STATUS_ENABLE);
     apa_status->SetGenTimestamp(gen_ts);
     // pub msg
     auto pub_apa_status_port
-      = proc->GetOutputPort(kPubApaStatus);
+      = proc->GetOutputPort("pub_apa_status");
     if (!pub_apa_status_port) {
-      DFHLOG_E("failed to get output port of {}", kPubApaStatus);
+      DFHLOG_E("failed to get output port of {}", "pub_apa_status");
       return;
     }
     pub_apa_status_port->Send(apa_status);
-    DFHLOG_I("pub apa_status info, apa_status = {}", 
+    DFHLOG_I("pub apa_status msg timestamp: {}, apa_status = {}", 
+                          apa_status->GetGenTimestamp(), 
                           apa_status->proto.m_current_apa_status());
   }
-
-  {// do something with output port pub_target_slot
+  // target_slot
+  {
     // fill proto
     auto target_slot = std::make_shared<TargetSlotMsg>();
-    target_slot->proto.set_m_user_select_slot_label_idx(88);
+    static int cnt = 0;
+    ++cnt;
+    cnt = cnt%500;
+    target_slot->proto.set_m_user_select_slot_label_idx(cnt);
     target_slot->SetGenTimestamp(gen_ts);
     //pub msg
-    auto pub_target_slot_port = proc->GetOutputPort(kPubTargetSlot);
+    auto pub_target_slot_port = proc->GetOutputPort("pub_target_slot");
     if (!pub_target_slot_port) {
-      DFHLOG_E("failed to get output port of {}", kPubTargetSlot);
+      DFHLOG_E("failed to get output port of {}", "pub_target_slot");
       return;
     }
     pub_target_slot_port->Send(target_slot);
-    DFHLOG_I("pub target_slot_port info, target slot = {}",
+    DFHLOG_I("pub target_slot_port msg timestamp: {}, target slot = {}",
+                          target_slot->GetGenTimestamp(), 
                           target_slot->proto.m_user_select_slot_label_idx());
   }
-
 
 }
 

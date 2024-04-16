@@ -65,6 +65,16 @@
           "schedule_group": {
             "scheduler_name": "TP_APH"
           }
+        },
+        {
+          "proc_id": "TimerProc",
+          "disable": false,
+          "proc_type": "MsgTimerTriggerProc",
+          "proc_option": {
+            "interval": 20,
+            "repeat_counts": -1,
+            "trigger_type": 0
+          }
         }
       ]
     }

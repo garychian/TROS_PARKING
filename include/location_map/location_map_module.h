@@ -33,6 +33,9 @@ class LocationMapModule:
   void MsgCenterProc(
     hobot::dataflow::spMsgResourceProc proc,
     const hobot::dataflow::MessageLists &msgs);
+  void TimerProc(
+    hobot::dataflow::spMsgResourceProc proc,
+    const hobot::dataflow::MessageLists &msgs);
  protected:
   int32_t Init() override;
 };

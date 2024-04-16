@@ -18,6 +18,7 @@
 #include "communication/common/types.h"
 #include "message/proto/proto_serializer.hpp"
 #include "common/proto_msg_all.h"
+#include "common/timestamp.h"
 
 #include "dataflow/module/port.h"
 #include "dataflow/module_loader/register_module_macro.h"
@@ -119,6 +120,14 @@ void LocationMapModule::InitPortsAndProcs() {
     hobot::dataflow::ProcType::DF_MSG_COND_PROC,
     DF_VECTOR("sub_vehicleio_data", "sub_apa_status", "sub_target_slot", "sub_imu_data", "sub_gnss_data", "sub_ins_data", "sub_dual_antenna_data", "sub_psd_image", "sub_camera_frame_array", "sub_apa_ps_info", "sub_apa_ps_rect", "sub_apa_pointI"),
     DF_VECTOR("pub_pad_realtime_loc", "pub_loc_status", "pub_vehicle_pose", "pub_app2emap", "pub_pad_point", "pub_map_info", "pub_parking_slot", "pub_stio_lane_lines", "pub_stop_lines", "pub_bumps", "pub_crosswalks", "pub_arrows", "pub_pad_vehicleio_pose"));
+
+  DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
+    "TimerProc",
+    LocationMapModule,
+    TimerProc,
+    hobot::dataflow::ProcType::DF_MSG_TIMER_PROC,
+    DF_VECTOR(),
+    DF_VECTOR("pub_loc_status"));
 }
 
 int32_t LocationMapModule::Init() {
@@ -326,6 +335,32 @@ void LocationMapModule::MsgCenterProc(
     = proc->GetOutputPort("pub_pad_vehicleio_pose");
   // do something with output port pub_pad_vehicleio_pose
   UNUSED(pub_pad_vehicleio_pose_port);
+}
+
+void LocationMapModule::TimerProc(
+  hobot::dataflow::spMsgResourceProc proc,
+  const hobot::dataflow::MessageLists &msgs) {
+  UNUSED(msgs);
+  // do something with output port pub_location
+  auto gen_ts = GetTimeStamp();
+  auto loc_status = std::make_shared<LocStatusMsg>();
+  loc_status->SetGenTimestamp(gen_ts);
+
+  static int cnt = 0;
+  ++cnt;
+  cnt = cnt%4;
+
+  loc_status->proto.set_locstatus(static_cast<loc::LocStatusType>(cnt));
+
+  auto pub_loc_status_port
+    = proc->GetOutputPort("pub_loc_status");
+  if (!pub_loc_status_port) {
+    DFHLOG_E("failed to get output port of {}", "pub_loc_status");
+    return;
+  }
+  pub_loc_status_port->Send(loc_status);
+  DFHLOG_I("pub_loc_status msg timestamp: {}, loc_status = {}", 
+            loc_status->GetGenTimestamp(), loc_status->proto.locstatus());
 }
 
 DATAFLOW_REGISTER_MODULE(LocationMapModule)

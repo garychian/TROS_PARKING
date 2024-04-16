@@ -56,5 +56,8 @@ using spTargetSlotMsg = std::shared_ptr<TargetSlotMsg>;
 using SlotlabelMsg = hobot::message::ProtoMsg<fsm::Slotlabel>;
 using spSlotlabelMsg = std::shared_ptr<SlotlabelMsg>;
 
+using LocStatusMsg = hobot::message::ProtoMsg<loc::LocStatus>;
+using spLocStatusMsg = std::shared_ptr<LocStatusMsg>;
+
 } // namespace parking
 } // namespace fanya
