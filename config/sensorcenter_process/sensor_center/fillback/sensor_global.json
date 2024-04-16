@@ -1,0 +1,178 @@
+{
+  "Sensors": [
+    {
+      "sensor_name": "camera_0",
+      "plugin_info": {
+        "libraries": [
+          "./tros_common_lib/libcamera.so"
+        ],
+        "property_file": "../sensor_center/fillback/camera/camera_0.json",
+        "class_name": "Camera"
+      },
+      "frame_adapter_name": "camera_0",
+      "raw_adapter_name": "camera_image_0",
+      "group_info": {
+        "group_adapter_name": "camera_0",
+        "group_adapter_name_commit": "If the group_adapter_name is the same as the frame_adapter_name, pub msg from this sensor",
+        "group_id": 0,
+        "group_sync_timeout": 50,
+        "group_sync_timeout_commit": "get vio data timeout for sync-mult-chan, unit ms",
+        "group_sync_difftime": 10,
+        "group_sync_difftime_commit": "If the time difference is less than the set value, sync success, unit ms",
+        "group_sync_mode": 1,
+        "group_sync_mode_commit": "0:msg without sync, 1:discard the no sync frame, 2:interpolation the no sync frame",
+        "group_enable": true,
+        "group_enable_commit": "group frame switch"
+      },
+      "run_mode": {
+        "run_mode_type": 1,
+        "run_mode_type_commit": "0: online_mode, 1: feedback_mode",
+        "online_mode": {
+          "ts_src": 0,
+          "ts_src_commit": "sync_ts source, 0:sensor, 1:os",
+          "raw_msg_enable": false,
+          "raw_msg_enable_commit": "save raw data which has not processed for recording file"
+        },
+        "feedback_mode": {
+          "ts_src": 2,
+          "ts_src_commit": "msg param source, 1:os, 2:pack",
+          "feedback_msg_mode": 0,
+          "feedback_msg_mode_commit": "feedback mode, 0:pub_sub, 1:req_rep"
+        }
+      },
+      "enable": true
+    },
+    {
+      "sensor_name": "camera_1",
+      "plugin_info": {
+        "libraries": [
+          "./tros_common_lib/libcamera.so"
+        ],
+        "property_file": "../sensor_center/fillback/camera/camera_1.json",
+        "class_name": "Camera"
+      },
+      "frame_adapter_name": "camera_1",
+      "raw_adapter_name": "camera_image_1",
+      "group_info": {
+        "group_adapter_name": "camera_0",
+        "group_adapter_name_commit": "If the group_adapter_name is the same as the frame_adapter_name, pub msg from this sensor",
+        "group_id": 0,
+        "group_enable": true,
+        "group_enable_commit": "group frame switch"
+      },
+      "run_mode": {
+        "run_mode_type": 1,
+        "run_mode_type_commit": "0: online_mode, 1: feedback_mode",
+        "online_mode": {
+          "ts_src": 0,
+          "ts_src_commit": "sync_ts source, 0:sensor, 1:os",
+          "raw_msg_enable": false,
+          "raw_msg_enable_commit": "save raw data which has not processed for recording file"
+        },
+        "feedback_mode": {
+          "ts_src": 2,
+          "ts_src_commit": "msg param source, 1:os, 2:pack",
+          "feedback_msg_mode": 0,
+          "feedback_msg_mode_commit": "feedback mode, 0:pub_sub, 1:req_rep"
+        }
+      },
+      "enable": true
+    },
+    {
+      "sensor_name": "camera_2",
+      "plugin_info": {
+        "libraries": [
+          "./tros_common_lib/libcamera.so"
+        ],
+        "property_file": "../sensor_center/fillback/camera/camera_2.json",
+        "class_name": "Camera"
+      },
+      "frame_adapter_name": "camera_2",
+      "raw_adapter_name": "camera_image_2",
+      "group_info": {
+        "group_adapter_name": "camera_0",
+        "group_adapter_name_commit": "If the group_adapter_name is the same as the frame_adapter_name, pub msg from this sensor",
+        "group_id": 0,
+        "group_enable": true,
+        "group_enable_commit": "group frame switch"
+      },
+      "run_mode": {
+        "run_mode_type": 1,
+        "run_mode_type_commit": "0: online_mode, 1: feedback_mode",
+        "online_mode": {
+          "ts_src": 0,
+          "ts_src_commit": "sync_ts source, 0:sensor, 1:os",
+          "raw_msg_enable": false,
+          "raw_msg_enable_commit": "save raw data which has not processed for recording file"
+        },
+        "feedback_mode": {
+          "ts_src": 2,
+          "ts_src_commit": "msg param source, 1:os, 2:pack",
+          "feedback_msg_mode": 0,
+          "feedback_msg_mode_commit": "feedback mode, 0:pub_sub, 1:req_rep"
+        }
+      },
+      "enable": true
+    },
+    {
+      "sensor_name": "camera_3",
+      "plugin_info": {
+        "libraries": [
+          "./tros_common_lib/libcamera.so"
+        ],
+        "property_file": "../sensor_center/fillback/camera/camera_3.json",
+        "class_name": "Camera"
+      },
+      "frame_adapter_name": "camera_3",
+      "raw_adapter_name": "camera_image_3",
+      "group_info": {
+        "group_adapter_name": "camera_0",
+        "group_adapter_name_commit": "If the group_adapter_name is the same as the frame_adapter_name, pub msg from this sensor",
+        "group_id": 0,
+        "group_enable": true,
+        "group_enable_commit": "group frame switch"
+      },
+      "run_mode": {
+        "run_mode_type": 1,
+        "run_mode_type_commit": "0: online_mode, 1: feedback_mode",
+        "online_mode": {
+          "ts_src": 0,
+          "ts_src_commit": "sync_ts source, 0:sensor, 1:os",
+          "raw_msg_enable": false,
+          "raw_msg_enable_commit": "save raw data which has not processed for recording file"
+        },
+        "feedback_mode": {
+          "ts_src": 2,
+          "ts_src_commit": "msg param source, 1:os, 2:pack",
+          "feedback_msg_mode": 0,
+          "feedback_msg_mode_commit": "feedback mode, 0:pub_sub, 1:req_rep"
+        }
+      },
+      "enable": true
+    }
+  ],
+  "fps_control": {
+    "enable": false,
+    "fps_control_adapter_name": [
+      "camera_0",
+      "camera_1",
+      "camera_2",
+      "camera_3"
+    ],
+    "fps": [
+      10,
+      10,
+      10,
+      10
+    ]
+  },
+  "+diag_adapter_name": "/bole/event/sensors",
+  "command_adapter_name": "/bole/command/sensors",
+  "adapter_path": "../sensor_center/fillback/adapter/adapter.json",
+  "adapter_path_comment": "absolute path for adapter.json",
+  "communication_path": "../communication.json",
+  "customized_field": "../sensor_center/empty.json",
+  "time_cost_en": false,
+  "log_path": "../../log/sensors/",
+  "log_level": 5
+}

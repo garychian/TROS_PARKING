@@ -5,7 +5,7 @@ echo "parking app."
 
 show_usage() {
   echo "Usage: sh $0 [opt] [arg]"
-  echo "  -m [mode] : 0: remote fillback, 1: online. 0 by default."
+  echo "  -m [mode] : 0: fillback, 1: online. 0 by default."
   echo "  -t [target to run]: 0: all processes, 1: apa_sc only, 0 by default."
   echo "  -h [show usuage]: display usage guide"
   echo "  no arg : run with default parameters: [mode=0][target=0]"
@@ -62,6 +62,17 @@ fi
 
 echo MODE=$MODE
 echo TARGET=$TARGET
+
+# set sensor-center mode
+rm config/sensorcenter_process/module/SensorCenterModule.json
+if [[ "$MODE" == "0" ]];then
+  ln -s $(pwd)/config/sensorcenter_process/sensor_center/fillback/sensor_global.json  config/sensorcenter_process/module/SensorCenterModule.json
+elif [[ "$MODE" == "1" ]];then
+  ln -s $(pwd)/config/sensorcenter_process/sensor_center/online/sensor_global.json  config/sensorcenter_process/module/SensorCenterModule.json
+else
+  echo "invalid mode = $MODE, exit!"
+  exit 1
+fi
 
 # dataflow require mainboard2 in PATH, when run program by launch2.
 export PATH=.:$PATH

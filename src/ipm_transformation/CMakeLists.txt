@@ -19,7 +19,7 @@ target_include_directories(ipm_trans
     ${PROJECT_SOURCE_DIR}/src
     ${TROS_MESSAGE_DIR})
 
-target_link_libraries(ipm_trans ${COMMON_LIB} ${HOBOT_BOLE_PROTOCOL_LIB} ${PROTO})
+target_link_libraries(ipm_trans ${COMMON_LIB} ${HOBOT_BOLE_PROTOCOL_LIB} ${PROTO} convert_assistant)
 
 # install stage
 #   binary should be installed into ${TROS_INSTALL_BIN}

@@ -134,7 +134,7 @@ void ParkingslotDetectMoudle::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_camera_frame_array msg timestamp: {}",
+    DFHLOG_I("sub_camera_frame_array msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_camera_frame_array
   }
