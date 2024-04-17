@@ -39,7 +39,7 @@ def run_command(conan_install_command):
 
 
 def conan_build(conan_command):
-    conan_install_command = "conan install .. din/stable {} -u".format(
+    conan_install_command = "conan install .. din/stable {}".format(
         conan_command)
     print("[conan]: {}".format(conan_install_command))
     run_command(conan_install_command)
@@ -85,7 +85,7 @@ def config_build(args):
         elif config == "j3_conan":
             options += "-pr aarch64_gcc6.5 -o *:soc=j3 -o *:hbmem=True -o *:dataflow=True"
         elif config == "j5_conan":
-            options += "-pr aarch64_gcc9.3 -o *:soc=j5 -o *:hbmem=True -o *:dataflow=True"
+            options += "-pr aarch64_gcc9.3 -o *:soc=j5 -o *:hbmem=True -o *:dataflow=True -o *:pagesize=64k"
         elif config == "s32g_conan":
             options += "-pr aarch64_fsl_gcc9.3 -o *:soc=s32g -o *:hbmem=True -o *:dataflow=True"
         else:
@@ -149,7 +149,7 @@ def build_with_conan(args):
             options += "-pr aarch64_gcc6.5 -o *:soc=j3 -o *:hbmem=True -o *:dataflow=True"
         # toolchains [aarch64_gcc9.3] corresponds to soc [j5]
         elif toolchains == "aarch64_gcc9.3" and soc == "j5":
-            options += "-pr aarch64_gcc9.3 -o *:soc=j5 -o *:hbmem=True -o *:dataflow=True"
+            options += "-pr aarch64_gcc9.3 -o *:soc=j5 -o *:hbmem=True -o *:dataflow=True -o *:pagesize=64k"
         # soc: toolchains [aarch64_fsl_gcc9.3] corresponds to soc [s32g]
         elif toolchains == "aarch64_fsl_gcc9.3" and soc == "s32g":
             options += "-pr aarch64_fsl_gcc9.3 -o *:soc=s32g -o *:hbmem=True -o *:dataflow=True"

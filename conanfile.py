@@ -9,7 +9,7 @@ class PackageConanFile(ConanFile):
     default_channel = "stable"
     default_user = "tros"
     settings = "os", "compiler", "build_type", "arch"
-    generators = ["cmake_find_package", "json"]
+    generators = ["cmake_find_package", "json","deploy"]
 
     requires = ["dataflow/[x.x.x]@bole/stable",
                 ("hobot-bole-protocol/1.4.33@bole/stable", "private")]
@@ -22,6 +22,7 @@ class PackageConanFile(ConanFile):
 
     requires = [
         # direct deps
+        ("gperftools/2.10.0@thirdparty/stable"),
         ("opencv/3.4.5@thirdparty/stable"),
         ("nlohmann_json/3.7.3@thirdparty/stable"),
         ("hobot-bole-protocol/1.4.43@bole/stable"),
