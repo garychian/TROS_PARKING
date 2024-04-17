@@ -23,7 +23,7 @@ def run_command(conan_install_command):
 
 
 def conan_build(conan_command):
-    conan_install_command = "conan install .. bole/stable {} -u".format(
+    conan_install_command = "conan install .. din/stable {} ".format(
         conan_command)
     print("[conan]: {}".format(conan_install_command))
     run_command(conan_install_command)
