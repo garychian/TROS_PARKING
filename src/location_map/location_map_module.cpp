@@ -119,7 +119,7 @@ void LocationMapModule::InitPortsAndProcs() {
     MsgCenterProc,
     hobot::dataflow::ProcType::DF_MSG_COND_PROC,
     DF_VECTOR("sub_vehicleio_data", "sub_apa_status", "sub_target_slot", "sub_imu_data", "sub_gnss_data", "sub_ins_data", "sub_dual_antenna_data", "sub_psd_image", "sub_camera_frame_array", "sub_apa_ps_info", "sub_apa_ps_rect", "sub_apa_pointI"),
-    DF_VECTOR("pub_pad_realtime_loc", "pub_loc_status", "pub_vehicle_pose", "pub_app2emap", "pub_pad_point", "pub_map_info", "pub_parking_slot", "pub_stio_lane_lines", "pub_stop_lines", "pub_bumps", "pub_crosswalks", "pub_arrows", "pub_pad_vehicleio_pose"));
+    DF_VECTOR());
 
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
     "TimerProc",
@@ -127,7 +127,7 @@ void LocationMapModule::InitPortsAndProcs() {
     TimerProc,
     hobot::dataflow::ProcType::DF_MSG_TIMER_PROC,
     DF_VECTOR(),
-    DF_VECTOR("pub_loc_status"));
+    DF_VECTOR("pub_pad_realtime_loc", "pub_loc_status", "pub_vehicle_pose", "pub_app2emap", "pub_pad_point", "pub_map_info", "pub_parking_slot", "pub_stio_lane_lines", "pub_stop_lines", "pub_bumps", "pub_crosswalks", "pub_arrows", "pub_pad_vehicleio_pose"));
 }
 
 int32_t LocationMapModule::Init() {
@@ -159,7 +159,7 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_vehicleio_data msg timestamp: {}",
+    DFHLOG_I("sub_vehicleio_data msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_vehicleio_data
   }
@@ -169,7 +169,7 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_apa_status msg timestamp: {}",
+    DFHLOG_I("sub_apa_status msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_apa_status
     auto apa_status = std::dynamic_pointer_cast<ApaStatusMsg>(sub_apa_status_msgs->at(0));
@@ -184,7 +184,7 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_target_slot msg timestamp: {}",
+    DFHLOG_I("sub_target_slot msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_target_slot
     auto target_slot = std::dynamic_pointer_cast<TargetSlotMsg>(sub_target_slot_msgs->at(0));
@@ -199,7 +199,7 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_imu_data msg timestamp: {}",
+    DFHLOG_I("sub_imu_data msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_imu_data
   }
@@ -209,7 +209,7 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_gnss_data msg timestamp: {}",
+    DFHLOG_I("sub_gnss_data msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_gnss_data
   }
@@ -219,7 +219,7 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_ins_data msg timestamp: {}",
+    DFHLOG_I("sub_ins_data msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_ins_data
   }
@@ -229,7 +229,7 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_dual_antenna_data msg timestamp: {}",
+    DFHLOG_I("sub_dual_antenna_data msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_dual_antenna_data
   }
@@ -239,7 +239,7 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_psd_image msg timestamp: {}",
+    DFHLOG_I("sub_psd_image msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_psd_image
   }
@@ -249,7 +249,7 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_camera_frame_array msg timestamp: {}",
+    DFHLOG_I("sub_camera_frame_array msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_camera_frame_array
   }
@@ -259,7 +259,7 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_apa_ps_info msg timestamp: {}",
+    DFHLOG_I("sub_apa_ps_info msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_apa_ps_info
   }
@@ -269,7 +269,7 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_apa_ps_rect msg timestamp: {}",
+    DFHLOG_I("sub_apa_ps_rect msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_apa_ps_rect
   }
@@ -279,88 +279,229 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_D("sub_apa_pointI msg timestamp: {}",
+    DFHLOG_I("sub_apa_pointI msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_apa_pointI
   }
-  auto pub_pad_realtime_loc_port
-    = proc->GetOutputPort("pub_pad_realtime_loc");
-  // do something with output port pub_pad_realtime_loc
-  UNUSED(pub_pad_realtime_loc_port);
-  auto pub_loc_status_port
-    = proc->GetOutputPort("pub_loc_status");
-  // do something with output port pub_loc_status
-  UNUSED(pub_loc_status_port);
-  auto pub_vehicle_pose_port
-    = proc->GetOutputPort("pub_vehicle_pose");
-  // do something with output port pub_vehicle_pose
-  UNUSED(pub_vehicle_pose_port);
-  auto pub_app2emap_port
-    = proc->GetOutputPort("pub_app2emap");
-  // do something with output port pub_app2emap
-  UNUSED(pub_app2emap_port);
-  auto pub_pad_point_port
-    = proc->GetOutputPort("pub_pad_point");
-  // do something with output port pub_pad_point
-  UNUSED(pub_pad_point_port);
-  auto pub_map_info_port
-    = proc->GetOutputPort("pub_map_info");
-  // do something with output port pub_map_info
-  UNUSED(pub_map_info_port);
-  auto pub_parking_slot_port
-    = proc->GetOutputPort("pub_parking_slot");
-  // do something with output port pub_parking_slot
-  UNUSED(pub_parking_slot_port);
-  auto pub_stio_lane_lines_port
-    = proc->GetOutputPort("pub_stio_lane_lines");
-  // do something with output port pub_stio_lane_lines
-  UNUSED(pub_stio_lane_lines_port);
-  auto pub_stop_lines_port
-    = proc->GetOutputPort("pub_stop_lines");
-  // do something with output port pub_stop_lines
-  UNUSED(pub_stop_lines_port);
-  auto pub_bumps_port
-    = proc->GetOutputPort("pub_bumps");
-  // do something with output port pub_bumps
-  UNUSED(pub_bumps_port);
-  auto pub_crosswalks_port
-    = proc->GetOutputPort("pub_crosswalks");
-  // do something with output port pub_crosswalks
-  UNUSED(pub_crosswalks_port);
-  auto pub_arrows_port
-    = proc->GetOutputPort("pub_arrows");
-  // do something with output port pub_arrows
-  UNUSED(pub_arrows_port);
-  auto pub_pad_vehicleio_pose_port
-    = proc->GetOutputPort("pub_pad_vehicleio_pose");
-  // do something with output port pub_pad_vehicleio_pose
-  UNUSED(pub_pad_vehicleio_pose_port);
 }
 
 void LocationMapModule::TimerProc(
   hobot::dataflow::spMsgResourceProc proc,
   const hobot::dataflow::MessageLists &msgs) {
   UNUSED(msgs);
-  // do something with output port pub_location
   auto gen_ts = GetTimeStamp();
-  auto loc_status = std::make_shared<LocStatusMsg>();
-  loc_status->SetGenTimestamp(gen_ts);
+  {// do something with output port pub_loc_status
+    auto loc_status = std::make_shared<LocStatusMsg>();
+    loc_status->SetGenTimestamp(gen_ts);
 
-  static int cnt = 0;
-  ++cnt;
-  cnt = cnt%4;
+    static int cnt = 0;
+    ++cnt;
+    cnt = cnt%4;
 
-  loc_status->proto.set_locstatus(static_cast<loc::LocStatusType>(cnt));
+    loc_status->proto.set_locstatus(static_cast<loc::LocStatusType>(cnt));
 
-  auto pub_loc_status_port
-    = proc->GetOutputPort("pub_loc_status");
-  if (!pub_loc_status_port) {
-    DFHLOG_E("failed to get output port of {}", "pub_loc_status");
-    return;
+    auto pub_loc_status_port
+      = proc->GetOutputPort("pub_loc_status");
+    if (!pub_loc_status_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_loc_status");
+      return;
+    }
+    pub_loc_status_port->Send(loc_status);
+    DFHLOG_I("pub_loc_status msg timestamp: {}, loc_status = {}", 
+              loc_status->GetGenTimestamp(), loc_status->proto.locstatus());
   }
-  pub_loc_status_port->Send(loc_status);
-  DFHLOG_I("pub_loc_status msg timestamp: {}, loc_status = {}", 
-            loc_status->GetGenTimestamp(), loc_status->proto.locstatus());
+
+  {// do something with output port pub_pad_realtime_loc
+    // fill proto
+    auto pad_realtime_loc = std::make_shared<PadRealTimeLocationMsg>();
+    pad_realtime_loc->proto.set_reserve(88);
+    pad_realtime_loc->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_pad_realtime_loc_port = proc->GetOutputPort("pub_pad_realtime_loc");
+    if (!pub_pad_realtime_loc_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_pad_realtime_loc");
+      return;
+    }
+    pub_pad_realtime_loc_port->Send(pad_realtime_loc);
+    DFHLOG_I("pub pad_realtime_loc_port info, reserve = {}",
+                          pad_realtime_loc->proto.reserve());
+  }
+
+  {// do something with output port pub_vehicle_pose
+    // fill proto
+    auto vehicle_pose = std::make_shared<VehiclePosMsg>();
+    vehicle_pose->proto.set_x(1920);
+    vehicle_pose->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_vehicle_pose_port = proc->GetOutputPort("pub_vehicle_pose");
+    if (!pub_vehicle_pose_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_vehicle_pose");
+      return;
+    }
+    pub_vehicle_pose_port->Send(vehicle_pose);
+    DFHLOG_I("pub vehicle_pose_port info, x = {}",
+                          vehicle_pose->proto.x());
+  }
+
+  {// do something with output port pub_app2emap
+    // fill proto
+    auto app2emap = std::make_shared<App2emap_DRMsg>();
+    app2emap->proto.set_x(1920);
+    app2emap->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_app2emap_port = proc->GetOutputPort("pub_app2emap");
+    if (!pub_app2emap_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_app2emap");
+      return;
+    }
+    pub_app2emap_port->Send(app2emap);
+    DFHLOG_I("pub app2emap_port info, x = {}",
+                          app2emap->proto.x());
+  }
+
+  {// do something with output port pub_pad_point
+    // fill proto
+    auto pad_point = std::make_shared<PadPointMsg>();
+    pad_point->proto.set_x(1920);
+    pad_point->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_pad_point_port = proc->GetOutputPort("pub_pad_point");
+    if (!pub_pad_point_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_pad_point");
+      return;
+    }
+    pub_pad_point_port->Send(pad_point);
+    DFHLOG_I("pub pad_point_port info, x = {}",
+                          pad_point->proto.x());
+  }
+
+  {// do something with output port pub_pad_vehicleio_pose
+    // fill proto
+    auto pad_vehicleio_pose = std::make_shared<PadVehiclePoseMsg>();
+    pad_vehicleio_pose->proto.set_status(88);
+    pad_vehicleio_pose->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_pad_vehicleio_pose_port = proc->GetOutputPort("pub_pad_vehicleio_pose");
+    if (!pub_pad_vehicleio_pose_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_pad_vehicleio_pose");
+      return;
+    }
+    pub_pad_vehicleio_pose_port->Send(pad_vehicleio_pose);
+    DFHLOG_I("pub pad_vehicleio_pose_port info, status = {}",
+                          pad_vehicleio_pose->proto.status());
+  }
+
+  {// do something with output port pub_map_info
+    // fill proto
+    auto map_info = std::make_shared<MapInfoMsg>();
+    map_info->proto.set_mapid(88);
+    map_info->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_map_info_port = proc->GetOutputPort("pub_map_info");
+    if (!pub_map_info_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_map_info");
+      return;
+    }
+    pub_map_info_port->Send(map_info);
+    DFHLOG_I("pub map_info_port info, mapid = {}",
+                          map_info->proto.mapid());
+  }
+
+  {// do something with output port pub_parking_slot
+    // fill proto
+    auto parking_slot = std::make_shared<ParkingSlotsMsg>();
+    parking_slot->proto.set_width(1920);
+    parking_slot->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_parking_slot_port = proc->GetOutputPort("pub_parking_slot");
+    if (!pub_parking_slot_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_parking_slot");
+      return;
+    }
+    pub_parking_slot_port->Send(parking_slot);
+    DFHLOG_I("pub parking_slot_port info, width = {}",
+                          parking_slot->proto.width());
+  }
+
+  {// do something with output port pub_stio_lane_lines
+    // fill proto
+    auto stio_lane_lines = std::make_shared<LaneLinesMsg>();
+    stio_lane_lines->proto.set_linetype(88);
+    stio_lane_lines->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_stio_lane_lines_port = proc->GetOutputPort("pub_stio_lane_lines");
+    if (!pub_stio_lane_lines_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_stio_lane_lines");
+      return;
+    }
+    pub_stio_lane_lines_port->Send(stio_lane_lines);
+    DFHLOG_I("pub stio_lane_lines_port info, linetype = {}",
+                          stio_lane_lines->proto.linetype());
+  }
+
+  {// do something with output port pub_stop_lines
+    // fill proto
+    auto stop_lines = std::make_shared<StopLinesMsg>();
+    stop_lines->proto.set_id(88);
+    stop_lines->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_stop_lines_port = proc->GetOutputPort("pub_stop_lines");
+    if (!pub_stop_lines_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_stop_lines");
+      return;
+    }
+    pub_stop_lines_port->Send(stop_lines);
+    DFHLOG_I("pub stop_lines_port info, id = {}",
+                          stop_lines->proto.id());
+  }
+
+  {// do something with output port pub_bumps
+    // fill proto
+    auto bumps = std::make_shared<BumpsMsg>();
+    bumps->proto.set_id(88);
+    bumps->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_bumps_port = proc->GetOutputPort("pub_bumps");
+    if (!pub_bumps_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_bumps");
+      return;
+    }
+    pub_bumps_port->Send(bumps);
+    DFHLOG_I("pub bumps_port info, id = {}",
+                          bumps->proto.id());
+  }
+
+  {// do something with output port pub_crosswalks
+    // fill proto
+    auto crosswalks = std::make_shared<CrossWalksMsg>();
+    crosswalks->proto.set_id(88);
+    crosswalks->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_crosswalks_port = proc->GetOutputPort("pub_crosswalks");
+    if (!pub_crosswalks_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_crosswalks");
+      return;
+    }
+    pub_crosswalks_port->Send(crosswalks);
+    DFHLOG_I("pub crosswalks_port info, id = {}",
+                          crosswalks->proto.id());
+  }
+
+  {// do something with output port pub_arrows
+    // fill proto
+    auto arrows = std::make_shared<ArrowsMsg>();
+    arrows->proto.set_id(88);
+    arrows->SetGenTimestamp(gen_ts);
+    //pub msg
+    auto pub_arrows_port = proc->GetOutputPort("pub_arrows");
+    if (!pub_arrows_port) {
+      DFHLOG_E("failed to get output port of {}", "pub_arrows");
+      return;
+    }
+    pub_arrows_port->Send(arrows);
+    DFHLOG_I("pub arrows_port info, id = {}",
+                          arrows->proto.id());
+  }
 }
 
 DATAFLOW_REGISTER_MODULE(LocationMapModule)

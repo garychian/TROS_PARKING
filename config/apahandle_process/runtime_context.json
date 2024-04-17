@@ -71,7 +71,7 @@
           "disable": false,
           "proc_type": "MsgTimerTriggerProc",
           "proc_option": {
-            "interval": 20,
+            "interval": 1000,
             "repeat_counts": -1,
             "trigger_type": 0
           }

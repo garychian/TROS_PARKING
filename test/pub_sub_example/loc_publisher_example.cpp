@@ -50,8 +50,11 @@ using hobot::communication::ProtobufSerializer;
 
 // for proto serialize
 
-using SlotlabelSerializer = ProtobufSerializer<fsm::Slotlabel>;
-using ApastatusreqSerializer = ProtobufSerializer<fsm::Apastatusreq>;
+using CanSignalUnitSerializer = ProtobufSerializer<vehicleiostate::CanSignalUnit>;
+using IMUDataSerializer = ProtobufSerializer<sen::IMUData>;
+using GNSSDataSerializer = ProtobufSerializer<sen::GNSSData>;
+using INSDataSerializer = ProtobufSerializer<sen::INSData>;
+using DualAntennaDataSerializer = ProtobufSerializer<sen::DualAntennaData>;
 
 struct Args {
   int participant_id = 0;
@@ -202,78 +205,184 @@ int main(int argc, char** argv) {
   std::string version = hobot::communication::GetVersion();
   std::cout << "communication version is " << version << std::endl;
 
-  CommAttr slot_label_comm_attr;
-  Args slot_label_args;
-  slot_label_args.protocol = PROTOCOL_ZMQ_TCP;
-  slot_label_args.participant_id = 1;
-
-  if (!MatchParticipantId(slot_label_args, slot_label_comm_attr)) {
-    return -1;
-  }
-  
-  // pub slotlabel
+  // LocationMapModule
+  // pub CanSignalUnit
   ErrorCode error_code;
-  auto slot_label_publisher =
-      Publisher<SlotlabelSerializer>::New(slot_label_comm_attr,
-                                          "/fsm/slot_label",
+  CommAttr can_signal_unit_comm_attr;
+  Args can_signal_unit_args;
+  can_signal_unit_args.protocol = PROTOCOL_ZMQ_TCP;
+  can_signal_unit_args.participant_id = 7;
+
+  if (!MatchParticipantId(can_signal_unit_args, can_signal_unit_comm_attr)) {
+    return -1;
+  }
+
+  auto can_signal_unit_publisher =
+      Publisher<CanSignalUnitSerializer>::New(can_signal_unit_comm_attr,
+                                          "/vec/vehicleio_data",
                                           0,
-                                          slot_label_args.protocol,
+                                          can_signal_unit_args.protocol,
                                           &error_code,
                                           pub_connlisteners);
-  if (!slot_label_publisher) {
+  if (!can_signal_unit_publisher) {
     std::cout << " create publisher failed";
     return -1;
   }
 
-  CommAttr apa_status_req_comm_attr;
-  Args apa_status_req_args;
-  apa_status_req_args.protocol = PROTOCOL_ZMQ_TCP;
-  apa_status_req_args.participant_id = 2;
+  // pub IMUData
+  CommAttr imu_data_comm_attr;
+  Args imu_data_args;
+  imu_data_args.protocol = PROTOCOL_ZMQ_TCP;
+  imu_data_args.participant_id = 7;
 
-  if (!MatchParticipantId(apa_status_req_args, apa_status_req_comm_attr)) {
+  if (!MatchParticipantId(imu_data_args, imu_data_comm_attr)) {
     return -1;
   }
 
-  auto apa_status_req_publisher =
-      Publisher<ApastatusreqSerializer>::New(apa_status_req_comm_attr,
-                                          "/fsm/apa_status_req",
+  auto imu_data_publisher =
+      Publisher<IMUDataSerializer>::New(imu_data_comm_attr,
+                                          "/sen/imu_data",
                                           0,
-                                          apa_status_req_args.protocol,
+                                          imu_data_args.protocol,
                                           &error_code,
                                           pub_connlisteners);
-  if (!apa_status_req_publisher) {
+  if (!imu_data_publisher) {
     std::cout << " create publisher failed";
     return -1;
   }
 
+// pub GNSSData
+  CommAttr gnss_data_comm_attr;
+  Args gnss_data_args;
+  gnss_data_args.protocol = PROTOCOL_ZMQ_TCP;
+  gnss_data_args.participant_id = 7;
+
+  if (!MatchParticipantId(gnss_data_args, gnss_data_comm_attr)) {
+    return -1;
+  }
+
+  auto gnss_data_publisher =
+      Publisher<GNSSDataSerializer>::New(gnss_data_comm_attr,
+                                          "/sen/gnss_data",
+                                          0,
+                                          gnss_data_args.protocol,
+                                          &error_code,
+                                          pub_connlisteners);
+  if (!gnss_data_publisher) {
+    std::cout << " create publisher failed";
+    return -1;
+  }
+
+  // pub INSData
+  CommAttr ins_data_comm_attr;
+  Args ins_data_args;
+  ins_data_args.protocol = PROTOCOL_ZMQ_TCP;
+  ins_data_args.participant_id = 7;
+
+  if (!MatchParticipantId(ins_data_args, ins_data_comm_attr)) {
+    return -1;
+  }
+
+  auto ins_data_publisher =
+      Publisher<INSDataSerializer>::New(ins_data_comm_attr,
+                                          "/sen/ins_data",
+                                          0,
+                                          ins_data_args.protocol,
+                                          &error_code,
+                                          pub_connlisteners);
+  if (!ins_data_publisher) {
+    std::cout << " create publisher failed";
+    return -1;
+  }
+
+  // pub DualAntennaData
+  CommAttr dual_antenna_data_comm_attr;
+  Args dual_antenna_data_args;
+  dual_antenna_data_args.protocol = PROTOCOL_ZMQ_TCP;
+  dual_antenna_data_args.participant_id = 7;
+
+  if (!MatchParticipantId(dual_antenna_data_args, dual_antenna_data_comm_attr)) {
+    return -1;
+  }
+
+  auto dual_antenna_data_publisher =
+      Publisher<DualAntennaDataSerializer>::New(dual_antenna_data_comm_attr,
+                                          "/sen/dual_antenna_data",
+                                          0,
+                                          dual_antenna_data_args.protocol,
+                                          &error_code,
+                                          pub_connlisteners);
+  if (!dual_antenna_data_publisher) {
+    std::cout << " create publisher failed";
+    return -1;
+  }
 
   while (true){
     
     {
       auto gen_ts = GetTimeStamp();
-      auto msg = std::make_shared<SlotlabelMsg>();
+      auto msg = std::make_shared<CanSignalUnitMsg>();
       msg->SetGenTimestamp(gen_ts);
-      msg->proto.set_targetslotlabel(33);
+      msg->proto.set_type(vehicleiostate::CANValueType::CAN_VALUE_TYPE_INT);
       msg->SetDoneTimestamp(GetTimeStamp());
-      auto ret = slot_label_publisher->Pub(msg);
+      auto ret = can_signal_unit_publisher->Pub(msg);
       if (ret != COMM_CODE_OK) {
         std::cout << "pub failed, reason: " << ErrorMsg(ret) << std::endl;
       }else{
-        std::cout << "pub SlotlabelMsg successful, ts = " << gen_ts << std::endl;
+        std::cout << "pub CanSignalUnitMsg successful, ts = " << gen_ts << std::endl;
       }
 
     }
 
     {
       auto gen_ts = GetTimeStamp();
-      auto msg = std::make_shared<ApastatusreqMsg>();
+      auto msg = std::make_shared<IMUDataMsg>();
       msg->SetGenTimestamp(gen_ts);
-      msg->proto.set_apastatusreq(fsm::apaStatusReqType::enable);
-      auto ret = apa_status_req_publisher->Pub(msg);
+      // msg->proto.set_apastatusreq(fsm::apaStatusReqType::enable);
+      auto ret = imu_data_publisher->Pub(msg);
       if (ret != COMM_CODE_OK) {
         std::cout << "pub failed, reason: " << ErrorMsg(ret) << std::endl;
       }else{
-        std::cout << "pub ApastatusreqMsg successful, ts = " <<  gen_ts << std::endl;
+        std::cout << "pub IMUDataMsg successful, ts = " <<  gen_ts << std::endl;
+      }
+    }
+
+    {
+      auto gen_ts = GetTimeStamp();
+      auto msg = std::make_shared<GNSSDataMsg>();
+      msg->SetGenTimestamp(gen_ts);
+      // msg->proto.set_apastatusreq(fsm::apaStatusReqType::enable);
+      auto ret = gnss_data_publisher->Pub(msg);
+      if (ret != COMM_CODE_OK) {
+        std::cout << "pub failed, reason: " << ErrorMsg(ret) << std::endl;
+      }else{
+        std::cout << "pub GNSSDataMsg successful, ts = " <<  gen_ts << std::endl;
+      }
+    }
+
+    {
+      auto gen_ts = GetTimeStamp();
+      auto msg = std::make_shared<INSDataMsg>();
+      msg->SetGenTimestamp(gen_ts);
+      // msg->proto.set_apastatusreq(fsm::apaStatusReqType::enable);
+      auto ret = ins_data_publisher->Pub(msg);
+      if (ret != COMM_CODE_OK) {
+        std::cout << "pub failed, reason: " << ErrorMsg(ret) << std::endl;
+      }else{
+        std::cout << "pub INSDataMsg successful, ts = " <<  gen_ts << std::endl;
+      }
+    }
+
+    {
+      auto gen_ts = GetTimeStamp();
+      auto msg = std::make_shared<DualAntennaDataMsg>();
+      msg->SetGenTimestamp(gen_ts);
+      // msg->proto.set_apastatusreq(fsm::apaStatusReqType::enable);
+      auto ret = dual_antenna_data_publisher->Pub(msg);
+      if (ret != COMM_CODE_OK) {
+        std::cout << "pub failed, reason: " << ErrorMsg(ret) << std::endl;
+      }else{
+        std::cout << "pub DualAntennaDataMsg successful, ts = " <<  gen_ts << std::endl;
       }
     }
 

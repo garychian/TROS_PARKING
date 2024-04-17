@@ -7,7 +7,18 @@
       "inputs": [
         {
           "port_id": "sub_vehicleio_data",
-          "topic": "/vec/vehicleio_data"
+          "topic": "/vec/vehicleio_data",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 1
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "sub_apa_status",
@@ -27,93 +38,286 @@
         },
         {
           "port_id": "sub_imu_data",
-          "topic": "/sen/imu_data"
+          "topic": "/sen/imu_data",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 1
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "sub_gnss_data",
-          "topic": "/sen/gnss_data"
+          "topic": "/sen/gnss_data",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 1
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "sub_ins_data",
-          "topic": "/sen/ins_data"
+          "topic": "/sen/ins_data",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 1
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "sub_dual_antenna_data",
-          "topic": "/sen/dual_antenna_data"
+          "topic": "/sen/dual_antenna_data",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 1
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "sub_psd_image",
-          "topic": "/psd/image"
+          "topic": "/psd/image",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         },
         {
           "port_id": "sub_camera_frame_array",
-          "topic": "/sec/camera_frame_array"
+          "topic": "/sec/camera_frame_array",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         },
         {
           "port_id": "sub_apa_ps_info",
-          "topic": "/psd/apa_ps_info"
+          "topic": "/psd/apa_ps_info",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         },
         {
           "port_id": "sub_apa_ps_rect",
-          "topic": "/psd/apa_ps_rect"
+          "topic": "/psd/apa_ps_rect",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         },
         {
           "port_id": "sub_apa_pointI",
-          "topic": "/psd/apa_pointI"
+          "topic": "/psd/apa_pointI",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         }
       ],
       "outputs": [
         {
           "port_id": "pub_pad_realtime_loc",
-          "topic": "/loc/pad_realtime_loc"
+          "topic": "/loc/pad_realtime_loc",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "pub_loc_status",
-          "topic": "/loc/loc_status"
+          "topic": "/loc/loc_status",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "pub_vehicle_pose",
-          "topic": "/loc/vehicle_pose"
+          "topic": "/loc/vehicle_pose",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "pub_app2emap",
-          "topic": "/loc/app2emap"
+          "topic": "/loc/app2emap",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "pub_pad_point",
-          "topic": "/loc/pad_point"
+          "topic": "/loc/pad_point",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         },
         {
           "port_id": "pub_map_info",
-          "topic": "/loc/map_info"
+          "topic": "/loc/map_info",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "pub_parking_slot",
-          "topic": "/loc/parking_slot"
+          "topic": "/loc/parking_slot",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "pub_stio_lane_lines",
-          "topic": "/loc/stio_lane_lines"
+          "topic": "/loc/stio_lane_lines",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "pub_stop_lines",
-          "topic": "/loc/stop_lines"
+          "topic": "/loc/stop_lines",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "pub_bumps",
-          "topic": "/loc/bumps"
+          "topic": "/loc/bumps",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "pub_crosswalks",
-          "topic": "/loc/crosswalks"
+          "topic": "/loc/crosswalks",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "pub_arrows",
-          "topic": "/loc/arrows"
+          "topic": "/loc/arrows",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
         },
         {
           "port_id": "pub_pad_vehicleio_pose",
-          "topic": "/loc/pad_vehicle_pose"
+          "topic": "/loc/pad_vehicle_pose",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         }
       ],
       "procs": [
@@ -133,7 +337,7 @@
           "disable": false,
           "proc_type": "MsgTimerTriggerProc",
           "proc_option": {
-            "interval": 20,
+            "interval": 1000,
             "repeat_counts": -1,
             "trigger_type": 0
           }

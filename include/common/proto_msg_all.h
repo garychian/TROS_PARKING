@@ -59,5 +59,53 @@ using spSlotlabelMsg = std::shared_ptr<SlotlabelMsg>;
 using LocStatusMsg = hobot::message::ProtoMsg<loc::LocStatus>;
 using spLocStatusMsg = std::shared_ptr<LocStatusMsg>;
 
+using SApaPSInfoMsg = hobot::message::ProtoMsg<psd::SApaPSInfo>;
+using spSApaPSInfoMsg = std::shared_ptr<SApaPSInfoMsg>;
+
+using SApaPSRectMsg = hobot::message::ProtoMsg<psd::SApaPSRect>;
+using spSApaPSRectMsg = std::shared_ptr<SApaPSRectMsg>;
+
+using SApaPoint_IMsg = hobot::message::ProtoMsg<psd::SApaPoint_I>;
+using spSApaPoint_IMsg = std::shared_ptr<SApaPoint_IMsg>;
+
+using ImageMsg = hobot::message::ProtoMsg<psd::Image>;
+using spImageMsg = std::shared_ptr<ImageMsg>;
+
+using PadRealTimeLocationMsg = hobot::message::ProtoMsg<loc::padRealTimeLocation>;
+using spPadRealTimeLocationMsg = std::shared_ptr<PadRealTimeLocationMsg>;
+
+using VehiclePosMsg = hobot::message::ProtoMsg<loc::VehiclePos>;
+using spVehiclePosMsg = std::shared_ptr<VehiclePosMsg>;
+
+using App2emap_DRMsg = hobot::message::ProtoMsg<loc::App2emap_DR>;
+using spApp2emap_DRMsg = std::shared_ptr<App2emap_DRMsg>;
+
+using PadPointMsg = hobot::message::ProtoMsg<loc::padPoint>;
+using spPadPointMsg = std::shared_ptr<PadPointMsg>;
+
+using PadVehiclePoseMsg = hobot::message::ProtoMsg<loc::padVehiclePose>;
+using spPadVehiclePoseMsg = std::shared_ptr<PadVehiclePoseMsg>;
+
+using MapInfoMsg = hobot::message::ProtoMsg<loc::MapInfo>;
+using spMapInfoMsg = std::shared_ptr<MapInfoMsg>;
+
+using ParkingSlotsMsg = hobot::message::ProtoMsg<loc::parkingSlots>;
+using spParkingSlotsMsg = std::shared_ptr<ParkingSlotsMsg>;
+
+using LaneLinesMsg = hobot::message::ProtoMsg<loc::laneLines>;
+using spLaneLinesMsg = std::shared_ptr<LaneLinesMsg>;
+
+using StopLinesMsg = hobot::message::ProtoMsg<loc::stopLines>;
+using spStopLinesMsg = std::shared_ptr<StopLinesMsg>;
+
+using BumpsMsg = hobot::message::ProtoMsg<loc::bumps>;
+using spBumpsMsg = std::shared_ptr<BumpsMsg>;
+
+using CrossWalksMsg = hobot::message::ProtoMsg<loc::crossWalks>;
+using spCrossWalksMsg = std::shared_ptr<CrossWalksMsg>;
+
+using ArrowsMsg = hobot::message::ProtoMsg<loc::arrows>;
+using spArrowsMsg = std::shared_ptr<ArrowsMsg>;
+
 } // namespace parking
 } // namespace fanya

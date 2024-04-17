@@ -15,11 +15,19 @@
         },
         {
           "port_id": "sub_pad_point",
-          "topic": "/loc/pad_point"
+          "topic": "/loc/pad_point",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         },
         {
           "port_id": "sub_pad_vehicle_pose",
-          "topic": "/loc/pad_vehicle_pose"
+          "topic": "/loc/pad_vehicle_pose",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         },
         {
           "port_id": "sub_camera_frame_array",
@@ -33,19 +41,35 @@
       "outputs": [
         {
           "port_id": "pub_apa_ps_info",
-          "topic": "/psd/apa_ps_info"
+          "topic": "/psd/apa_ps_info",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         },
         {
           "port_id": "pub_apa_ps_rect",
-          "topic": "/psd/apa_ps_rect"
+          "topic": "/psd/apa_ps_rect",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         },
         {
           "port_id": "pub_apa_pointI",
-          "topic": "/psd/apa_pointI"
+          "topic": "/psd/apa_pointI",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         },
         {
           "port_id": "pub_psd_image",
-          "topic": "/psd/image"
+          "topic": "/psd/image",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         }
       ],
       "procs": [
@@ -58,6 +82,16 @@
           },
           "schedule_group": {
             "scheduler_name": "TP_PSD"
+          }
+        },
+        {
+          "proc_id": "TimerProc",
+          "disable": false,
+          "proc_type": "MsgTimerTriggerProc",
+          "proc_option": {
+            "interval": 20,
+            "repeat_counts": -1,
+            "trigger_type": 0
           }
         }
       ]

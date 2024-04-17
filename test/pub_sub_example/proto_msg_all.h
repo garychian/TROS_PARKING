@@ -20,9 +20,13 @@
 
 #include "message/message.h"
 #include "message/proto/proto_serializer.hpp"
+#include "protocol/vehicleiostate.pb.h"
 
 #include "fanya_protocol/aph.pb.h"
 #include "fanya_protocol/fsm.pb.h"
+#include "fanya_protocol/psd.pb.h"
+#include "fanya_protocol/loc.pb.h"
+#include "fanya_protocol/sen.pb.h"
 
 #include <ctime>
 
@@ -50,6 +54,54 @@ using spSlotlabelMsg = std::shared_ptr<SlotlabelMsg>;
 
 using ApastatusreqMsg = hobot::message::ProtoMsg<fsm::Apastatusreq>;
 using spApastatusreqMsg = std::shared_ptr<ApastatusreqMsg>;
+
+using PadRealTimeLocationMsg = hobot::message::ProtoMsg<loc::padRealTimeLocation>;
+using spPadRealTimeLocationMsg = std::shared_ptr<PadRealTimeLocationMsg>;
+
+using LocStatusMsg = hobot::message::ProtoMsg<loc::LocStatus>;
+using spLocStatusMsg = std::shared_ptr<LocStatusMsg>;
+
+using VehiclePosMsg = hobot::message::ProtoMsg<loc::VehiclePos>;
+using spVehiclePosMsg = std::shared_ptr<VehiclePosMsg>;
+
+using App2emap_DRMsg = hobot::message::ProtoMsg<loc::App2emap_DR>;
+using spApp2emap_DRMsg = std::shared_ptr<App2emap_DRMsg>;
+
+using MapInfoMsg = hobot::message::ProtoMsg<loc::MapInfo>;
+using spMapInfoMsg = std::shared_ptr<MapInfoMsg>;
+
+using ParkingSlotsMsg = hobot::message::ProtoMsg<loc::parkingSlots>;
+using spParkingSlotsMsg = std::shared_ptr<ParkingSlotsMsg>;
+
+using LaneLinesMsg = hobot::message::ProtoMsg<loc::laneLines>;
+using spLaneLinesMsg = std::shared_ptr<LaneLinesMsg>;
+
+using StopLinesMsg = hobot::message::ProtoMsg<loc::stopLines>;
+using spStopLinesMsg = std::shared_ptr<StopLinesMsg>;
+
+using BumpsMsg = hobot::message::ProtoMsg<loc::bumps>;
+using spBumpsMsg = std::shared_ptr<BumpsMsg>;
+
+using CrossWalksMsg = hobot::message::ProtoMsg<loc::crossWalks>;
+using spCrossWalksMsg = std::shared_ptr<CrossWalksMsg>;
+
+using ArrowsMsg = hobot::message::ProtoMsg<loc::arrows>;
+using spArrowsMsg = std::shared_ptr<ArrowsMsg>;
+
+using IMUDataMsg = hobot::message::ProtoMsg<sen::IMUData>;
+using spIMUDataMsg = std::shared_ptr<IMUDataMsg>;
+
+using GNSSDataMsg = hobot::message::ProtoMsg<sen::GNSSData>;
+using spGNSSDataMsg = std::shared_ptr<GNSSDataMsg>;
+
+using INSDataMsg = hobot::message::ProtoMsg<sen::INSData>;
+using spINSDataMsg = std::shared_ptr<INSDataMsg>;
+
+using DualAntennaDataMsg = hobot::message::ProtoMsg<sen::DualAntennaData>;
+using spDualAntennaDataMsg = std::shared_ptr<DualAntennaDataMsg>;
+
+using CanSignalUnitMsg = hobot::message::ProtoMsg<vehicleiostate::CanSignalUnit>;
+using spCanSignalUnitMsg = std::shared_ptr<CanSignalUnitMsg>;
 
 static uint64_t GetTimeStamp() {
     auto time_now = std::chrono::system_clock::now();

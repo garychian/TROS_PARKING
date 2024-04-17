@@ -134,6 +134,26 @@
       "protocol": "zmq_tcp",
       "link_info": "127.0.0.1:6784",
       "link_type": ""
+    },
+    {
+      "id": 7,
+      "protocol": "zmq_tcp",
+      "link_info": "10.97.109.147:25582",
+      "link_type": "connect",
+      "link_options": {
+        "ZMQ_SNDHWM": 15,
+        "ZMQ_RCVHWM": 15
+      }
+    },
+    {
+      "id": 8,
+      "protocol": "zmq_tcp",
+      "link_info": "10.97.109.147:25583",
+      "link_type": "connect",
+      "link_options": {
+        "ZMQ_SNDHWM": 15,
+        "ZMQ_RCVHWM": 15
+      }
     }
   ]
 }
