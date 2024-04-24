@@ -1,0 +1,44 @@
+{
+  "MemManager" : [
+      {
+          "MemPoolIndex":0,
+          "PageSize" : 256,
+          "PageNumber": 1000
+      },
+      {
+          "MemPoolIndex":1,
+          "PageSize" : 1024,
+          "PageNumber": 500
+      },
+      {
+          "MemPoolIndex":2,
+          "PageSize" : 4096,
+          "PageNumber": 300
+      },
+      {
+          "MemPoolIndex":3,
+          "PageSize" : 36864,
+          "PageNumber": 100
+      },
+      {
+          "MemPoolIndex":4,
+          "PageSize" : 131072,
+          "PageNumber": 100
+      },
+      {
+          "MemPoolIndex":5,
+          "PageSize" : 524288,
+          "PageNumber": 50
+      },
+      {
+          "MemPoolIndex":6,
+          "PageSize" : 1048576,
+          "PageNumber": 30
+      },  
+      {
+          "MemPoolIndex":7,
+          "PageSize" : 4194304,
+          "PageNumber": 10
+      }  
+  ]
+}
