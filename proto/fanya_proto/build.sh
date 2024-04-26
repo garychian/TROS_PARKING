@@ -8,7 +8,7 @@ rm -rf build output
 ARCH="j5"
 
 usage() {
-  echo "usage: bash package.sh [j3|j5|linux] [release|debug|clean]"
+  echo "usage: bash package.sh [j3|j5|linux][s32g][kbd_s32g] [release|debug|clean]"
   exit 1
 }
 
@@ -22,6 +22,8 @@ do
     ARCH=$1
   elif [ x$1 == x"s32g" ]; then
     ARCH=$1
+  elif [ x$1 == x"kbd_s32g" ]; then
+    ARCH=$1
   elif [ x$1 == x"clean" ]; then
     build_clean
     exit
@@ -29,7 +31,7 @@ do
   shift
 done
 
-# platform [linux | win64 | mac | aarch64_gcc9.3 | aarch64_gcc6.5]
+# platform [linux | win64 | mac | aarch64_gcc9.3 | aarch64_gcc6.5 | aarch64_fsl_gcc9.3 | aarch64_fsl_gcc10.2]
 
 platform="aarch64_gcc9.3"
 
@@ -38,6 +40,10 @@ if [[ ${ARCH} == "j5" ]]; then
     platform="aarch64_gcc9.3"
 elif [[ ${ARCH} == "linux" ]]; then
     platform="linux"
+elif [[ ${ARCH} == "s32g" ]]; then
+    platform="aarch64_fsl_gcc9.3"
+elif [[ ${ARCH} == "kbd_s32g" ]]; then
+    platform="aarch64_fsl_gcc10.2"
 else
     echo "unknow platform, compile proto failed"
     exit 1
