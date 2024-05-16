@@ -62,6 +62,9 @@ void ParkingslotDetectMoudle::InitPortsAndProcs() {
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
     "pub_psd_image",
     psd::Image);
+  DF_MODULE_INIT_IDL_OUTPUT_PORT(
+    "pub_apa_ps_info_s32g",
+    psd::SApaPSInfo);
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
     "MsgCenterProc",
     ParkingslotDetectMoudle,
@@ -75,7 +78,7 @@ void ParkingslotDetectMoudle::InitPortsAndProcs() {
     TimerProc,
     hobot::dataflow::ProcType::DF_MSG_TIMER_PROC,
     DF_VECTOR(),
-    DF_VECTOR("pub_apa_ps_rect", "pub_apa_ps_info", "pub_apa_pointI", "pub_psd_image"));
+    DF_VECTOR("pub_apa_ps_rect", "pub_apa_ps_info", "pub_apa_pointI", "pub_psd_image","pub_apa_ps_info_s32g"));
 }
 
 int32_t ParkingslotDetectMoudle::Init() {
@@ -134,8 +137,30 @@ void ParkingslotDetectMoudle::MsgCenterProc(
     }
     DFHLOG_I("sub_pad_vehicle_pose msg timestamp: {}",
       msg->GetGenTimestamp());
+auto location_msg = std::dynamic_pointer_cast<PadVehiclePoseMsg>(msg);
+    if (!location_msg)
+    {
+      DFHLOG_C("DetectionProc Empty location msg");
+      return;
+    }
+    else
+    {
+      DFHLOG_W("DetectionProc get location_msg OK.");
+    
+     std::cout<< "x_position: " << location_msg->proto.coord().x() <<std::endl;
+     std::cout<<"y_position: "<< location_msg->proto.coord().y() <<std::endl;
+     std::cout<<"yaw_position: "<< location_msg->proto.yaw()<<std::endl;
+     // location_msg->proto.status();
+      // LOGC("SLOT TYPE: {}, ts = {}", location_msg->proto.slottype(),msg->GetGenTimestamp());
+    }
+
     // process msg of sub_pad_vehicle_pose
   }
+
+
+
+
+
   auto &sub_camera_frame_array_msgs
     = msgs[proc->GetResultIndex("sub_camera_frame_array")];
   for (auto &msg : *(sub_camera_frame_array_msgs.get())) {
@@ -163,8 +188,16 @@ void ParkingslotDetectMoudle::TimerProc(
       DFHLOG_E("failed to get output port of {}", "pub_apa_ps_info");
       return;
     }
+
+    auto pub_apa_ps_rect_port_s32g = proc->GetOutputPort("pub_apa_ps_info_s32g");
+    if (!pub_apa_ps_rect_port_s32g) {
+      DFHLOG_E("pub_apa_ps_rect_port_s32g failed to get output port of {}", "pub_apa_ps_rect");
+      return;
+    }
+
     pub_apa_ps_info_port->Send(apa_ps_info);
-    DFHLOG_I("pub pub_apa_ps_info_port info, ullframeid = {}",
+    pub_apa_ps_rect_port_s32g ->Send(apa_ps_info);
+    DFHLOG_W("pub pub_apa_ps_info_port info, ullframeid = {}",
                           apa_ps_info->proto.ullframeid());
   }
 
@@ -179,7 +212,15 @@ void ParkingslotDetectMoudle::TimerProc(
       DFHLOG_E("failed to get output port of {}", "pub_apa_ps_rect");
       return;
     }
+
+    // auto pub_apa_ps_rect_port_s32g = proc->GetOutputPort("pub_apa_ps_info_s32g");
+    // if (!pub_apa_ps_rect_port_s32g) {
+    //   DFHLOG_E("pub_apa_ps_rect_port_s32g failed to get output port of {}", "pub_apa_ps_rect");
+    //   return;
+    // }
+
     pub_apa_ps_rect_port->Send(apa_ps_rect);
+    //pub_apa_ps_rect_port_s32g->Send(apa_ps_rect);
     DFHLOG_I("pub apa_ps_rect_port info, label = {}",
                           apa_ps_rect->proto.label());
   }

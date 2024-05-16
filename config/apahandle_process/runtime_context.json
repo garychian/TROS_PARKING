@@ -7,9 +7,9 @@
       "inputs": [
         {
           "port_id": "sub_slot_label",
-          "topic": "/fsm/slot_label",
+          "topic": "/fsm/slot_labe",
           "communication": {
-            "domain_id": 0,
+            "domain_id": -65535,
             "comm_protocol": "zmq_tcp",
             "comm_attr": {
               "participants": [
@@ -24,7 +24,7 @@
           "port_id": "sub_apa_status_req",
           "topic": "/fsm/apa_status_req",
           "communication": {
-            "domain_id": 0,
+            "domain_id": -65535,
             "comm_protocol": "zmq_tcp",
             "comm_attr": {
               "participants": [

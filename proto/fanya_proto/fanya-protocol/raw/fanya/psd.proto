@@ -28,7 +28,7 @@ message SApaPoint_I{
 message SApaPSRect{
   repeated SApaPoint_I pt = 1;
   optional Pstype pstype = 2;
-  optional int32 label = 3;
+optional int32 label = 3;
   optional int32 iSlotType = 4;
   optional int32 iSceneType = 5;
 }

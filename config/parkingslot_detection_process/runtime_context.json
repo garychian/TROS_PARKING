@@ -47,6 +47,25 @@
             "comm_protocol": "shm"
           }
         },
+
+        
+          {
+            "port_id": "pub_apa_ps_info_s32g",
+            "topic": "/psd/apa_ps_info",
+            "communication": {
+              "domain_id": 0,
+              "comm_protocol": "zmq_tcp",
+              "comm_attr": {
+                "participants": [
+                  {
+                    "id": 2
+                  }
+                ]
+              }
+            }
+          },
+
+
         {
           "port_id": "pub_apa_ps_rect",
           "topic": "/psd/apa_ps_rect",

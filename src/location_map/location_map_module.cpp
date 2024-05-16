@@ -259,8 +259,11 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_I("sub_apa_ps_info msg timestamp: {}",
+    DFHLOG_W("sub_apa_ps_info msg timestamp: {}",
       msg->GetGenTimestamp());
+      auto location_msg = std::dynamic_pointer_cast<SApaPSInfoMsg>(msg);
+      std::cout<< "locationmsg:*************"<< location_msg->proto.ullframeid()<<std::endl;
+
     // process msg of sub_apa_ps_info
   }
   auto &sub_apa_ps_rect_msgs
@@ -379,6 +382,18 @@ void LocationMapModule::TimerProc(
     // fill proto
     auto pad_vehicleio_pose = std::make_shared<PadVehiclePoseMsg>();
     pad_vehicleio_pose->proto.set_status(88);
+    pad_vehicleio_pose->proto.set_yaw(123);
+    
+   auto pad_point = std::make_shared<PadPointMsg>();
+   // pad_point ->proto.set_x(100);
+    //pad_point ->proto.set_y(200);
+   // auto coord = pad_vehicleio_pose->proto.coord(); 
+   // pad_vehicleio_pose->proto.set_coord(coord);
+   loc::padPoint *temp =   pad_vehicleio_pose->proto.mutable_coord();
+    temp ->set_x(2);
+    temp ->set_y(3);
+
+   // pad_vehicleio_pose->proto.set_allocated_coord(temp);
     pad_vehicleio_pose->SetGenTimestamp(gen_ts);
     //pub msg
     auto pub_pad_vehicleio_pose_port = proc->GetOutputPort("pub_pad_vehicleio_pose");
@@ -387,8 +402,8 @@ void LocationMapModule::TimerProc(
       return;
     }
     pub_pad_vehicleio_pose_port->Send(pad_vehicleio_pose);
-    DFHLOG_I("pub pad_vehicleio_pose_port info, status = {}",
-                          pad_vehicleio_pose->proto.status());
+    DFHLOG_I("pub pad_vehicleio_pose_port info, status = {} , pub_pad_vehicleio_pose_port info x={}",
+                          pad_vehicleio_pose->proto.status(), pad_vehicleio_pose->proto.coord().x());
   }
 
   {// do something with output port pub_map_info
