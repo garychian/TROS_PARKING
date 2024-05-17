@@ -35,6 +35,7 @@ class PackageConanFile(ConanFile):
         ("message/[1.7.x]@bole/stable", "override"),
         ("dataflow/1.10.5@bole/stable", "override"),
         ("convert_assistant/2.5.3@thirdparty/stable"),
+        ("vehicleio/[1.10.4]@bole/stable"),
         ("fanya-protocol/1.0.0@ltc/fanya")
     ]
 
@@ -101,8 +102,9 @@ class PackageConanFile(ConanFile):
             self.copy("libsm_client.so*", "package/%s/tros_common_lib" % target,
                           "lib")
             self.copy("libfanya*", "package/%s/tros_common_lib" % target,
+                          "lib") 
+            self.copy("libvehicleio*", "package/%s/tros_common_lib" % target,
                           "lib")                        
-
 
             # if self.options.soc == "j3":
             #     self.copy(
@@ -128,7 +130,6 @@ class PackageConanFile(ConanFile):
             
         # self.copy("communication_tool*", "package/%s/tools" % target,
         #                   "bin")
-
     # generators = "cmake_find_package"
     _cmake = None
 

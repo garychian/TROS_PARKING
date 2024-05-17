@@ -1,0 +1,77 @@
+{
+  "modules": [
+    {
+      "module_id": "vehicle_module",
+      "class_name": "VehicleioModule",
+      "package": "../lib/libvehicleio_module.so",
+      "user_config": "user_config.json",
+      "outputs": [
+        {
+          "port_id": "vehicle_out",
+          "topic": "vehicleiostate",
+          "communication": 
+          {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr" : {
+              "participants" : [
+                 {
+                   "id" : 1
+                 }
+              ]
+            }
+          }
+        },
+        {
+          "port_id": "vehicle_raw_out",
+          "topic": "vehicleiocanraw",
+          "communication": 
+          {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr" : {
+              "participants" : [
+                 {
+                   "id" : 2
+                 }
+              ]
+            }
+          }
+        },
+        {
+          "port_id": "diag_data_out",
+          "topic": "vehicleiodiag",
+          "communication": 
+          {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr" : {
+              "participants" : [
+                 {
+                   "id" : 6
+                 }
+              ]
+            }
+          }
+        }
+      ],
+      "procs": [
+        {
+          "proc_id": "vehicle",
+          "disable": false,
+          "proc_type": "ResidentProc"
+        },
+        {
+          "proc_id": "vehicle_raw",
+          "disable": false,
+          "proc_type": "ResidentProc"
+        },
+        {
+          "proc_id": "diag_data",
+          "disable": false,
+          "proc_type": "ResidentProc"
+        }
+      ]
+    }    
+  ]
+}

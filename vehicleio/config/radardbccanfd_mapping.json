@@ -1,0 +1,129 @@
+{
+  "can": [
+    {
+      "can_id": "0x340,0x341,0x342,0x343,0x344,0x345,0x346,0x347,0x348,0x349,0x34a,0x34b,0x34c,0x34d,0x34e,0x34f",
+      "object": [
+        {
+          "object_index": 0,
+          "object_describe": "obstacle data"
+        },
+        {
+          "object_index": 1,
+          "object_describe": "point cloud data"
+        }
+      ]
+    }
+  ],
+  "signals": [
+    {
+      "ID": 25,
+      "Dbc_Signal_Name": "id",
+      "Veh_Signal_Name": "id"
+    },
+    {
+      "ID": 26,
+      "Dbc_Signal_Name": "existprob",
+      "Veh_Signal_Name": "existprob"
+    },
+    {
+      "ID": 27,
+      "Dbc_Signal_Name": "obstacleprob",
+      "Veh_Signal_Name": "obstacleprob"
+    },
+    {
+      "ID": 28,
+      "Dbc_Signal_Name": "y",
+      "Veh_Signal_Name": "y"
+    },
+    {
+      "ID": 29,
+      "Dbc_Signal_Name": "type",
+      "Veh_Signal_Name": "type"
+    },
+    {
+      "ID": 30,
+      "Dbc_Signal_Name": "x",
+      "Veh_Signal_Name": "x"
+    },
+    {
+      "ID": 31,
+      "Dbc_Signal_Name": "vx",
+      "Veh_Signal_Name": "vx"
+    },
+    {
+      "ID": 32,
+      "Dbc_Signal_Name": "ax",
+      "Veh_Signal_Name": "ax"
+    },
+    {
+      "ID": 33,
+      "Dbc_Signal_Name": "ay",
+      "Veh_Signal_Name": "ay"
+    },
+    {
+      "ID": 34,
+      "Dbc_Signal_Name": "vy",
+      "Veh_Signal_Name": "vy"
+    },
+    {
+      "ID": 35,
+      "Dbc_Signal_Name": "stdx",
+      "Veh_Signal_Name": "stdx"
+    },
+    {
+      "ID": 36,
+      "Dbc_Signal_Name": "stdy",
+      "Veh_Signal_Name": "stdy"
+    },
+    {
+      "ID": 37,
+      "Dbc_Signal_Name": "stdvy",
+      "Veh_Signal_Name": "stdvy"
+    },
+    {
+      "ID": 38,
+      "Dbc_Signal_Name": "stdvx",
+      "Veh_Signal_Name": "stdvx"
+    },
+    {
+      "ID": 39,
+      "Dbc_Signal_Name": "stdax",
+      "Veh_Signal_Name": "stdax"
+    },
+    {
+      "ID": 40,
+      "Dbc_Signal_Name": "stday",
+      "Veh_Signal_Name": "stday"
+    },
+    {
+      "ID": 41,
+      "Dbc_Signal_Name": "objectts",
+      "Veh_Signal_Name": "objectts"
+    },
+    {
+      "ID": 42,
+      "Dbc_Signal_Name": "sgufailure",
+      "Veh_Signal_Name": "sgufailure"
+    },
+    {
+      "ID": 43,
+      "Dbc_Signal_Name": "alignmentfailure",
+      "Veh_Signal_Name": "alignmentfailure"
+    },
+    {
+      "ID": 44,
+      "Dbc_Signal_Name": "hwfailure",
+      "Veh_Signal_Name": "hwfailure"
+    },
+    {
+      "ID": 45,
+      "Dbc_Signal_Name": "otherfailure",
+      "Veh_Signal_Name": "otherfailure"
+    },
+    {
+      "ID": 46,
+      "Dbc_Signal_Name": "sensordirty",
+      "Veh_Signal_Name": "sensordirty"
+    }
+  ]
+}

@@ -1,0 +1,221 @@
+{
+  "version": "1.10.4",
+  "module_mode" : 3,
+  "hlog" : {
+    "log_path_name" : "Vehicleio.Log",
+    "log_level" : 2,
+    "log_size" : 512,
+    "log_count" : 20,
+    "log_cache" : 200
+  },
+  "running_mode" : 1,
+  "running_mode_comment" : "bit 000 , represent example rawdata",
+  "debug_quality_info_switch" : 0,
+  "debug_quality_info_switch_comment" : "0 - close, 1 - open",
+  "source_comment" : "0 virtual 1 eth 2 spihal 3 socket_can 4 ipcf 5 extend",
+  "ts_soource_comment" : "SENSOR = 0, OS = 1, VIRTUAL_CLOCK = 2",
+  "virtual_clock" : "config/timer.json",
+  "soc_ts_source" : 1,
+  "soc_ts_source_comment" : "Monotonic = 0, System = 1",
+  "thread_priority": 9,
+  "thread_priority_comment": "[1--99]:valid priority,other:use system default",
+  "car" : {
+    "can_source" : 4,
+    "ts_source" : 0,
+    "mapping_file" : "config/can_mapping_internal.json",
+    "filterfile" : [
+      "config/can_internal.json"
+    ]
+  },
+  "radar" : {
+    "can_source" : 1,
+    "ts_source" : 0,
+    "data_mode" : "can",
+    "data_mode_comment" : "can or bypass",
+    "filterfile" : [
+      {
+        "file": "config/radardbccanfd.json",
+        "device_index": 1
+      },
+      {
+        "file": "config/radardbc.json", 
+        "device_index": 3
+      }
+    ]
+  },
+  "canraw_cache_size" : 5,
+  "SignalThreshold" : "config/signalthreshold.json",
+  "hal": {
+    "enable" : 1,
+    "ethintf" : {
+      "ip": "192.168.2.50",
+      "port" : 7500,
+      "connect_type" : "client",
+      "queue_timeout" : 50,
+      "recv_timeout" : 50,
+      "recv_timeout_comment" : "unit is ms",
+      "wait_reconnect" : 2000
+    },
+    "spi" : {
+      "libspi_path" : "/system/lib/libhbspihal.so"
+    },
+    "socket_can" : {
+      "group_recv_time" : 100,
+      "need_canfilter" : 0,
+      "dev_name" : "can0"
+    },
+    "ipcf" : {
+      "libipcf_path" : "/usr/lib/libhbipcfhal.so"
+    }
+  },
+  "mcu" : {
+    "queue_maxlen" : 20,
+    "read_write_mode_comment" : "0: close, 1:read, 2:write, 3:read & write",
+    "ipcfmessage" : [
+      {
+        "support" : 1,
+        "read_write_mode" : 3,
+        "name": "chassis_can",
+        "channel": 3,
+        "fifo_size": 64000,
+        "fifo_type": 0,
+        "pkg_size_max": 4096,
+        "ipcf_dev_path":"/dev/ipcdrv",
+        "ipcf_dev_name":"ipcdrv",
+        "group_recv_time" : 15
+      },
+      {
+        "support" : 1,
+        "read_write_mode" : 3,
+        "name": "veh_ctr",
+        "channel": 5,
+        "fifo_size": 64000,
+        "fifo_type": 0,
+        "pkg_size_max": 4096,
+        "ipcf_dev_path":"/dev/ipcdrv",
+        "ipcf_dev_name":"ipcdrv",
+        "group_recv_time" : 100
+      }
+    ],
+    "spimessage" : [
+      {
+        "support" : 1,
+        "name" : "chassis_can",
+        "spi_dev" : 1,
+        "read_write_mode" : 3,
+        "id" : 9,
+        "cache_size" : 16000,
+        "num" : 1,
+        "group_recv_time" : 25,
+        "service" : [
+          {
+            "type" : "0x0002",
+            "sub" : "0x0000"
+          },
+          {
+            "type" : "0x0104",
+            "sub" : "0x0000"
+          }
+        ]
+      },
+      {
+        "support" : 1,
+        "name" : "veh_ctr",
+        "spi_dev" : 1,
+        "read_write_mode" : 2,
+        "id" : 10,
+        "cache_size" : 16000,
+        "num" : 1,
+        "group_recv_time" : 100,
+        "service" : [
+          {
+            "type" : "0x0202",
+            "sub" : "0x0031"
+          }
+        ]
+      },
+      {
+        "support" : 1,
+        "name" : "veh_odo",
+        "spi_dev" : 1,
+        "read_write_mode" : 3,
+        "id" : 9,
+        "cache_size" : 1000,
+        "num" : 1,
+        "group_recv_time" : 100,
+        "service" : [
+          {
+            "type" : "0x0202",
+            "sub" : "0x0030"
+          }
+        ]
+      },
+      {
+        "support" : 1,
+        "name" : "veh_apa",
+        "spi_dev" : 1,
+        "read_write_mode" : 3,
+        "id" : 11,
+        "cache_size" : 6400,
+        "num" : 3,
+        "group_recv_time" : 100,
+        "service" : [
+          {
+            "type" : "0x0202",
+            "sub" : "0x01C1"
+          },
+          {
+            "type" : "0x0202",
+            "sub" : "0x01C2"
+          },
+          {
+            "type" : "0x0202",
+            "sub" : "0x01C3"
+          }
+        ]
+      }
+    ]
+  },
+  "comm_service" : {
+    "pack_type" : 0,
+    "pack_type_comment" : "0:can_pack and radar_pack, 1:adas_pack",
+    "communication_json" : "config/communication_service.json",
+    "enable_comment" : "0 close, 1 open",
+    "comm_cansignal" : {
+      "enable" : 1,
+      "topic" : "vehicleiostate",
+      "participantattr" : 1,
+      "domain_id" : 0
+    },
+    "comm_canraw" : {
+      "enable" : 1,
+      "topic" : "vehicleiocanraw",
+      "participantattr" : 2,
+      "domain_id" : 0
+    },
+    "comm_radar" : {
+      "enable" : 0,
+      "topic" : "vehicleioradar",
+      "participantattr" : 3,
+      "domain_id" : 0
+    },
+    "comm_radarraw" : {
+      "enable" : 0,
+      "topic" : "vehicleioradarraw",
+      "participantattr" : 4,
+      "domain_id" : 0
+    },
+    "comm_fillback_canraw" : {
+      "topic" : "can#0",
+      "participantattr" : 5,
+      "domain_id" : 0
+    },
+    "comm_diagnosis" : {
+      "enable" : 1,
+      "topic" : "vehicleiodiag",
+      "participantattr" : 6,
+      "domain_id" : 0,
+      "protocol" : "zmq_tcp"
+    }
+  }
+}

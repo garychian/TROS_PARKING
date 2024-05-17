@@ -1,0 +1,719 @@
+{
+  "type": "canfd",
+  "object_dbc": [
+    {
+      "id": "0x340,0x341,0x342,0x343,0x344,0x345,0x346,0x347,0x348,0x349,0x34a,0x34b,0x34c,0x34d,0x34e,0x34f",
+      "dlc": 64,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "object": [
+            {
+              "name": "id",
+              "value_type": "Unsigned",
+              "start_bit": 24,
+              "bit_length": 8,
+              "scale": 1,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 255
+              }
+            },
+            {
+              "name": "existprob",
+              "value_type": "Unsigned",
+              "start_bit": 35,
+              "bit_length": 5,
+              "scale": 0.03125,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 0.96875
+              }
+            },
+            {
+              "name": "obstacleprob",
+              "value_type": "Unsigned",
+              "start_bit": 46,
+              "bit_length": 5,
+              "scale": 0.03125,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 0.96875
+              }
+            },
+            {
+              "name": "y",
+              "value_type": "Unsigned",
+              "start_bit": 48,
+              "bit_length": 14,
+              "scale": 0.0078125,
+              "offset": -64,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 63.9921875
+              }
+            },
+            {
+              "name": "type",
+              "value_type": "Enum",
+              "start_bit": 64,
+              "bit_length": 4,
+              "scale": 1,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 15
+              },
+              "value_table": [
+                {
+                  "value": "0x0",
+                  "desp": "Unknown"
+                },
+                {
+                  "value": "0x3",
+                  "desp": "Pedestrain"
+                },
+                {
+                  "value": "0x5",
+                  "desp": "Bicycle"
+                },
+                {
+                  "value": "0x6",
+                  "desp": "Motorbike"
+                },
+                {
+                  "value": "0x7",
+                  "desp": "Car"
+                },
+                {
+                  "value": "0x8",
+                  "desp": "Van"
+                },
+                {
+                  "value": "0x9",
+                  "desp": "Truck"
+                },
+                {
+                  "value": "0xf",
+                  "desp": "Init"
+                }
+              ]
+            },
+            {
+              "name": "x",
+              "value_type": "Unsigned",
+              "start_bit": 68,
+              "bit_length": 12,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 254.9375
+              }
+            },
+            {
+              "name": "vx",
+              "value_type": "Unsigned",
+              "start_bit": 83,
+              "bit_length": 13,
+              "scale": 0.0312,
+              "offset": -128,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 126.9976
+              }
+            },
+            {
+              "name": "ax",
+              "value_type": "Unsigned",
+              "start_bit": 88,
+              "bit_length": 10,
+              "scale": 0.03125,
+              "offset": -16,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 15.96875
+              }
+            },
+            {
+              "name": "vy",
+              "value_type": "Unsigned",
+              "start_bit": 107,
+              "bit_length": 13,
+              "scale": 0.0312,
+              "offset": -128,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 126.9976
+              }
+            },
+            {
+              "name": "ay",
+              "value_type": "Unsigned",
+              "start_bit": 112,
+              "bit_length": 10,
+              "scale": 0.03125,
+              "offset": -16,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 15.96875
+              }
+            },
+            {
+              "name": "stdx",
+              "value_type": "Unsigned",
+              "start_bit": 122,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            },
+            {
+              "name": "stdy",
+              "value_type": "Unsigned",
+              "start_bit": 132,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            },
+            {
+              "name": "stdvy",
+              "value_type": "Unsigned",
+              "start_bit": 136,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            },
+            {
+              "name": "stdvx",
+              "value_type": "Unsigned",
+              "start_bit": 142,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            },
+            {
+              "name": "stdax",
+              "value_type": "Unsigned",
+              "start_bit": 146,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            },
+            {
+              "name": "stday",
+              "value_type": "Unsigned",
+              "start_bit": 156,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            }
+          ]
+        },
+        {
+          "object": [
+            {
+              "name": "id",
+              "value_type": "Unsigned",
+              "start_bit": 192,
+              "bit_length": 8,
+              "scale": 1,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 255
+              }
+            },
+            {
+              "name": "existprob",
+              "value_type": "Unsigned",
+              "start_bit": 203,
+              "bit_length": 5,
+              "scale": 0.03125,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 0.96875
+              }
+            },
+            {
+              "name": "obstacleprob",
+              "value_type": "Unsigned",
+              "start_bit": 214,
+              "bit_length": 5,
+              "scale": 0.03125,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 0.96875
+              }
+            },
+            {
+              "name": "y",
+              "value_type": "Unsigned",
+              "start_bit": 216,
+              "bit_length": 14,
+              "scale": 0.0078125,
+              "offset": -64,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 63.9921875
+              }
+            },
+            {
+              "name": "type",
+              "value_type": "Enum",
+              "start_bit": 232,
+              "bit_length": 4,
+              "scale": 1,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 15
+              },
+              "value_table": [
+                {
+                  "value": "0x0",
+                  "desp": "Unknown"
+                },
+                {
+                  "value": "0x3",
+                  "desp": "Pedestrian"
+                },
+                {
+                  "value": "0x5",
+                  "desp": "Bicycle"
+                },
+                {
+                  "value": "0x6",
+                  "desp": "Motorbike"
+                },
+                {
+                  "value": "0x7",
+                  "desp": "Car"
+                },
+                {
+                  "value": "0x8",
+                  "desp": "Van"
+                },
+                {
+                  "value": "0x9",
+                  "desp": "Truck"
+                },
+                {
+                  "value": "0xf",
+                  "desp": "Init"
+                }
+              ]
+            },
+            {
+              "name": "x",
+              "value_type": "Unsigned",
+              "start_bit": 236,
+              "bit_length": 12,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 254.9375
+              }
+            },
+            {
+              "name": "vx",
+              "value_type": "Unsigned",
+              "start_bit": 251,
+              "bit_length": 13,
+              "scale": 0.0312,
+              "offset": -128,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 126.9976
+              }
+            },
+            {
+              "name": "ax",
+              "value_type": "Unsigned",
+              "start_bit": 256,
+              "bit_length": 10,
+              "scale": 0.03125,
+              "offset": -16,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 15.96875
+              }
+            },
+            {
+              "name": "vy",
+              "value_type": "Unsigned",
+              "start_bit": 275,
+              "bit_length": 13,
+              "scale": 0.0312,
+              "offset": -128,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 126.9976
+              }
+            },
+            {
+              "name": "ay",
+              "value_type": "Unsigned",
+              "start_bit": 280,
+              "bit_length": 10,
+              "scale": 0.03125,
+              "offset": -16,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 15.96875
+              }
+            },
+            {
+              "name": "stdx",
+              "value_type": "Unsigned",
+              "start_bit": 290,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            },
+            {
+              "name": "stdy",
+              "value_type": "Unsigned",
+              "start_bit": 300,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            },
+            {
+              "name": "stdvy",
+              "value_type": "Unsigned",
+              "start_bit": 304,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            },
+            {
+              "name": "stdvx",
+              "value_type": "Unsigned",
+              "start_bit": 310,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            },
+            {
+              "name": "stdax",
+              "value_type": "Unsigned",
+              "start_bit": 314,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            },
+            {
+              "name": "stday",
+              "value_type": "Unsigned",
+              "start_bit": 324,
+              "bit_length": 6,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 3.9375
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "normal_dbc": [
+    {
+      "id": "0x350",
+      "endian": "Motorola",
+      "cycle": 0,
+      "dlc": 64,
+      "data": [
+        {
+          "name": "objectts",
+          "value_type": "Double",
+          "start_bit": 112,
+          "bit_length": 48,
+          "scale": 1,
+          "offset": 0,
+          "range": {
+              "min": 0.0,
+              "max": 4294967295
+          },
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None"
+        },
+        {
+          "name": "sgufailure",
+          "value_type": "Enum",
+          "start_bit": 120,
+          "bit_length": 1,
+          "scale": 1,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 1
+          },
+          "value_table": [
+            {
+              "value": "0x0",
+              "desp": "noerror"
+            },
+            {
+              "value": "0x1",
+              "desp": "error"
+            }
+          ]
+        },
+        {
+          "name": "alignmentfailure",
+          "value_type": "Enum",
+          "start_bit": 126,
+          "bit_length": 1,
+          "scale": 1,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 1
+          },
+          "value_table": [
+            {
+              "value": "0x0",
+              "desp": "noerror"
+            },
+            {
+              "value": "0x1",
+              "desp": "error"
+            }
+          ]
+        },
+        {
+          "name": "hwfailure",
+          "value_type": "Enum",
+          "start_bit": 127,
+          "bit_length": 1,
+          "scale": 1,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 1
+          },
+          "value_table": [
+            {
+              "value": "0x0",
+              "desp": "noerror"
+            },
+            {
+              "value": "0x1",
+              "desp": "error"
+            }
+          ]
+        },
+        {
+          "name": "otherfailure",
+          "value_type": "Enum",
+          "start_bit": 122,
+          "bit_length": 1,
+          "scale": 1,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 1
+          },
+          "value_table": [
+            {
+              "value": "0x0",
+              "desp": "noerror"
+            },
+            {
+              "value": "0x1",
+              "desp": "error"
+            }
+          ]
+        },
+        {
+          "name": "sensordirty",
+          "value_type": "Enum",
+          "start_bit": 124,
+          "bit_length": 1,
+          "scale": 1,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 1
+          },
+          "value_table": [
+            {
+              "value": "0x0",
+              "desp": "noblindness"
+            },
+            {
+              "value": "0x1",
+              "desp": "blindness"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

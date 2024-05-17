@@ -1,0 +1,61 @@
+{
+  "diag_statistics" : {
+    "enable" : false,
+    "period_min" : 5
+  },
+  "timing_diag_control" : {
+    "enable" : false,
+    "period_ms" : 1000
+  },
+  "DiagMessage" : {
+    "revcan_timeout_enable" : true,
+    "revcan_timeout_threshold": 30,
+    "dual_timesource_enable" : true,
+    "dual_timesource_threshold": 30
+  },
+  "CanCheckSum_Enable" : 0,
+  "CanSignalUnchanged_commit" : "Designated signal check, config add or dele",
+  "CanSignalUnchanged_Enable" : 1,
+  "CanSignalUnchanged" : [
+    { "name" : "speed",
+      "threshold" : 6,
+      "threshold_commit" : "unit: continuous signal frames"
+    },
+    { "name" : "yawrate",
+      "threshold" : 6,
+      "threshold_commit" : "unit: continuous signal frames"
+    }
+  ],
+  "CanSignalRang_commit" : "CanSignalRang with param is Complete check, otherwise it is Increment Check",
+  "CanSignalRang_Enable" : 1,
+  "CanSignalRang" : [
+    { 
+      "name" : "speed"
+    },
+    { 
+      "name" : "yawrate"
+    }
+  ],
+  "CanSignalLoss_commit" : "CanSignalLoss with param is Complete check, otherwise it is Increment Check",
+  "CanSignalLoss_Enable" : 1,
+  "CanSignalLoss_threshold" : 1000,
+  "CanSignalLoss_threshold_commit" : "unit:ms",
+  "CanSignalLoss" : [
+    { "name" : "speed",
+      "threshold" : 1000,
+      "threshold_commit" : "unit:ms"
+    },
+    { "name" : "yawrate",
+      "threshold" : 1000,
+      "threshold_commit" : "unit:ms"
+    }
+  ],
+  "RadarCheckSum_Enable" : 0,
+  "RadarSignal_Enable" : 0,
+  "RadarSignal" : [
+    { "id" : "0x340",
+      "name" : "obstacleprob",
+      "threshold" : 4
+    }
+  ]
+}

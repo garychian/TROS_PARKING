@@ -1,0 +1,63 @@
+{
+  "discovery_pattern": 1,
+  "discovery_option": {
+    "discovery_enable": 0,
+    "cross_different_subnets": 1,
+    "default_eth": "",
+    "port_range": "10100-10200",
+    "multicast_domain": ""
+  },
+  "log_level" : "err",
+  "supported_protocols": [
+    {
+      "enable" : 1,
+      "protocol_type" : 2,
+      "protocol_name" : "zmq_tcp",
+      "is_in_hybrid" : 0,
+      "plugin_file": "libplugin-zmq"
+    }
+  ],
+  "shm_option" : {
+    "shm_size":"100M",
+    "block_size":"1M"
+  },
+  "participants": [
+    {
+      "id": 1,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:1111",
+      "link_type": "",
+      "comment_link" : "the port to rev canparsedata"
+    },
+    {
+      "id": 2,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:1112",
+      "link_type": ""
+    },
+    {
+      "id": 3,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:1113",
+      "link_type": ""
+    },
+    {
+      "id": 4,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:1114",
+      "link_type": ""
+    },
+    {
+      "id": 5,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:1115",
+      "link_type": "bind"
+    },
+    {
+      "id": 6,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:1116",
+      "link_type": ""
+    }
+  ]
+}

@@ -18,7 +18,8 @@ COMPILE_MODE="Release"
 DEPLOY_PATH=$(cat "deploy_path")
 version_num=""
 
-OutputDir=${work_dir}/output/parking
+OutputDir=${work_dir}/output
+LibDir=${work_dir}/output/parking/tros_common_lib
 
 function build_clean() {
   cd ${work_dir}
@@ -43,24 +44,25 @@ function build_project(){
         echo "build failed"
         exit 1
     fi
+    mv ${LibDir} ${work_dir}/output/
     package
 }
 
 generate_git_log() {
-  echo 1 > ${OutputDir}/commit_info
-  echo ${version_num} > ${OutputDir}/commit_info
-  echo "" >> ${OutputDir}/commit_info
-  echo "Buid Repository" >> ${OutputDir}/commit_info
-  echo "branch:" >> ${OutputDir}/commit_info
+  echo 1 > ${OutputDir}/parking/commit_info
+  echo ${version_num} > ${OutputDir}/parking/commit_info
+  echo "" >> ${OutputDir}/parking/commit_info
+  echo "Buid Repository" >> ${OutputDir}/parking/commit_info
+  echo "branch:" >> ${OutputDir}/parking/commit_info
 
   if git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git rev-parse --abbrev-ref HEAD >/dev/null 2>&1; then
-    echo $(git rev-parse --abbrev-ref HEAD) >> ${OutputDir}/commit_info
+    echo $(git rev-parse --abbrev-ref HEAD) >> ${OutputDir}/parking/commit_info
   fi
-  echo "commit id:" >> ${OutputDir}/commit_info
+  echo "commit id:" >> ${OutputDir}/parking/commit_info
   if git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git rev-parse HEAD >/dev/null 2>&1; then
-    echo $(git rev-parse HEAD) >> ${OutputDir}/commit_info
+    echo $(git rev-parse HEAD) >> ${OutputDir}/parking/commit_info
   fi
-  echo "" >> ${OutputDir}/commit_info
+  echo "" >> ${OutputDir}/parking/commit_info
 }
 
 
@@ -68,8 +70,8 @@ generate_version() {
   version=$(cat ${work_dir}/version.txt)
   IFS="=" read -ra arr <<< "$version"
   version=V${arr[1]}
-  version_num=PARKING_${version}_${time}_$(echo ${ARCH} | tr '[:lower:]' '[:upper:]')
-  echo ${version_num}_${COMPILE_MODE} > ${OutputDir}/version
+  version_num=APP_${version}_${time}_$(echo ${ARCH} | tr '[:lower:]' '[:upper:]')
+  echo ${version_num}_${COMPILE_MODE} > ${OutputDir}/parking/version
 }
 
 compress_package() {
@@ -78,6 +80,10 @@ compress_package() {
   mkdir release
   cd release
   cp -rf ${OutputDir} ./
+
+  mv output app
+
+  ln -s ../tros_common_lib app/parking/tros_common_lib
 
   echo "package name: $pack"
 

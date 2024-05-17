@@ -1,0 +1,42 @@
+{
+  "process_name": "vehicle_module",
+  "domain_id": 0,
+  "log": {
+    "log_level": "info",
+    "log_path": ""
+  },
+  "time": {
+    "clock_type": "steady_time",
+    "clock_topic": "/Clock",
+    "sub_paitipant": 0,
+    "sub_domain_id": 0,
+    "pub_paitipant": 0,
+    "pub_domain_id": 0
+  },
+  "monitor": {             
+      "enable_diagnose": true,  
+      "interval": 50,
+      "topic": "/bole/dataflow/event"
+  },
+  "dag_information": {
+      "enable": false,
+      "enable_module": true,
+      "topic": "/bole/dataflow/dag"
+  },
+  "profiling": {
+      "enable_task": false,
+      "enable_message": false,
+      "enable_custom": false,
+      "soc": {
+          "enable": false,
+          "collector_interval": 10
+      },
+      "interval": 50,
+      "topic": "/bole/dataflow/profiling"
+  },
+  "auto_trigger": true,
+  "global_user_config": "",
+  "schedule_config": "schedule_config.json",
+  "runtime_context": "runtime_context.json",
+  "communication_config": "communication_service.json"
+}

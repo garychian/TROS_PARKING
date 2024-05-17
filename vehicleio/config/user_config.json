@@ -1,0 +1,11 @@
+{
+  "thread_priority": 9,
+  "vehicleio_json" : "config/not_s32g/vehicleio.json",
+  "car_protocol" : 2,
+  "car_protocol_commit" : "0:Pilot, 1:Galaxy, 2:Matrix5, 3:reachauto 4:extend protocol",
+  "pub_timeout": 30,
+  "cpu_mem_enable" : true,
+  "cpu_mem_cycle" : 10,
+  "cpu_mem_cycle_commit": "unit:s",
+  "enable_print_signal": true
+}

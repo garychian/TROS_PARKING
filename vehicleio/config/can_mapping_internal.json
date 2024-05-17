@@ -1,0 +1,258 @@
+{
+  "vehicle": "hobot_car",
+  "InternalCorrelation" : true,
+  "signals": [
+    {
+      "ID": 0,
+      "Dbc_Signal_Name": "speedvalid",
+      "Veh_Signal_Name": "speedvalid",
+      "value_table": [
+        {
+          "Veh_name": "Invalid",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x0"
+        },
+        {
+          "Veh_name": "Valid",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x1"
+        }
+      ]
+    },
+    {
+      "ID": 1,
+      "Dbc_Signal_Name": "speed",
+      "Veh_Signal_Name": "speed"
+    },
+    {
+      "ID": 2,
+      "Dbc_Signal_Name": "yawratevalid",
+      "Veh_Signal_Name": "yawratevalid",
+      "value_table": [
+        {
+          "Veh_name": "Invalid",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x0"
+        },
+        {
+          "Veh_name": "Valid",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x1"
+        }
+      ]
+    },
+    {
+      "ID": 3,
+      "Dbc_Signal_Name": "yawrate",
+      "Veh_Signal_Name": "yawrate"
+    },
+    {
+      "ID": 4,
+      "Dbc_Signal_Name": "wheelangle",
+      "Veh_Signal_Name": "wheelangle"
+    },
+    {
+      "ID": 5,
+      "Dbc_Signal_Name": "gearvalid",
+      "Veh_Signal_Name": "gearvalid",
+      "value_table": [
+        {
+          "Veh_name": "Invalid",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x0"
+        },
+        {
+          "Veh_name": "Valid",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x1"
+        }
+      ]
+    },
+    {
+      "ID": 6,
+      "Dbc_Signal_Name": "gear",
+      "Veh_Signal_Name": "gear",
+      "value_table": [
+        {
+          "Veh_name": "N",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x0"
+        },
+        {
+          "Veh_name": "P",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x1"
+        },
+        {
+          "Veh_name": "R",
+          "Veh_value": "0x2",
+          "Dbc_value": "0x2"
+        },
+        {
+          "Veh_name": "D",
+          "Veh_value": "0x3",
+          "Dbc_value": "0x3"
+        },
+        {
+          "Veh_name": "Invalid",
+          "Veh_value": "0x4",
+          "Dbc_value": "0x4"
+        }
+      ]
+    },
+    {
+      "ID": 7,
+      "Dbc_Signal_Name": "turnsignalvalid",
+      "Veh_Signal_Name": "turnsignalvalid",
+      "value_table": [
+        {
+          "Veh_name": "Invalid",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x0"
+        },
+        {
+          "Veh_name": "Valid",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x1"
+        }
+      ]
+    },
+    {
+      "ID": 8,
+      "Dbc_Signal_Name": "turnsignal",
+      "Veh_Signal_Name": "turnsignal",
+      "value_table": [
+        {
+          "Veh_name": "Invalid",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x0"
+        },
+        {
+          "Veh_name": "Left",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x1"
+        },
+        {
+          "Veh_name": "Right",
+          "Veh_value": "0x2",
+          "Dbc_value": "0x2"
+        },
+        {
+          "Veh_name": "Double",
+          "Veh_value": "0x3",
+          "Dbc_value": "0x3"
+        }
+      ]
+    },
+    {
+      "ID": 9,
+      "Dbc_Signal_Name": "HeadWiperValid",
+      "Veh_Signal_Name": "HeadWiperValid",
+      "value_table": [
+        {
+          "Veh_name": "Invalid",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x0"
+        },
+        {
+          "Veh_name": "Valid",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x1"
+        }
+      ]
+    },
+    {
+      "ID": 10,
+      "Dbc_Signal_Name": "headwiper",
+      "Veh_Signal_Name": "headwiper",
+      "value_table": [
+        {
+          "Veh_name": "Off",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x0"
+        },
+        {
+          "Veh_name": "Onslow",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x1"
+        },
+        {
+          "Veh_name": "Onmiddle",
+          "Veh_value": "0x2",
+          "Dbc_value": "0x2"
+        },
+        {
+          "Veh_name": "Onfast",
+          "Veh_value": "0x3",
+          "Dbc_value": "0x3"
+        }
+      ]
+    },
+    {
+      "ID": 11,
+      "Dbc_Signal_Name": "highbeamstatusvalid",
+      "Veh_Signal_Name": "highbeamstatusvalid",
+      "value_table": [
+        {
+          "Veh_name": "Invalid",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x0"
+        },
+        {
+          "Veh_name": "Valid",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x1"
+        }
+      ]
+    },
+    {
+      "ID": 12,
+      "Dbc_Signal_Name": "highheamstatus",
+      "Veh_Signal_Name": "highheamstatus",
+      "value_table": [
+        {
+          "Veh_name": "Lowbeam",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x0"
+        },
+        {
+          "Veh_name": "Highbeam",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x1"
+        },
+        {
+          "Veh_name": "Off",
+          "Veh_value": "0x2",
+          "Dbc_value": "0x2"
+        },
+        {
+          "Veh_name": "Invalid",
+          "Veh_value": "0x3",
+          "Dbc_value": "0x3"
+        }
+      ]
+    },
+    {
+      "ID": 13,
+      "Dbc_Signal_Name": "accvalid",
+      "Veh_Signal_Name": "accvalid",
+      "value_table": [
+        {
+          "Veh_name": "Invalid",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x0"
+        },
+        {
+          "Veh_name": "Valid",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x1"
+        }
+      ]
+    },
+    {
+      "ID": 14,
+      "Dbc_Signal_Name": "acc",
+      "Veh_Signal_Name": "acc"
+    }
+  ]
+}

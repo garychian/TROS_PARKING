@@ -1,0 +1,24 @@
+{
+  "threadpool_scheduler": [
+    {
+      "scheduler_name": "Priority",
+      "thread_num": 4,
+      "configuration": {
+        "scheduler_type": "Priority",
+        "priority_count": 8,
+        "wait_time_for_upgrade": 30
+      }
+    }
+  ],
+   "global_scheduler": {
+    "enable": true,
+    "scheduler_name": "global_sg",
+    "persistent_task_list":[
+      {
+        "persistent_task_name": "persistent",
+        "persistent_task_cpuset": [3],
+        "persistent_task_threadname": ""
+      }
+    ]
+  }
+}

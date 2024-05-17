@@ -79,3 +79,10 @@ set(TROS_INSTALL_BIN ${CMAKE_SOURCE_DIR}/output/parking/bin)
 set(TROS_INSTALL_LIB ${CMAKE_SOURCE_DIR}/output/parking/lib)
 
 add_subdirectory(src)
+
+set(VECHICLEIO_DIR "${CMAKE_SOURCE_DIR}/vehicleio")
+
+
+install(DIRECTORY ${VECHICLEIO_DIR}/bin DESTINATION ${CMAKE_SOURCE_DIR}/output/vehicleio)
+install(DIRECTORY ${VECHICLEIO_DIR}/config DESTINATION ${CMAKE_SOURCE_DIR}/output/vehicleio)
+install(FILES ${VECHICLEIO_DIR}/service.sh DESTINATION ${CMAKE_SOURCE_DIR}/output/vehicleio)

@@ -1,0 +1,333 @@
+{
+    "vehicle": "hobot_car",
+    "verbose": 1,
+    "type" : "can",
+    "dbc": [
+      {
+        "id": "0x100",
+        "endian": "Intel",
+        "dlc": 8,
+        "cycle": 0,
+        "data": [
+          {
+            "name": "speedvalid",
+            "value_type": "Enum",
+            "start_bit": 0,
+            "bit_length": 1,
+            "scale": 1.0,
+            "offset": 0.0,
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "value_table": [
+                {"value": "0x0", "desp": "Invalid"},
+                {"value": "0x1", "desp": "Valid"}
+            ],
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          },
+          {
+            "name": "speed",
+            "value_type": "Unsigned",
+            "start_bit": 1,
+            "bit_length": 15,
+            "scale": 0.01,
+            "offset": 0.0,
+            "range": {
+                "min": 0.0,
+                "max": 327.67
+            },
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          }
+        ]
+      },
+      {
+        "id": "0x101",
+        "endian": "Intel",
+        "dlc": 8,
+        "cycle": 0,
+        "data": [
+          {
+            "name": "yawratevalid",
+            "value_type": "Enum",
+            "start_bit": 0,
+            "bit_length": 1,
+            "scale": 1.0,
+            "offset": 0.0,
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "value_table": [
+                {"value": "0x0", "desp": "Invalid"},
+                {"value": "0x1", "desp": "Valid"}
+            ],
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          },
+          {
+            "name": "yawrate",
+            "value_type": "Unsigned",
+            "start_bit": 1,
+            "bit_length": 12,
+            "scale": 0.001,
+            "offset": -2.048,
+            "range": {
+                "min": -2.048,
+                "max": 2.047
+            },
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          }
+        ]
+      },
+      {
+        "id": "0x102",
+        "endian": "Intel",
+        "dlc": 8,
+        "cycle": 0,
+        "data": [
+          {
+            "name": "wheelangle",
+            "value_type": "Unsigned",
+            "start_bit": 1,
+            "bit_length": 16,
+            "scale": 0.025,
+            "offset": -819.2,
+            "range": {
+                "min": -819.2,
+                "max": 819.175
+            },
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          }
+        ]
+      },
+      {
+        "id": "0x103",
+        "endian": "Intel",
+        "dlc": 8,
+        "cycle": 0,
+        "data": [
+          {
+            "name": "gearvalid",
+            "value_type": "Enum",
+            "start_bit": 4,
+            "bit_length": 1,
+            "scale": 1.0,
+            "offset": 0.0,
+            "range": {
+                "min": 0,
+                "max": 1
+            },
+            "value_table": [
+                {"value": "0x0", "desp": "Invalid"},
+                {"value": "0x1", "desp": "Valid"}
+            ],
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          },
+          {
+            "name": "gear",
+            "value_type": "Enum",
+            "start_bit": 0,
+            "bit_length": 4,
+            "scale": 1.0,
+            "offset": 0.0,
+            "range": {
+              "min": 0.0,
+              "max": 15.0
+            },
+            "value_table": [
+              {"value": "0x0", "desp": "N"},
+              {"value": "0x1", "desp": "P"},
+              {"value": "0x2", "desp": "R"},
+              {"value": "0x3", "desp": "D"},
+              {"value": "0x4", "desp": "Invalid"}
+            ],
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          }
+        ]
+      },
+      {
+        "id": "0x104",
+        "endian": "Intel",
+        "dlc": 8,
+        "cycle": 0,
+        "data": [
+          {
+            "name": "turnsignalvalid",
+            "value_type": "Enum",
+            "start_bit": 7,
+            "bit_length": 1,
+            "scale": 1.0,
+            "offset": 0.0,
+            "range": {
+                "min": 0,
+                "max": 1
+            },
+            "value_table": [
+                {"value": "0x0", "desp": "Invalid"},
+                {"value": "0x1", "desp": "Valid"}
+            ],
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          },
+          {
+            "name": "turnsignal",
+            "value_type": "Enum",
+            "start_bit": 0,
+            "bit_length": 3,
+            "scale": 1.0,
+            "offset": 0.0,
+            "range": {
+              "min": 0.0,
+              "max": 7.0
+            },
+            "value_table": [
+              {"value": "0x0", "desp": "Invalid"},
+              {"value": "0x1", "desp": "Left"},
+              {"value": "0x2", "desp": "Right"},
+              {"value": "0x3", "desp": "Double"}
+            ],
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          },
+          {
+            "name": "HeadWiperValid",
+            "value_type": "Enum",
+            "start_bit": 8,
+            "bit_length": 1,
+            "scale": 1.0,
+            "offset": 0.0,
+            "range": {
+              "min": 0.0,
+              "max": 1.0
+            },
+            "value_table": [
+              {"value": "0x0", "desp": "Invalid"},
+              {"value": "0x1", "desp": "Valid"}
+            ],
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          },
+          {
+            "name": "headwiper",
+            "value_type": "Enum",
+            "start_bit": 3,
+            "bit_length": 2,
+            "scale": 1.0,
+            "offset": 0.0,
+            "range": {
+              "min": 0.0,
+              "max": 3.0
+            },
+            "value_table": [
+              {"value": "0x0", "desp": "Off"},
+              {"value": "0x1", "desp": "Onslow"},
+              {"value": "0x2", "desp": "Onmiddle"},
+              {"value": "0x3", "desp": "Onfast"}
+            ],
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          },
+          {
+            "name": "highbeamstatusvalid",
+            "value_type": "Enum",
+            "start_bit": 9,
+            "bit_length": 1,
+            "scale": 1.0,
+            "offset": 0.0,
+            "range": {
+              "min": 0.0,
+              "max": 1.0
+            },
+            "value_table": [
+              {"value": "0x0", "desp": "Invalid"},
+              {"value": "0x1", "desp": "Valid"}
+            ],
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          },
+          {
+            "name": "highheamstatus",
+            "value_type": "Enum",
+            "start_bit": 5,
+            "bit_length": 2,
+            "scale": 1.0,
+            "offset": 0.0,
+            "range": {
+              "min": 0.0,
+              "max": 3.0
+            },
+            "value_table": [
+              {"value": "0x0", "desp": "Lowbeam"},
+              {"value": "0x1", "desp": "Highbeam"},
+              {"value": "0x2", "desp": "Off"},
+              {"value": "0x3", "desp": "Invalid"}
+            ],
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          }
+        ]
+      },
+      {
+        "id": "0x105",
+        "endian": "Intel",
+        "dlc": 8,
+        "cycle": 0,
+        "data": [
+          {
+            "name": "accvalid",
+            "value_type": "Enum",
+            "start_bit": 0,
+            "bit_length": 1,
+            "scale": 1.0,
+            "offset": 0.0,
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "value_table": [
+                {"value": "0x0", "desp": "Invalid"},
+                {"value": "0x1", "desp": "Valid"}
+            ],
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          },
+          {
+            "name": "acc",
+            "value_type": "Unsigned",
+            "start_bit": 1,
+            "bit_length": 15,
+            "scale": 0.001,
+            "offset": -16.384,
+            "range": {
+              "min": -16.384,
+              "max": 16.383
+            },
+            "parser_flag": 1,
+            "timeout_time": 1000,
+            "comments": ""
+          }
+        ]
+      }
+    ]
+  }

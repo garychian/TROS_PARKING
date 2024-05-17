@@ -1,0 +1,482 @@
+{
+  "type" : "can",
+  "channel_devicenum": 1,
+  "object_mapping" : "config/radardbc_mapping.json",
+  "object_dbc": [
+    {
+      "id": "0x37e,0x3a3,0x395,0x370,0x3a1,0x3b0,0x383",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "object": [
+            {
+              "name": "x",
+              "value_type": "Unsigned",
+              "start_bit": 43,
+              "bit_length": 13,
+              "scale": 0.0625,
+              "offset": -256,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": -256,
+                "max": 255.9375
+              }
+            },
+            {
+              "name": "y",
+              "value_type": "Unsigned",
+              "start_bit": 24,
+              "bit_length": 11,
+              "scale": 0.125,
+              "offset": -128,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": -128,
+                "max": 127.875
+              }
+            },
+            {
+              "name": "id",
+              "value_type": "Unsigned",
+              "start_bit": 0,
+              "bit_length": 8,
+              "scale": 1,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 255
+              }
+            },
+            {
+              "name": "vx",
+              "value_type": "Unsigned",
+              "start_bit": 20,
+              "bit_length": 12,
+              "scale": 0.0625,
+              "offset": -128,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": -128,
+                "max": 127.9375
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x38e,0x38f,0x3a5,0x371,0x3b1,0x381,0x384",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "object": [
+            {
+              "name": "existprob",
+              "value_type": "Unsigned",
+              "start_bit": 2,
+              "bit_length": 6,
+              "scale": 2,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 100
+              }
+            },
+            {
+              "name": "obstacleprob",
+              "value_type": "Unsigned",
+              "start_bit": 12,
+              "bit_length": 6,
+              "scale": 2,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 100
+              }
+            },
+            {
+              "name": "type",
+              "value_type": "Enum",
+              "start_bit": 9,
+              "bit_length": 3,
+              "scale": 1,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 7
+              },
+              "value_table": [
+                {
+                  "value": "0x7",
+                  "desp": "Unknown"
+                },
+                {
+                  "value": "0x6",
+                  "desp": "Animal"
+                },
+                {
+                  "value": "0x5",
+                  "desp": "General"
+                },
+                {
+                  "value": "0x4",
+                  "desp": "Pedestrain"
+                },
+                {
+                  "value": "0x3",
+                  "desp": "Bicycle"
+                },
+                {
+                  "value": "0x2",
+                  "desp": "Car"
+                },
+                {
+                  "value": "0x1",
+                  "desp": "Truck"
+                },
+                {
+                  "value": "0x0",
+                  "desp": "Unknown"
+                }
+              ]
+            },
+            {
+              "name": "ay",
+              "value_type": "Unsigned",
+              "start_bit": 16,
+              "bit_length": 9,
+              "scale": 0.0625,
+              "offset": -16,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": -16,
+                "max": 15.9375
+              }
+            },
+            {
+              "name": "ax",
+              "value_type": "Unsigned",
+              "start_bit": 38,
+              "bit_length": 10,
+              "scale": 0.03125,
+              "offset": -16,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": -16,
+                "max": 15.96875
+              }
+            },
+            {
+              "name": "vy",
+              "value_type": "Unsigned",
+              "start_bit": 40,
+              "bit_length": 10,
+              "scale": 0.125,
+              "offset": -64,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": -64,
+                "max": 63.875
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x503,0x504,0x513,0x514,0x523,0x524,0x533,0x534,0x543,0x544,0x553,0x554,0x563,0x564,0x509,0x50a,0x519,0x51a,0x529,0x52a,0x539,0x53a,0x549,0x54a,0x559,0x55a,0x569,0x56a,0x50e,0x51e,0x52e,0x53e",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "object": [
+            {
+              "name": "id",
+              "value_type": "Unsigned",
+              "start_bit": 0,
+              "bit_length": 8,
+              "scale": 1,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 255
+              }
+            },
+            {
+              "name": "x",
+              "value_type": "Unsigned",
+              "start_bit": 20,
+              "bit_length": 12,
+              "scale": 0.0625,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 254.9375
+              }
+            },
+            {
+              "name": "y",
+              "value_type": "Unsigned",
+              "start_bit": 24,
+              "bit_length": 11,
+              "scale": 0.125,
+              "offset": -128,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": -128,
+                "max": 127.875
+              }
+            },
+            {
+              "name": "vx",
+              "value_type": "Unsigned",
+              "start_bit": 43,
+              "bit_length": 13,
+              "scale": 0.0312,
+              "offset": -128,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": -128,
+                "max": 126.9976
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x300,0x301,0x304,0x305,0x306,0x307,0x309,0x30a,0x30b,0x30c,0x30d,0x30e,0x30f,0x310,0x311,0x313,0x31e,0x320,0x321,0x324,0x331,0x333,0x340,0x341,0x344,0x346,0x350,0x351,0x360,0x361,0x364,0x36f",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "object": [
+            {
+              "name": "existprob",
+              "value_type": "Unsigned",
+              "start_bit": 3,
+              "bit_length": 5,
+              "scale": 0.03125,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 0.96875
+              }
+            },
+            {
+              "name": "obstacleprob",
+              "value_type": "Unsigned",
+              "start_bit": 14,
+              "bit_length": 5,
+              "scale": 0.03125,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 0.96875
+              }
+            },
+            {
+              "name": "type",
+              "value_type": "Enum",
+              "start_bit": 10,
+              "bit_length": 4,
+              "scale": 1,
+              "offset": 0,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": 0,
+                "max": 15
+              },
+              "value_table": [
+                {
+                  "value": "0xf",
+                  "desp": "Reserved"
+                },
+                {
+                  "value": "0xe",
+                  "desp": "Reserved"
+                },
+                {
+                  "value": "0xd",
+                  "desp": "Reserved"
+                },
+                {
+                  "value": "0xc",
+                  "desp": "Reserved"
+                },
+                {
+                  "value": "0xb",
+                  "desp": "Reserved"
+                },
+                {
+                  "value": "0xa",
+                  "desp": "Reserved"
+                },
+                {
+                  "value": "0x9",
+                  "desp": "Reserved"
+                },
+                {
+                  "value": "0x8",
+                  "desp": "Reserved"
+                },
+                {
+                  "value": "0x7",
+                  "desp": "Reserved"
+                },
+                {
+                  "value": "0x6",
+                  "desp": "Reserved"
+                },
+                {
+                  "value": "0x5",
+                  "desp": "Reserved"
+                },
+                {
+                  "value": "0x4",
+                  "desp": "Bicycle"
+                },
+                {
+                  "value": "0x3",
+                  "desp": "Pedestrain"
+                },
+                {
+                  "value": "0x2",
+                  "desp": "Car"
+                },
+                {
+                  "value": "0x1",
+                  "desp": "Truck"
+                },
+                {
+                  "value": "0x0",
+                  "desp": "Unknown"
+                }
+              ]
+            },
+            {
+              "name": "ay",
+              "value_type": "Unsigned",
+              "start_bit": 16,
+              "bit_length": 10,
+              "scale": 0.03125,
+              "offset": -16,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": -16,
+                "max": 15.96875
+              }
+            },
+            {
+              "name": "vy",
+              "value_type": "Unsigned",
+              "start_bit": 35,
+              "bit_length": 13,
+              "scale": 0.0312,
+              "offset": -128,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": -128,
+                "max": 126.9976
+              }
+            },
+            {
+              "name": "ax",
+              "value_type": "Unsigned",
+              "start_bit": 40,
+              "bit_length": 10,
+              "scale": 0.03125,
+              "offset": -16,
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": "None",
+              "range": {
+                "min": -16,
+                "max": 15.96875
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x01",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "object": [
+            {
+              "name": "xxx_signal",
+              "value_type": "Unsigned",
+              "start_bit": 19,
+              "bit_length": 13,
+              "scale": 0.05625,
+              "offset": 0.0,
+              "range": {
+                  "min": 0.0,
+                  "max": 460.63125
+              },
+              "parser_flag": 1,
+              "timeout_time": 1000,
+              "comments": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

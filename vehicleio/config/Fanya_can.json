@@ -1,0 +1,426 @@
+{
+  "version": "",
+  "vehicle": "",
+  "verbose": 1,
+  "type": "canfd",
+  "dbc": [
+    {
+      "id": "0xc8",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "name": "TrnsShftLvrPos_TCM",
+          "value_type": "Enum",
+          "endian": "Motorola",
+          "start_bit": 40,
+          "bit_length": 4,
+          "scale": 1,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 15
+          },
+          "value_table": [
+            {
+              "value": "0xf",
+              "desp": "Leverpositionunknown"
+            },
+            {
+              "value": "0xe",
+              "desp": "Reserved"
+            },
+            {
+              "value": "0xd",
+              "desp": "Forwardrangej"
+            },
+            {
+              "value": "0xc",
+              "desp": "Forwardrangei"
+            },
+            {
+              "value": "0xb",
+              "desp": "Forwardrangeh"
+            },
+            {
+              "value": "0xa",
+              "desp": "Forwardrangeg"
+            },
+            {
+              "value": "0x9",
+              "desp": "Forwardrangef"
+            },
+            {
+              "value": "0x8",
+              "desp": "Forwardrangee"
+            },
+            {
+              "value": "0x7",
+              "desp": "Forwardranged"
+            },
+            {
+              "value": "0x6",
+              "desp": "Forwardrangec"
+            },
+            {
+              "value": "0x5",
+              "desp": "Forwardrangeb"
+            },
+            {
+              "value": "0x4",
+              "desp": "Forwardrangea"
+            },
+            {
+              "value": "0x3",
+              "desp": "Neutralrange"
+            },
+            {
+              "value": "0x2",
+              "desp": "Reverserange"
+            },
+            {
+              "value": "0x1",
+              "desp": "Parkrange"
+            },
+            {
+              "value": "0x0",
+              "desp": "Betweenranges"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x208",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "name": "VehSpdAvgNDrvn",
+          "value_type": "Unsigned",
+          "endian": "Motorola",
+          "start_bit": 41,
+          "bit_length": 15,
+          "scale": 0.015625,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 511.984375
+          }
+        }
+      ]
+    },
+    {
+      "id": "0x34",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "name": "StrWhAng",
+          "value_type": "Signed",
+          "endian": "Motorola",
+          "start_bit": 40,
+          "bit_length": 16,
+          "scale": 0.0625,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": -2048,
+            "max": 2047.9375
+          }
+        }
+      ]
+    },
+    {
+      "id": "0x36",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "name": "IMUYawRtPri",
+          "value_type": "Signed",
+          "endian": "Motorola",
+          "start_bit": 42,
+          "bit_length": 13,
+          "scale": 0.024,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": -98.304,
+            "max": 98.28
+          }
+        }
+      ]
+    },
+    {
+      "id": "0x37",
+      "dlc": 13,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "name": "IMULatACCSec",
+          "value_type": "Signed",
+          "endian": "Motorola",
+          "start_bit": 50,
+          "bit_length": 10,
+          "scale": 0.0625,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": -32,
+            "max": 31.9375
+          }
+        },
+        {
+          "name": "IMUYawRtSec",
+          "value_type": "Signed",
+          "endian": "Motorola",
+          "start_bit": 67,
+          "bit_length": 13,
+          "scale": 0.024,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": -98.304,
+            "max": 98.28
+          }
+        }
+      ]
+    },
+    {
+      "id": "0x35",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "name": "IMULonAccSec",
+          "value_type": "Unsigned",
+          "endian": "Motorola",
+          "start_bit": 44,
+          "bit_length": 10,
+          "scale": 0.0625,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": -32,
+            "max": 31.9375
+          }
+        },
+        {
+          "name": "IIMULatAccPrim",
+          "value_type": "Signed",
+          "endian": "Motorola",
+          "start_bit": 49,
+          "bit_length": 10,
+          "scale": 0.0625,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": -32,
+            "max": 31.9375
+          }
+        }
+      ]
+    },
+    {
+      "id": "0x38",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "name": "IMULonAccPri",
+          "value_type": "Signed",
+          "endian": "Motorola",
+          "start_bit": 43,
+          "bit_length": 12,
+          "scale": 0.015625,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": -32,
+            "max": 31.984375
+          }
+        }
+      ]
+    },
+    {
+      "id": "0x32",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "name": "WhlAngVelRRrAuth",
+          "value_type": "Unsigned",
+          "endian": "Motorola",
+          "start_bit": 54,
+          "bit_length": 14,
+          "scale": 0.004,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 65.532
+          }
+        },
+        {
+          "name": "WhlAngVelLRrAuth",
+          "value_type": "Unsigned",
+          "endian": "Motorola",
+          "start_bit": 56,
+          "bit_length": 14,
+          "scale": 0.004,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 65.532
+          }
+        }
+      ]
+    },
+    {
+      "id": "0x31",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "name": "WhlAngVelRFrtAuth",
+          "value_type": "Unsigned",
+          "endian": "Motorola",
+          "start_bit": 54,
+          "bit_length": 14,
+          "scale": 0.004,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 65.532
+          }
+        },
+        {
+          "name": "WhlAngVelLFrtAuth",
+          "value_type": "Unsigned",
+          "endian": "Motorola",
+          "start_bit": 56,
+          "bit_length": 14,
+          "scale": 0.004,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 65.532
+          }
+        }
+      ]
+    },
+    {
+      "id": "0xa8",
+      "dlc": 8,
+      "cycle": 0,
+      "endian": "Motorola",
+      "data": [
+        {
+          "name": "WhlDistEdgeCntrLRHigFreq",
+          "value_type": "Unsigned",
+          "endian": "Motorola",
+          "start_bit": 13,
+          "bit_length": 11,
+          "scale": 1,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 2047
+          }
+        },
+        {
+          "name": "WhlDistEdgeCntrRRHigFreq",
+          "value_type": "Unsigned",
+          "endian": "Motorola",
+          "start_bit": 18,
+          "bit_length": 11,
+          "scale": 1,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 2047
+          }
+        },
+        {
+          "name": "WhlDistEdgeCntrRFHigFreq",
+          "value_type": "Unsigned",
+          "endian": "Motorola",
+          "start_bit": 39,
+          "bit_length": 11,
+          "scale": 1,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 2047
+          }
+        },
+        {
+          "name": "WhlDistEdgeCntrLFHigFreq",
+          "value_type": "Unsigned",
+          "endian": "Motorola",
+          "start_bit": 44,
+          "bit_length": 11,
+          "scale": 1,
+          "offset": 0,
+          "parser_flag": 1,
+          "timeout_time": 1000,
+          "comments": "None",
+          "range": {
+            "min": 0,
+            "max": 2047
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "time_mode" : 0,
+  "time_mode_commit" : "time_mode: 0-systemTime, 1-simTim",
+  "communication_path" : "config/communication_service.json",
+  "time_topic_name" : "/Clock",
+  "time_sub_paitipant" : 7,
+  "time_sub_paitipant_commit" : "time_sub_paitipant : Only useful in vehicleio",
+  "time_domain_id" : 0
+}
