@@ -12,7 +12,7 @@ class ProtocolConan(ConanFile):
                                    "pb_cyclonedds",
                                    "pb_fastdds"]}
     default_options = {"accelerate_type": "none"}
-    requires = [("protobuf/3.19.3@thirdparty/stable")]
+    requires = [("protobuf/3.19.6@thirdparty/stable")]
 
     def requirements(self):
         if self.options.accelerate_type == "pb_pb":

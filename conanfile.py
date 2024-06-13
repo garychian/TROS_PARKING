@@ -13,7 +13,7 @@ class PackageConanFile(ConanFile):
 
     requires = ["dataflow/[x.x.x]@bole/stable",
                 ("hobot-bole-protocol/1.4.33@bole/stable", "private")]
-    tool_requires = ["gtest/1.8.0@thirdparty/stable"]
+    tool_requires = ["gtest/1.11.0@thirdparty/stable"]
 
     version_major = None
     version_minor = None
@@ -25,17 +25,17 @@ class PackageConanFile(ConanFile):
         ("gperftools/2.10.0@thirdparty/stable"),
         ("opencv/3.4.5@thirdparty/stable"),
         ("nlohmann_json/3.7.3@thirdparty/stable"),
-        ("hobot-bole-protocol/1.4.43@bole/stable"),
+        ("hobot-bole-protocol/1.7.64.1@bole/stable"),
         ("easy_dnn/1.10.6@bole/stable", "override"),
-        ("sensors/1.10.5@bole/stable"),
-        ("sm_client/1.6.3@tros/stable", "override"),
-        ("common/1.6.3@tros/stable", "override"),
-        ("hlog/1.10.2@bole/stable", "override"),
-        ("communication/1.10.5@bole/stable", "override"),
+        ("sensors/1.13.7@bole/stable"),
+        ("sm_client/1.9.10@tros/stable", "override"),
+        ("common/1.9.10@tros/stable", "override"),
+        ("hlog/1.13.8@bole/stable", "override"),
+        ("communication/1.13.5@bole/stable", "override"),
         ("message/[1.7.x]@bole/stable", "override"),
-        ("dataflow/1.10.5@bole/stable", "override"),
+        ("dataflow/1.13.3@bole/stable", "override"),
         ("convert_assistant/2.5.3@thirdparty/stable"),
-        ("vehicleio/[1.10.4]@bole/stable"),
+        ("vehicleio/[1.13.8]@bole/stable"),
         ("fanya-protocol/1.0.0@ltc/fanya")
     ]
 
@@ -104,7 +104,9 @@ class PackageConanFile(ConanFile):
             self.copy("libfanya*", "package/%s/tros_common_lib" % target,
                           "lib") 
             self.copy("libvehicleio*", "package/%s/tros_common_lib" % target,
-                          "lib")                        
+                          "lib")
+            self.copy("libexec.so*", "package/%s/tros_common_lib" % target,
+                          "lib")                                      
 
             # if self.options.soc == "j3":
             #     self.copy(
