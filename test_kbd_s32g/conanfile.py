@@ -19,9 +19,9 @@ class communication_exampleConan(ConanFile):
 
     use_perfetto = True
 
-    requires = [("communication/1.10.5@bole/stable"),
+    requires = [("communication/1.13.5@bole/stable"),
                 ("fanya-protocol/1.0.0@ltc/fanya"),
-                ("hobot-bole-protocol/1.4.43@bole/stable")]
+                ("hobot-bole-protocol/1.7.64.1@bole/stable")]
 
     generators = "cmake_find_package"
     _cmake = None
