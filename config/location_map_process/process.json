@@ -4,6 +4,7 @@
   "runtime_context": "runtime_context.json",
   "schedule_config": "schedule.json",
   "process_name": "parking_loc",
+  "log_config": "./log_config.json",
   "log": {
     "log_level": "info",
     "rotate_number": 128,

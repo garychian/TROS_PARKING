@@ -5,6 +5,7 @@
   "process_name": "parking_sc",
   "communication_config": "communication.json",
   "ignore_config": ["module.rtignore"],
+  "log_config": "./log_config.json",
   "log": {
     "log_level": "info",
     "rotate_number": 128,
