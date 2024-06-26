@@ -237,7 +237,7 @@ int main(int argc, char** argv) {
   auto apa_status_req_publisher =
       Publisher<ApastatusreqSerializer>::New(apa_status_req_comm_attr,
                                           "/fsm/apa_status_req",
-                                          0,
+                                          -65535,
                                           apa_status_req_args.protocol,
                                           &error_code,
                                           pub_connlisteners);
