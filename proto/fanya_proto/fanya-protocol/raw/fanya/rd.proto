@@ -1,0 +1,128 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package rd;
+// [END declaration]
+
+
+// [START messages]
+
+enum Pstype {
+  PARALLEL_PARKING = 0; 
+  VERTICAL_PARKING = 1;
+  DIAGONAL_PARKING_1 = 2; 
+}
+
+enum Memtype {
+  host = 0; 
+  cambriconVgu = 1;
+  horizonIon = 2; 
+}
+
+message SApaPoint_I {
+  optional int32 x = 1;
+  optional int32 y = 2;
+}
+
+message SApaPSRect {
+  repeated SApaPoint_I pt = 1;
+  optional Pstype pstype = 2;
+  optional int32 label = 3;
+  optional int32 iSlotType = 4;
+  optional int32 iSceneType = 5;
+}
+
+message Image {
+  optional Header header = 1;
+  optional uint32	oriHeight = 2;
+  optional uint32	oriWidth = 3;
+  optional uint32	height = 4;
+  optional uint32	width = 5;
+  optional string encoding = 6;
+  optional uint32	step = 7;
+  optional Data	data = 8;
+  optional uint64	phyAddr = 9;
+  optional uint64	virAddr = 10;
+  optional Memtype	memtype = 11;
+}
+
+message SApaPSInfo {
+  repeated SApaPSRect WorldoutRect = 1;
+  optional int64 ullFrameId = 2;
+}
+
+message QuadParkingSlots {
+  optional Header header = 1;                     
+  optional uint64 frameTimeStampNs = 2;
+  optional int32 sensorId = 3;
+  repeated QuadParkingSlot quadParkingSlotList = 4;             
+}
+
+message Header {
+  optional uint32	seq = 1;
+  optional Time	timestampNs = 2; 
+  optional string frameId = 3;   
+}
+
+message Time {
+  optional uint64	nanoSec = 1;
+}
+
+message QuadParkingSlot {
+  optional Point2f	tl = 1;
+  optional Point2f	tr = 2;
+  optional Point2f	bl = 3;
+  optional Point2f	br = 4;
+  optional float	confidence = 5;
+  optional uint32 label = 6;
+  optional bool filtered = 7;
+  optional int32	slotType = 8;
+  optional float	sTl = 9;
+  optional float	sTr = 10;
+  optional float	sBl = 11;
+  optional float	sBr = 12;
+  optional Point2f	dirIn = 13;
+  optional Point2f	dirWidth = 14;
+  optional Point2f	dirLength = 15;
+  optional Point2f	center = 16;
+  optional bool oppModify = 17;
+  optional bool isComplete = 18;
+  optional float	width = 19;
+  optional float	length = 20;
+  optional bool isVisited = 21;
+  optional ApproxBoxPoints	pTl = 22;
+  optional ApproxBoxPoints	pTr = 23;
+  optional ApproxBoxPoints	pBl = 24;
+  optional ApproxBoxPoints	pBr = 25;
+}
+
+message Point2f {
+  optional float	x = 1;
+  optional float	y = 2;
+}
+
+message ApproxBoxPoints {
+  optional Point2f	point = 1;
+  optional float	borderDist = 2;
+  optional float	pointScore = 3;
+  optional float	lineLen = 4;
+  optional float	lineScore = 5;
+  optional bool	hasBorderPoint = 6;
+}
+
+message Data {
+  repeated  Row pt = 1;
+
+  message Row {
+    repeated int32 value = 1;
+  }
+}
+
+// [END messages]

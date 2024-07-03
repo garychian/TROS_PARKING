@@ -47,7 +47,7 @@ struct TableStruct_loc_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[14]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[17]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -58,6 +58,12 @@ namespace loc {
 class App2emap_DR;
 struct App2emap_DRDefaultTypeInternal;
 extern App2emap_DRDefaultTypeInternal _App2emap_DR_default_instance_;
+class FusionSlotInfo;
+struct FusionSlotInfoDefaultTypeInternal;
+extern FusionSlotInfoDefaultTypeInternal _FusionSlotInfo_default_instance_;
+class FusionSlotInfo2Location;
+struct FusionSlotInfo2LocationDefaultTypeInternal;
+extern FusionSlotInfo2LocationDefaultTypeInternal _FusionSlotInfo2Location_default_instance_;
 class LocStatus;
 struct LocStatusDefaultTypeInternal;
 extern LocStatusDefaultTypeInternal _LocStatus_default_instance_;
@@ -67,6 +73,9 @@ extern MapInfoDefaultTypeInternal _MapInfo_default_instance_;
 class Point3D;
 struct Point3DDefaultTypeInternal;
 extern Point3DDefaultTypeInternal _Point3D_default_instance_;
+class SlotPoint;
+struct SlotPointDefaultTypeInternal;
+extern SlotPointDefaultTypeInternal _SlotPoint_default_instance_;
 class VehiclePos;
 struct VehiclePosDefaultTypeInternal;
 extern VehiclePosDefaultTypeInternal _VehiclePos_default_instance_;
@@ -100,9 +109,12 @@ extern stopLinesDefaultTypeInternal _stopLines_default_instance_;
 }  // namespace loc
 PROTOBUF_NAMESPACE_OPEN
 template<> ::loc::App2emap_DR* Arena::CreateMaybeMessage<::loc::App2emap_DR>(Arena*);
+template<> ::loc::FusionSlotInfo* Arena::CreateMaybeMessage<::loc::FusionSlotInfo>(Arena*);
+template<> ::loc::FusionSlotInfo2Location* Arena::CreateMaybeMessage<::loc::FusionSlotInfo2Location>(Arena*);
 template<> ::loc::LocStatus* Arena::CreateMaybeMessage<::loc::LocStatus>(Arena*);
 template<> ::loc::MapInfo* Arena::CreateMaybeMessage<::loc::MapInfo>(Arena*);
 template<> ::loc::Point3D* Arena::CreateMaybeMessage<::loc::Point3D>(Arena*);
+template<> ::loc::SlotPoint* Arena::CreateMaybeMessage<::loc::SlotPoint>(Arena*);
 template<> ::loc::VehiclePos* Arena::CreateMaybeMessage<::loc::VehiclePos>(Arena*);
 template<> ::loc::arrows* Arena::CreateMaybeMessage<::loc::arrows>(Arena*);
 template<> ::loc::bumps* Arena::CreateMaybeMessage<::loc::bumps>(Arena*);
@@ -3132,6 +3144,589 @@ class padRealTimeLocation final :
   uint64_t timestamp_;
   friend struct ::TableStruct_loc_2eproto;
 };
+// -------------------------------------------------------------------
+
+class FusionSlotInfo2Location final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:loc.FusionSlotInfo2Location) */ {
+ public:
+  inline FusionSlotInfo2Location() : FusionSlotInfo2Location(nullptr) {}
+  ~FusionSlotInfo2Location() override;
+  explicit constexpr FusionSlotInfo2Location(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  FusionSlotInfo2Location(const FusionSlotInfo2Location& from);
+  FusionSlotInfo2Location(FusionSlotInfo2Location&& from) noexcept
+    : FusionSlotInfo2Location() {
+    *this = ::std::move(from);
+  }
+
+  inline FusionSlotInfo2Location& operator=(const FusionSlotInfo2Location& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline FusionSlotInfo2Location& operator=(FusionSlotInfo2Location&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const FusionSlotInfo2Location& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const FusionSlotInfo2Location* internal_default_instance() {
+    return reinterpret_cast<const FusionSlotInfo2Location*>(
+               &_FusionSlotInfo2Location_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    14;
+
+  friend void swap(FusionSlotInfo2Location& a, FusionSlotInfo2Location& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(FusionSlotInfo2Location* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(FusionSlotInfo2Location* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  FusionSlotInfo2Location* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<FusionSlotInfo2Location>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const FusionSlotInfo2Location& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom(const FusionSlotInfo2Location& from);
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(FusionSlotInfo2Location* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "loc.FusionSlotInfo2Location";
+  }
+  protected:
+  explicit FusionSlotInfo2Location(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kFusionSlotInfosFieldNumber = 2,
+    kSlotNumFieldNumber = 1,
+  };
+  // repeated .loc.FusionSlotInfo fusionSlotInfos = 2;
+  int fusionslotinfos_size() const;
+  private:
+  int _internal_fusionslotinfos_size() const;
+  public:
+  void clear_fusionslotinfos();
+  ::loc::FusionSlotInfo* mutable_fusionslotinfos(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::loc::FusionSlotInfo >*
+      mutable_fusionslotinfos();
+  private:
+  const ::loc::FusionSlotInfo& _internal_fusionslotinfos(int index) const;
+  ::loc::FusionSlotInfo* _internal_add_fusionslotinfos();
+  public:
+  const ::loc::FusionSlotInfo& fusionslotinfos(int index) const;
+  ::loc::FusionSlotInfo* add_fusionslotinfos();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::loc::FusionSlotInfo >&
+      fusionslotinfos() const;
+
+  // optional int32 slotNum = 1;
+  bool has_slotnum() const;
+  private:
+  bool _internal_has_slotnum() const;
+  public:
+  void clear_slotnum();
+  int32_t slotnum() const;
+  void set_slotnum(int32_t value);
+  private:
+  int32_t _internal_slotnum() const;
+  void _internal_set_slotnum(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:loc.FusionSlotInfo2Location)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::loc::FusionSlotInfo > fusionslotinfos_;
+  int32_t slotnum_;
+  friend struct ::TableStruct_loc_2eproto;
+};
+// -------------------------------------------------------------------
+
+class FusionSlotInfo final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:loc.FusionSlotInfo) */ {
+ public:
+  inline FusionSlotInfo() : FusionSlotInfo(nullptr) {}
+  ~FusionSlotInfo() override;
+  explicit constexpr FusionSlotInfo(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  FusionSlotInfo(const FusionSlotInfo& from);
+  FusionSlotInfo(FusionSlotInfo&& from) noexcept
+    : FusionSlotInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline FusionSlotInfo& operator=(const FusionSlotInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline FusionSlotInfo& operator=(FusionSlotInfo&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const FusionSlotInfo& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const FusionSlotInfo* internal_default_instance() {
+    return reinterpret_cast<const FusionSlotInfo*>(
+               &_FusionSlotInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    15;
+
+  friend void swap(FusionSlotInfo& a, FusionSlotInfo& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(FusionSlotInfo* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(FusionSlotInfo* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  FusionSlotInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<FusionSlotInfo>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const FusionSlotInfo& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom(const FusionSlotInfo& from);
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(FusionSlotInfo* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "loc.FusionSlotInfo";
+  }
+  protected:
+  explicit FusionSlotInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kPtFieldNumber = 1,
+    kSlotTypeFieldNumber = 2,
+    kFusionSlotTypeFieldNumber = 3,
+    kSlotLabelFieldNumber = 4,
+    kDisplayLabelFieldNumber = 5,
+    kSlotInnerObTypeFieldNumber = 6,
+    kSlotStatusTypeFieldNumber = 7,
+  };
+  // repeated .loc.SlotPoint pt = 1;
+  int pt_size() const;
+  private:
+  int _internal_pt_size() const;
+  public:
+  void clear_pt();
+  ::loc::SlotPoint* mutable_pt(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::loc::SlotPoint >*
+      mutable_pt();
+  private:
+  const ::loc::SlotPoint& _internal_pt(int index) const;
+  ::loc::SlotPoint* _internal_add_pt();
+  public:
+  const ::loc::SlotPoint& pt(int index) const;
+  ::loc::SlotPoint* add_pt();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::loc::SlotPoint >&
+      pt() const;
+
+  // optional int32 slotType = 2;
+  bool has_slottype() const;
+  private:
+  bool _internal_has_slottype() const;
+  public:
+  void clear_slottype();
+  int32_t slottype() const;
+  void set_slottype(int32_t value);
+  private:
+  int32_t _internal_slottype() const;
+  void _internal_set_slottype(int32_t value);
+  public:
+
+  // optional int32 fusionSlotType = 3;
+  bool has_fusionslottype() const;
+  private:
+  bool _internal_has_fusionslottype() const;
+  public:
+  void clear_fusionslottype();
+  int32_t fusionslottype() const;
+  void set_fusionslottype(int32_t value);
+  private:
+  int32_t _internal_fusionslottype() const;
+  void _internal_set_fusionslottype(int32_t value);
+  public:
+
+  // optional int32 slotLabel = 4;
+  bool has_slotlabel() const;
+  private:
+  bool _internal_has_slotlabel() const;
+  public:
+  void clear_slotlabel();
+  int32_t slotlabel() const;
+  void set_slotlabel(int32_t value);
+  private:
+  int32_t _internal_slotlabel() const;
+  void _internal_set_slotlabel(int32_t value);
+  public:
+
+  // optional int32 displayLabel = 5;
+  bool has_displaylabel() const;
+  private:
+  bool _internal_has_displaylabel() const;
+  public:
+  void clear_displaylabel();
+  int32_t displaylabel() const;
+  void set_displaylabel(int32_t value);
+  private:
+  int32_t _internal_displaylabel() const;
+  void _internal_set_displaylabel(int32_t value);
+  public:
+
+  // optional int32 slotInnerObType = 6;
+  bool has_slotinnerobtype() const;
+  private:
+  bool _internal_has_slotinnerobtype() const;
+  public:
+  void clear_slotinnerobtype();
+  int32_t slotinnerobtype() const;
+  void set_slotinnerobtype(int32_t value);
+  private:
+  int32_t _internal_slotinnerobtype() const;
+  void _internal_set_slotinnerobtype(int32_t value);
+  public:
+
+  // optional int32 slotStatusType = 7;
+  bool has_slotstatustype() const;
+  private:
+  bool _internal_has_slotstatustype() const;
+  public:
+  void clear_slotstatustype();
+  int32_t slotstatustype() const;
+  void set_slotstatustype(int32_t value);
+  private:
+  int32_t _internal_slotstatustype() const;
+  void _internal_set_slotstatustype(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:loc.FusionSlotInfo)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::loc::SlotPoint > pt_;
+  int32_t slottype_;
+  int32_t fusionslottype_;
+  int32_t slotlabel_;
+  int32_t displaylabel_;
+  int32_t slotinnerobtype_;
+  int32_t slotstatustype_;
+  friend struct ::TableStruct_loc_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SlotPoint final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:loc.SlotPoint) */ {
+ public:
+  inline SlotPoint() : SlotPoint(nullptr) {}
+  ~SlotPoint() override;
+  explicit constexpr SlotPoint(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  SlotPoint(const SlotPoint& from);
+  SlotPoint(SlotPoint&& from) noexcept
+    : SlotPoint() {
+    *this = ::std::move(from);
+  }
+
+  inline SlotPoint& operator=(const SlotPoint& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SlotPoint& operator=(SlotPoint&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SlotPoint& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SlotPoint* internal_default_instance() {
+    return reinterpret_cast<const SlotPoint*>(
+               &_SlotPoint_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    16;
+
+  friend void swap(SlotPoint& a, SlotPoint& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(SlotPoint* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SlotPoint* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SlotPoint* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<SlotPoint>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const SlotPoint& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom(const SlotPoint& from);
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(SlotPoint* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "loc.SlotPoint";
+  }
+  protected:
+  explicit SlotPoint(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kXFieldNumber = 1,
+    kYFieldNumber = 2,
+  };
+  // optional int32 x = 1;
+  bool has_x() const;
+  private:
+  bool _internal_has_x() const;
+  public:
+  void clear_x();
+  int32_t x() const;
+  void set_x(int32_t value);
+  private:
+  int32_t _internal_x() const;
+  void _internal_set_x(int32_t value);
+  public:
+
+  // optional int32 y = 2;
+  bool has_y() const;
+  private:
+  bool _internal_has_y() const;
+  public:
+  void clear_y();
+  int32_t y() const;
+  void set_y(int32_t value);
+  private:
+  int32_t _internal_y() const;
+  void _internal_set_y(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:loc.SlotPoint)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  int32_t x_;
+  int32_t y_;
+  friend struct ::TableStruct_loc_2eproto;
+};
 // ===================================================================
 
 
@@ -5982,9 +6577,359 @@ inline void padRealTimeLocation::set_reserve(uint32_t value) {
   // @@protoc_insertion_point(field_set:loc.padRealTimeLocation.reserve)
 }
 
+// -------------------------------------------------------------------
+
+// FusionSlotInfo2Location
+
+// optional int32 slotNum = 1;
+inline bool FusionSlotInfo2Location::_internal_has_slotnum() const {
+  bool value = (_has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool FusionSlotInfo2Location::has_slotnum() const {
+  return _internal_has_slotnum();
+}
+inline void FusionSlotInfo2Location::clear_slotnum() {
+  slotnum_ = 0;
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline int32_t FusionSlotInfo2Location::_internal_slotnum() const {
+  return slotnum_;
+}
+inline int32_t FusionSlotInfo2Location::slotnum() const {
+  // @@protoc_insertion_point(field_get:loc.FusionSlotInfo2Location.slotNum)
+  return _internal_slotnum();
+}
+inline void FusionSlotInfo2Location::_internal_set_slotnum(int32_t value) {
+  _has_bits_[0] |= 0x00000001u;
+  slotnum_ = value;
+}
+inline void FusionSlotInfo2Location::set_slotnum(int32_t value) {
+  _internal_set_slotnum(value);
+  // @@protoc_insertion_point(field_set:loc.FusionSlotInfo2Location.slotNum)
+}
+
+// repeated .loc.FusionSlotInfo fusionSlotInfos = 2;
+inline int FusionSlotInfo2Location::_internal_fusionslotinfos_size() const {
+  return fusionslotinfos_.size();
+}
+inline int FusionSlotInfo2Location::fusionslotinfos_size() const {
+  return _internal_fusionslotinfos_size();
+}
+inline void FusionSlotInfo2Location::clear_fusionslotinfos() {
+  fusionslotinfos_.Clear();
+}
+inline ::loc::FusionSlotInfo* FusionSlotInfo2Location::mutable_fusionslotinfos(int index) {
+  // @@protoc_insertion_point(field_mutable:loc.FusionSlotInfo2Location.fusionSlotInfos)
+  return fusionslotinfos_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::loc::FusionSlotInfo >*
+FusionSlotInfo2Location::mutable_fusionslotinfos() {
+  // @@protoc_insertion_point(field_mutable_list:loc.FusionSlotInfo2Location.fusionSlotInfos)
+  return &fusionslotinfos_;
+}
+inline const ::loc::FusionSlotInfo& FusionSlotInfo2Location::_internal_fusionslotinfos(int index) const {
+  return fusionslotinfos_.Get(index);
+}
+inline const ::loc::FusionSlotInfo& FusionSlotInfo2Location::fusionslotinfos(int index) const {
+  // @@protoc_insertion_point(field_get:loc.FusionSlotInfo2Location.fusionSlotInfos)
+  return _internal_fusionslotinfos(index);
+}
+inline ::loc::FusionSlotInfo* FusionSlotInfo2Location::_internal_add_fusionslotinfos() {
+  return fusionslotinfos_.Add();
+}
+inline ::loc::FusionSlotInfo* FusionSlotInfo2Location::add_fusionslotinfos() {
+  ::loc::FusionSlotInfo* _add = _internal_add_fusionslotinfos();
+  // @@protoc_insertion_point(field_add:loc.FusionSlotInfo2Location.fusionSlotInfos)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::loc::FusionSlotInfo >&
+FusionSlotInfo2Location::fusionslotinfos() const {
+  // @@protoc_insertion_point(field_list:loc.FusionSlotInfo2Location.fusionSlotInfos)
+  return fusionslotinfos_;
+}
+
+// -------------------------------------------------------------------
+
+// FusionSlotInfo
+
+// repeated .loc.SlotPoint pt = 1;
+inline int FusionSlotInfo::_internal_pt_size() const {
+  return pt_.size();
+}
+inline int FusionSlotInfo::pt_size() const {
+  return _internal_pt_size();
+}
+inline void FusionSlotInfo::clear_pt() {
+  pt_.Clear();
+}
+inline ::loc::SlotPoint* FusionSlotInfo::mutable_pt(int index) {
+  // @@protoc_insertion_point(field_mutable:loc.FusionSlotInfo.pt)
+  return pt_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::loc::SlotPoint >*
+FusionSlotInfo::mutable_pt() {
+  // @@protoc_insertion_point(field_mutable_list:loc.FusionSlotInfo.pt)
+  return &pt_;
+}
+inline const ::loc::SlotPoint& FusionSlotInfo::_internal_pt(int index) const {
+  return pt_.Get(index);
+}
+inline const ::loc::SlotPoint& FusionSlotInfo::pt(int index) const {
+  // @@protoc_insertion_point(field_get:loc.FusionSlotInfo.pt)
+  return _internal_pt(index);
+}
+inline ::loc::SlotPoint* FusionSlotInfo::_internal_add_pt() {
+  return pt_.Add();
+}
+inline ::loc::SlotPoint* FusionSlotInfo::add_pt() {
+  ::loc::SlotPoint* _add = _internal_add_pt();
+  // @@protoc_insertion_point(field_add:loc.FusionSlotInfo.pt)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::loc::SlotPoint >&
+FusionSlotInfo::pt() const {
+  // @@protoc_insertion_point(field_list:loc.FusionSlotInfo.pt)
+  return pt_;
+}
+
+// optional int32 slotType = 2;
+inline bool FusionSlotInfo::_internal_has_slottype() const {
+  bool value = (_has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool FusionSlotInfo::has_slottype() const {
+  return _internal_has_slottype();
+}
+inline void FusionSlotInfo::clear_slottype() {
+  slottype_ = 0;
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline int32_t FusionSlotInfo::_internal_slottype() const {
+  return slottype_;
+}
+inline int32_t FusionSlotInfo::slottype() const {
+  // @@protoc_insertion_point(field_get:loc.FusionSlotInfo.slotType)
+  return _internal_slottype();
+}
+inline void FusionSlotInfo::_internal_set_slottype(int32_t value) {
+  _has_bits_[0] |= 0x00000001u;
+  slottype_ = value;
+}
+inline void FusionSlotInfo::set_slottype(int32_t value) {
+  _internal_set_slottype(value);
+  // @@protoc_insertion_point(field_set:loc.FusionSlotInfo.slotType)
+}
+
+// optional int32 fusionSlotType = 3;
+inline bool FusionSlotInfo::_internal_has_fusionslottype() const {
+  bool value = (_has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool FusionSlotInfo::has_fusionslottype() const {
+  return _internal_has_fusionslottype();
+}
+inline void FusionSlotInfo::clear_fusionslottype() {
+  fusionslottype_ = 0;
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline int32_t FusionSlotInfo::_internal_fusionslottype() const {
+  return fusionslottype_;
+}
+inline int32_t FusionSlotInfo::fusionslottype() const {
+  // @@protoc_insertion_point(field_get:loc.FusionSlotInfo.fusionSlotType)
+  return _internal_fusionslottype();
+}
+inline void FusionSlotInfo::_internal_set_fusionslottype(int32_t value) {
+  _has_bits_[0] |= 0x00000002u;
+  fusionslottype_ = value;
+}
+inline void FusionSlotInfo::set_fusionslottype(int32_t value) {
+  _internal_set_fusionslottype(value);
+  // @@protoc_insertion_point(field_set:loc.FusionSlotInfo.fusionSlotType)
+}
+
+// optional int32 slotLabel = 4;
+inline bool FusionSlotInfo::_internal_has_slotlabel() const {
+  bool value = (_has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool FusionSlotInfo::has_slotlabel() const {
+  return _internal_has_slotlabel();
+}
+inline void FusionSlotInfo::clear_slotlabel() {
+  slotlabel_ = 0;
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline int32_t FusionSlotInfo::_internal_slotlabel() const {
+  return slotlabel_;
+}
+inline int32_t FusionSlotInfo::slotlabel() const {
+  // @@protoc_insertion_point(field_get:loc.FusionSlotInfo.slotLabel)
+  return _internal_slotlabel();
+}
+inline void FusionSlotInfo::_internal_set_slotlabel(int32_t value) {
+  _has_bits_[0] |= 0x00000004u;
+  slotlabel_ = value;
+}
+inline void FusionSlotInfo::set_slotlabel(int32_t value) {
+  _internal_set_slotlabel(value);
+  // @@protoc_insertion_point(field_set:loc.FusionSlotInfo.slotLabel)
+}
+
+// optional int32 displayLabel = 5;
+inline bool FusionSlotInfo::_internal_has_displaylabel() const {
+  bool value = (_has_bits_[0] & 0x00000008u) != 0;
+  return value;
+}
+inline bool FusionSlotInfo::has_displaylabel() const {
+  return _internal_has_displaylabel();
+}
+inline void FusionSlotInfo::clear_displaylabel() {
+  displaylabel_ = 0;
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline int32_t FusionSlotInfo::_internal_displaylabel() const {
+  return displaylabel_;
+}
+inline int32_t FusionSlotInfo::displaylabel() const {
+  // @@protoc_insertion_point(field_get:loc.FusionSlotInfo.displayLabel)
+  return _internal_displaylabel();
+}
+inline void FusionSlotInfo::_internal_set_displaylabel(int32_t value) {
+  _has_bits_[0] |= 0x00000008u;
+  displaylabel_ = value;
+}
+inline void FusionSlotInfo::set_displaylabel(int32_t value) {
+  _internal_set_displaylabel(value);
+  // @@protoc_insertion_point(field_set:loc.FusionSlotInfo.displayLabel)
+}
+
+// optional int32 slotInnerObType = 6;
+inline bool FusionSlotInfo::_internal_has_slotinnerobtype() const {
+  bool value = (_has_bits_[0] & 0x00000010u) != 0;
+  return value;
+}
+inline bool FusionSlotInfo::has_slotinnerobtype() const {
+  return _internal_has_slotinnerobtype();
+}
+inline void FusionSlotInfo::clear_slotinnerobtype() {
+  slotinnerobtype_ = 0;
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline int32_t FusionSlotInfo::_internal_slotinnerobtype() const {
+  return slotinnerobtype_;
+}
+inline int32_t FusionSlotInfo::slotinnerobtype() const {
+  // @@protoc_insertion_point(field_get:loc.FusionSlotInfo.slotInnerObType)
+  return _internal_slotinnerobtype();
+}
+inline void FusionSlotInfo::_internal_set_slotinnerobtype(int32_t value) {
+  _has_bits_[0] |= 0x00000010u;
+  slotinnerobtype_ = value;
+}
+inline void FusionSlotInfo::set_slotinnerobtype(int32_t value) {
+  _internal_set_slotinnerobtype(value);
+  // @@protoc_insertion_point(field_set:loc.FusionSlotInfo.slotInnerObType)
+}
+
+// optional int32 slotStatusType = 7;
+inline bool FusionSlotInfo::_internal_has_slotstatustype() const {
+  bool value = (_has_bits_[0] & 0x00000020u) != 0;
+  return value;
+}
+inline bool FusionSlotInfo::has_slotstatustype() const {
+  return _internal_has_slotstatustype();
+}
+inline void FusionSlotInfo::clear_slotstatustype() {
+  slotstatustype_ = 0;
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline int32_t FusionSlotInfo::_internal_slotstatustype() const {
+  return slotstatustype_;
+}
+inline int32_t FusionSlotInfo::slotstatustype() const {
+  // @@protoc_insertion_point(field_get:loc.FusionSlotInfo.slotStatusType)
+  return _internal_slotstatustype();
+}
+inline void FusionSlotInfo::_internal_set_slotstatustype(int32_t value) {
+  _has_bits_[0] |= 0x00000020u;
+  slotstatustype_ = value;
+}
+inline void FusionSlotInfo::set_slotstatustype(int32_t value) {
+  _internal_set_slotstatustype(value);
+  // @@protoc_insertion_point(field_set:loc.FusionSlotInfo.slotStatusType)
+}
+
+// -------------------------------------------------------------------
+
+// SlotPoint
+
+// optional int32 x = 1;
+inline bool SlotPoint::_internal_has_x() const {
+  bool value = (_has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool SlotPoint::has_x() const {
+  return _internal_has_x();
+}
+inline void SlotPoint::clear_x() {
+  x_ = 0;
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline int32_t SlotPoint::_internal_x() const {
+  return x_;
+}
+inline int32_t SlotPoint::x() const {
+  // @@protoc_insertion_point(field_get:loc.SlotPoint.x)
+  return _internal_x();
+}
+inline void SlotPoint::_internal_set_x(int32_t value) {
+  _has_bits_[0] |= 0x00000001u;
+  x_ = value;
+}
+inline void SlotPoint::set_x(int32_t value) {
+  _internal_set_x(value);
+  // @@protoc_insertion_point(field_set:loc.SlotPoint.x)
+}
+
+// optional int32 y = 2;
+inline bool SlotPoint::_internal_has_y() const {
+  bool value = (_has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool SlotPoint::has_y() const {
+  return _internal_has_y();
+}
+inline void SlotPoint::clear_y() {
+  y_ = 0;
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline int32_t SlotPoint::_internal_y() const {
+  return y_;
+}
+inline int32_t SlotPoint::y() const {
+  // @@protoc_insertion_point(field_get:loc.SlotPoint.y)
+  return _internal_y();
+}
+inline void SlotPoint::_internal_set_y(int32_t value) {
+  _has_bits_[0] |= 0x00000002u;
+  y_ = value;
+}
+inline void SlotPoint::set_y(int32_t value) {
+  _internal_set_y(value);
+  // @@protoc_insertion_point(field_set:loc.SlotPoint.y)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

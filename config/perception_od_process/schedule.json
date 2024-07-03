@@ -1,0 +1,12 @@
+{
+  "threadpool_scheduler": [
+    {
+      "scheduler_name": "TP_PSD",
+      "thread_num": 4,
+      "configuration": {
+        "scheduler_type": "Fair",
+        "fair_type": "ordered"
+      }
+    }
+  ]
+}

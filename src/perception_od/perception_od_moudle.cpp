@@ -10,7 +10,7 @@
 // ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
-#include "parkingslot_detection/parkingslot_detect_moudle.h"
+#include "perception/perception_od_moudle.h"
 #include <functional>
 #include <vector>
 #include <string>
@@ -32,76 +32,70 @@
 namespace fanya {
 namespace parking {
 
-ParkingslotDetectMoudle::ParkingslotDetectMoudle(
+PerceptionOdMoudle::PerceptionOdMoudle(
   const hobot::dataflow::ModuleOption &module_option):
     hobot::dataflow::Module(module_option) {
 }
 
-void ParkingslotDetectMoudle::InitPortsAndProcs() {
+void PerceptionOdMoudle::InitPortsAndProcs() {
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_apa_status",
     aph::apa_status);
   DF_MODULE_INIT_IDL_INPUT_PORT(
-    "sub_pad_point",
-    loc::padPoint);
-  DF_MODULE_INIT_IDL_INPUT_PORT(
-    "sub_pad_vehicle_pose",
-    loc::padVehiclePose);
-  DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_camera_frame_array",
     camera_frame::CameraFrameArray);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
-    "pub_apa_ps_info",
-    rd::SApaPSInfo);
+    "pub_obstacles",
+    od::Obstacles);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
     "pub_apa_ps_rect",
-    rd::SApaPSRect);
+    od::SApaPSRect);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
     "pub_apa_pointI",
-    rd::SApaPoint_I);
+    od::SApaPoint_I);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
     "pub_psd_image",
-    rd::Image);
+    od::Image);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
     "pub_apa_ps_info_s32g",
-    rd::SApaPSInfo);
+    od::SApaPSInfo);
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
     "MsgCenterProc",
-    ParkingslotDetectMoudle,
+    PerceptionOdMoudle,
     MsgCenterProc,
     hobot::dataflow::ProcType::DF_MSG_COND_PROC,
     DF_VECTOR("sub_apa_status", "sub_pad_point", "sub_pad_vehicle_pose", "sub_camera_frame_array"),
     DF_VECTOR());
-    DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
+  DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
     "TimerProc",
-    ParkingslotDetectMoudle,
+    PerceptionOdMoudle,
     TimerProc,
     hobot::dataflow::ProcType::DF_MSG_TIMER_PROC,
     DF_VECTOR(),
     DF_VECTOR("pub_apa_ps_rect", "pub_apa_ps_info", "pub_apa_pointI", "pub_psd_image","pub_apa_ps_info_s32g"));
 }
 
-int32_t ParkingslotDetectMoudle::Init() {
+int32_t PerceptionOdMoudle::Init() {
   return 0;
 }
 
-int32_t ParkingslotDetectMoudle::Start() {
+int32_t PerceptionOdMoudle::Start() {
   return hobot::dataflow::Module::Start();
 }
 
-int32_t ParkingslotDetectMoudle::Stop() {
+int32_t PerceptionOdMoudle::Stop() {
   return hobot::dataflow::Module::Stop();
 }
 
-void ParkingslotDetectMoudle::Reset() {
+void PerceptionOdMoudle::Reset() {
   hobot::dataflow::Module::Reset();
 }
 
-int32_t ParkingslotDetectMoudle::DeInit() {
+int32_t PerceptionOdMoudle::DeInit() {
   return hobot::dataflow::Module::DeInit();
 }
 
-void ParkingslotDetectMoudle::MsgCenterProc(
+void PerceptionOdMoudle::MsgCenterProc(
   hobot::dataflow::spMsgResourceProc proc,
   const hobot::dataflow::MessageLists &msgs) {
   auto &sub_apa_status_msgs
@@ -157,10 +151,6 @@ auto location_msg = std::dynamic_pointer_cast<PadVehiclePoseMsg>(msg);
     // process msg of sub_pad_vehicle_pose
   }
 
-
-
-
-
   auto &sub_camera_frame_array_msgs
     = msgs[proc->GetResultIndex("sub_camera_frame_array")];
   for (auto &msg : *(sub_camera_frame_array_msgs.get())) {
@@ -173,21 +163,39 @@ auto location_msg = std::dynamic_pointer_cast<PadVehiclePoseMsg>(msg);
   }
 }
 
-void ParkingslotDetectMoudle::TimerProc(
+void PerceptionOdMoudle::TimerProc(
   hobot::dataflow::spMsgResourceProc proc,
   const hobot::dataflow::MessageLists &msgs) {
   auto gen_ts = GetTimeStamp();
-  {// do something with output port pub_apa_ps_info
-    // fill proto
-    auto apa_ps_info = std::make_shared<SApaPSInfoMsg>();
-    apa_ps_info->proto.set_ullframeid(88);
-    apa_ps_info->SetGenTimestamp(gen_ts);
+  {
+    auto header = std::make_shared<HeaderMsg>();
+    
+    //header->SetGenTimestamp(gen_ts);
     //pub msg
-    auto pub_apa_ps_info_port = proc->GetOutputPort("pub_apa_ps_info");
-    if (!pub_apa_ps_info_port) {
+    auto pub_header_port = proc->GetOutputPort("pub_header");
+    if (!pub_header_port) {
       DFHLOG_E("failed to get output port of {}", "pub_apa_ps_info");
       return;
     }
+
+    pub_header_port->Send(header);
+    pub_apa_ps_rect_port_s32g ->Send(apa_ps_info);
+    DFHLOG_W("pub pub_apa_ps_info_port info, ullframeid = {}",
+                          apa_ps_info->proto.ullframeid());
+
+  }
+
+  {// do something with output port pub_apa_ps_info
+    // fill proto
+    auto obstacles = std::make_shared<ObstaclesMsg>();
+    // apa_ps_info->proto.set_ullframeid(88);
+    // apa_ps_info->SetGenTimestamp(gen_ts);
+    //pub msg
+    // auto pub_apa_ps_info_port = proc->GetOutputPort("pub_apa_ps_info");
+    // if (!pub_apa_ps_info_port) {
+    //   DFHLOG_E("failed to get output port of {}", "pub_apa_ps_info");
+    //   return;
+    // }
 
     auto pub_apa_ps_rect_port_s32g = proc->GetOutputPort("pub_apa_ps_info_s32g");
     if (!pub_apa_ps_rect_port_s32g) {
@@ -201,64 +209,10 @@ void ParkingslotDetectMoudle::TimerProc(
                           apa_ps_info->proto.ullframeid());
   }
 
-  {// do something with output port pub_apa_ps_rect
-    // fill proto
-    auto apa_ps_rect = std::make_shared<SApaPSRectMsg>();
-    apa_ps_rect->proto.set_label(88);
-    apa_ps_rect->SetGenTimestamp(gen_ts);
-    //pub msg
-    auto pub_apa_ps_rect_port = proc->GetOutputPort("pub_apa_ps_rect");
-    if (!pub_apa_ps_rect_port) {
-      DFHLOG_E("failed to get output port of {}", "pub_apa_ps_rect");
-      return;
-    }
 
-    // auto pub_apa_ps_rect_port_s32g = proc->GetOutputPort("pub_apa_ps_info_s32g");
-    // if (!pub_apa_ps_rect_port_s32g) {
-    //   DFHLOG_E("pub_apa_ps_rect_port_s32g failed to get output port of {}", "pub_apa_ps_rect");
-    //   return;
-    // }
-
-    pub_apa_ps_rect_port->Send(apa_ps_rect);
-    //pub_apa_ps_rect_port_s32g->Send(apa_ps_rect);
-    DFHLOG_I("pub apa_ps_rect_port info, label = {}",
-                          apa_ps_rect->proto.label());
-  }
-
-  {// do something with output port pub_apa_pointI
-    // fill proto
-    auto apa_pointI = std::make_shared<SApaPoint_IMsg>();
-    apa_pointI->proto.set_x(88);
-    apa_pointI->SetGenTimestamp(gen_ts);
-    //pub msg
-    auto pub_apa_pointI_port = proc->GetOutputPort("pub_apa_pointI");
-    if (!pub_apa_pointI_port) {
-      DFHLOG_E("failed to get output port of {}", "pub_apa_pointI");
-      return;
-    }
-    pub_apa_pointI_port->Send(apa_pointI);
-    DFHLOG_I("pub apa_pointI_port info, x = {}",
-                          apa_pointI->proto.x());
-  }
-
-  {// do something with output port pub_psd_image
-    // fill proto
-    auto image = std::make_shared<ImageMsg>();
-    image->proto.set_width(1920);
-    image->SetGenTimestamp(gen_ts);
-    //pub msg
-    auto pub_image_port = proc->GetOutputPort("pub_psd_image");
-    if (!pub_image_port) {
-      DFHLOG_E("failed to get output port of {}", "pub_psd_image");
-      return;
-    }
-    pub_image_port->Send(image);
-    DFHLOG_I("pub image_port info, width = {}",
-                          image->proto.width());
-  }
 }
 
-DATAFLOW_REGISTER_MODULE(ParkingslotDetectMoudle)
+DATAFLOW_REGISTER_MODULE(PerceptionOdMoudle)
 
 }  // namespace parking
 }  // namespace fanya

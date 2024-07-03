@@ -95,7 +95,7 @@
         },
         {
           "id": "sub_psd_image",
-          "message": "psd::Image",
+          "message": "rd::Image",
           "msg_src": "raw/psd",
           "msg_type": 0
         },
@@ -107,19 +107,19 @@
         },
         {
           "id": "sub_apa_ps_info",
-          "message": "psd::SApaPSInfo",
+          "message": "rd::SApaPSInfo",
           "msg_src": "raw/psd",
           "msg_type": 0
         },
         {
           "id": "sub_apa_ps_rect",
-          "message": "psd::SApaPSRect",
+          "message": "rd::SApaPSRect",
           "msg_src": "raw/psd",
           "msg_type": 0
         },
         {
           "id": "sub_apa_pointI",
-          "message": "psd::SApaPoint_I",
+          "message": "rd::SApaPoint_I",
           "msg_src": "raw/psd",
           "msg_type": 0
         }
@@ -272,25 +272,25 @@
       "outputs": [
         {
           "id": "pub_apa_ps_info",
-          "message": "psd::SApaPSInfo",
+          "message": "rd::SApaPSInfo",
           "msg_src": "raw/psd",
           "msg_type": 0
         },
         {
           "id": "pub_apa_ps_rect",
-          "message": "psd::SApaPSRect",
+          "message": "rd::SApaPSRect",
           "msg_src": "raw/psd",
           "msg_type": 0
         },
         {
           "id": "pub_apa_pointI",
-          "message": "psd::SApaPoint_I",
+          "message": "rd::SApaPoint_I",
           "msg_src": "raw/psd",
           "msg_type": 0
         },
         {
           "id": "pub_psd_image",
-          "message": "psd::Image",
+          "message": "rd::Image",
           "msg_src": "raw/psd",
           "msg_type": 0
         }
@@ -531,7 +531,7 @@
         "module_id": "LocationMapModule"
       }
     ],
-    "parkingslot_detection_process": [
+    "perception_rd_process ": [
       {
         "type": "module",
         "module_type": 0,

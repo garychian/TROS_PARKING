@@ -97,7 +97,7 @@
           "id": "sub_psd_image",
           "msg_type": 0,
           "msg_src": "raw/psd",
-          "message": "psd::Image"
+          "message": "rd::Image"
         },
         {
           "id": "sub_camera_frame_array",
@@ -109,19 +109,19 @@
           "id": "sub_apa_ps_info",
           "msg_type": 0,
           "msg_src": "raw/psd",
-          "message": "psd::SApaPSInfo"
+          "message": "rd::SApaPSInfo"
         },
         {
           "id": "sub_apa_ps_rect",
           "msg_type": 0,
           "msg_src": "raw/psd",
-          "message": "psd::SApaPSRect"
+          "message": "rd::SApaPSRect"
         },
         {
           "id": "sub_apa_pointI",
           "msg_type": 0,
           "msg_src": "raw/psd",
-          "message": "psd::SApaPoint_I"
+          "message": "rd::SApaPoint_I"
         }
       ],
       "outputs": [
@@ -274,25 +274,25 @@
           "id": "pub_apa_ps_info",
           "msg_type": 0,
           "msg_src": "raw/psd",
-          "message": "psd::SApaPSInfo"
+          "message": "rd::SApaPSInfo"
         },
         {
           "id": "pub_apa_ps_rect",
           "msg_type": 0,
           "msg_src": "raw/psd",
-          "message": "psd::SApaPSRect"
+          "message": "rd::SApaPSRect"
         },
         {
           "id": "pub_apa_pointI",
           "msg_type": 0,
           "msg_src": "raw/psd",
-          "message": "psd::SApaPoint_I"
+          "message": "rd::SApaPoint_I"
         },
         {
           "id": "pub_psd_image",
           "msg_type": 0,
           "msg_src": "raw/psd",
-          "message": "psd::Image"
+          "message": "rd::Image"
         }
       ],
       "procs": [

@@ -78,4 +78,4 @@ message CameraFrameArray {
   optional int64 gdc_vio_ts = 3;  // gdc VIO时间戳, millisecond with vio
 }
 
-// [END messages]
+ // [END messages]

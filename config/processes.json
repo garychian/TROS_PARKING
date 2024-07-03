@@ -1,8 +1,8 @@
 {
   "processes": [
     {
-      "process_name": "parkingslot_detection_process",
-      "process_cfg": "parkingslot_detection_process/process.json"
+      "process_name": "perception_rd_process ",
+      "process_cfg": "perception_rd_process/process.json"
     },
     {
       "process_name": "location_map_process",
@@ -15,6 +15,10 @@
     {
       "process_name": "sensorcenter_process",
       "process_cfg": "sensorcenter_process/process.json"
+    },
+    {
+      "process_name": "perception_od_process",
+      "process_cfg": "perception_od_process/process.json"
     }
   ]
 }

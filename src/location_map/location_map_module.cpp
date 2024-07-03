@@ -61,19 +61,19 @@ void LocationMapModule::InitPortsAndProcs() {
     sen::DualAntennaData);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_psd_image",
-    psd::Image);
+    rd::Image);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_camera_frame_array",
     camera_frame::CameraFrameArray);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_apa_ps_info",
-    psd::SApaPSInfo);
+    rd::SApaPSInfo);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_apa_ps_rect",
-    psd::SApaPSRect);
+    rd::SApaPSRect);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_apa_pointI",
-    psd::SApaPoint_I);
+    rd::SApaPoint_I);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
     "pub_pad_realtime_loc",
     loc::padRealTimeLocation);

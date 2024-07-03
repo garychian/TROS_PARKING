@@ -29,12 +29,12 @@
 
 #include "fanya_protocol/loc.pb.h"
 #include "fanya_protocol/can.pb.h"
-#include "fanya_protocol/psd.pb.h"
+#include "fanya_protocol/rd.pb.h"
 #include "fanya_protocol/aph.pb.h"
 #include "fanya_protocol/fsm.pb.h"
 #include "fanya_protocol/s32g.pb.h"
 #include "fanya_protocol/sen.pb.h"
-
+#include "fanya_protocol/od.pb.h"
 namespace fanya {
 
 namespace parking {
@@ -59,16 +59,16 @@ using spSlotlabelMsg = std::shared_ptr<SlotlabelMsg>;
 using LocStatusMsg = hobot::message::ProtoMsg<loc::LocStatus>;
 using spLocStatusMsg = std::shared_ptr<LocStatusMsg>;
 
-using SApaPSInfoMsg = hobot::message::ProtoMsg<psd::SApaPSInfo>;
+using SApaPSInfoMsg = hobot::message::ProtoMsg<rd::SApaPSInfo>;
 using spSApaPSInfoMsg = std::shared_ptr<SApaPSInfoMsg>;
 
-using SApaPSRectMsg = hobot::message::ProtoMsg<psd::SApaPSRect>;
+using SApaPSRectMsg = hobot::message::ProtoMsg<rd::SApaPSRect>;
 using spSApaPSRectMsg = std::shared_ptr<SApaPSRectMsg>;
 
-using SApaPoint_IMsg = hobot::message::ProtoMsg<psd::SApaPoint_I>;
+using SApaPoint_IMsg = hobot::message::ProtoMsg<rd::SApaPoint_I>;
 using spSApaPoint_IMsg = std::shared_ptr<SApaPoint_IMsg>;
 
-using ImageMsg = hobot::message::ProtoMsg<psd::Image>;
+using ImageMsg = hobot::message::ProtoMsg<rd::Image>;
 using spImageMsg = std::shared_ptr<ImageMsg>;
 
 using PadRealTimeLocationMsg = hobot::message::ProtoMsg<loc::padRealTimeLocation>;
@@ -106,6 +106,67 @@ using spCrossWalksMsg = std::shared_ptr<CrossWalksMsg>;
 
 using ArrowsMsg = hobot::message::ProtoMsg<loc::arrows>;
 using spArrowsMsg = std::shared_ptr<ArrowsMsg>;
+
+//add od 
+using ObstaclesMsg = hobot::message::ProtoMsg<od::Obstacles>;
+using spObstaclesMsg = std::shared_ptr<ObstaclesMsg>;
+
+using HeaderMsg = hobot::message::ProtoMsg<od::Header>;
+using spHeaderMsg = std::shared_ptr<HeaderMsg>;
+
+using TimeMsg = hobot::message::ProtoMsg<od::Time>;
+using spTimeMsg = std::shared_ptr<TimeMsg>;
+
+using ObstacleCylindricalMsg = hobot::message::ProtoMsg<od::ObstacleCylindrical>;
+using spObstacleCylindricalMsg = std::shared_ptr<ObstacleCylindricalMsg>;
+
+using Vector3dMsg = hobot::message::ProtoMsg<od::Vector3d>;
+using spVector3d = std::shared_ptr<Vector3dMsg>;
+
+using MotionInfoMsg = hobot::message::ProtoMsg<od::MotionInfo>;
+using spMotionInfo = std::shared_ptr<MotionInfoMsg>;
+
+using Point2fMsg = hobot::message::ProtoMsg<od::Point2f>;
+using spPoint2fMsg = std::shared_ptr<Point2fMsg>;
+
+using Vector3fMsg = hobot::message::ProtoMsg<od::Vector3f>;
+using spVector3fMsg = std::shared_ptr<Vector3fMsg>;
+
+using Matrix3fMsg = hobot::message::ProtoMsg<od::Matrix3f>;
+using spMatrix3fMsg = std::shared_ptr<Matrix3fMsg>;
+
+using ObstacleCubeMsg = hobot::message::ProtoMsg<od::ObstacleCube>;
+using spObstacleCubeMsg = std::shared_ptr<ObstacleCubeMsg>;
+
+using ObstacleTrajectoryMsg = hobot::message::ProtoMsg<od::ObstacleTrajectory>;
+using spObstacleTrajectoryMsg = std::shared_ptr<ObstacleTrajectoryMsg>;
+
+using ObstacleTrajectoryPointMsg = hobot::message::ProtoMsg<od::ObstacleTrajectoryPoint>;
+using spObstacleTrajectoryPointMsg = std::shared_ptr<ObstacleTrajectoryPointMsg>;
+
+using ObstacleRawMsg = hobot::message::ProtoMsg<od::ObstacleRaw>;
+using spObstacleRawMsg = std::shared_ptr<ObstacleRawMsg>;
+
+using Bbox2DMsg = hobot::message::ProtoMsg<od::Bbox2D>;
+using spBbox2DMsg = std::shared_ptr<Bbox2DMsg>;
+
+using DirectionInfoMsg = hobot::message::ProtoMsg<od::DirectionInfo>;
+using spDirectionInfoMsg = std::shared_ptr<DirectionInfoMsg>;
+
+using UssRangeMsg = hobot::message::ProtoMsg<od::UssRange>;
+using spUssRangeMsg = std::shared_ptr<UssRangeMsg>;
+
+using PositionInfoMsg = hobot::message::ProtoMsg<od::PositionInfo>;
+using spPositionInfoMsg = std::shared_ptr<PositionInfoMsg>;
+
+using FSLineMsg = hobot::message::ProtoMsg<od::FSLine>;
+using spFSLineMsg = std::shared_ptr<FSLineMsg>;
+
+using FSLinesimpleMsg = hobot::message::ProtoMsg<od::FSLinesimple>;
+using spFSLinesimpleMsg = std::shared_ptr<FSLinesimpleMsg>;
+
+using FSLinePointMsg = hobot::message::ProtoMsg<od::FSLinePoint>;
+using spFSLinePointMsg = std::shared_ptr<FSLinePointMsg>;
 
 } // namespace parking
 } // namespace fanya

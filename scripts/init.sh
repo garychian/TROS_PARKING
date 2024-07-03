@@ -99,9 +99,11 @@ elif [[ "$TARGET" == "1" ]];then
 elif [[ "$TARGET" == "2" ]];then
   ./$MAINBOARD -c process.json -w config/apahandle_process
 elif [[ "$TARGET" == "3" ]];then
-  ./$MAINBOARD -c process.json -w config/parkingslot_detection_process
+  ./$MAINBOARD -c process.json -w config/perception_rd_process 
 elif [[ "$TARGET" == "4" ]];then
   ./$MAINBOARD -c process.json -w config/location_map_process
+elif [[ "$TARGET" == "5" ]];then
+  ./$MAINBOARD -c process.json -w config/perception_od_process
 else
   echo "invalid mode = $MODE, exit!"
   exit 1
