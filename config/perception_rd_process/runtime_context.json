@@ -47,8 +47,6 @@
             "comm_protocol": "shm"
           }
         },
-
-        
           {
             "port_id": "pub_apa_ps_info_s32g",
             "topic": "/psd/apa_ps_info",
@@ -64,8 +62,6 @@
               }
             }
           },
-
-
         {
           "port_id": "pub_apa_ps_rect",
           "topic": "/psd/apa_ps_rect",
@@ -88,6 +84,21 @@
           "communication": {
             "domain_id": 0,
             "comm_protocol": "shm"
+          }
+        },
+        {
+          "port_id": "pub_quad_parking_slots_s32g",
+          "topic": "/psd/quad_parking_slots",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 3
+                }
+              ]
+            }
           }
         }
       ],

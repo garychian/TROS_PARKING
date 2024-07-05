@@ -21,4 +21,4 @@ target_include_directories(od
 target_link_libraries(od ${COMMON_LIB} ${HOBOT_BOLE_PROTOCOL_LIB} ${FANYA_PROTO_LIB} ${PROTO})
 
 # install stage
-install(TARGETS psdod  DESTINATION ${TROS_INSTALL_LIB})
+install(TARGETS od  DESTINATION ${TROS_INSTALL_LIB})

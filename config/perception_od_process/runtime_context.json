@@ -1,8 +1,8 @@
 {
   "modules": [
     {
-      "class_name": "ParkingslotDetectMoudle",
-      "module_id": "ParkingslotDetectMoudle",
+      "class_name": "PerceptionOdMoudle",
+      "module_id": "PerceptionOdMoudle",
       "package": "../../lib/libod.so",
       "inputs": [
         {
@@ -28,12 +28,19 @@
           "topic": "/od/obstacles",
           "communication": {
             "domain_id": 0,
-            "comm_protocol": "shm"
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+                "participants": [
+                  {
+                    "id": 1
+                  }
+                ]
+              }
           }
         },
           {
-            "port_id": "pub_header",
-            "topic": "/od/header",
+            "port_id": "pub_fsline_msg",
+            "topic": "/od/fsline",
             "communication": {
               "domain_id": 0,
               "comm_protocol": "zmq_tcp",
@@ -56,7 +63,7 @@
             "expression": "sub_camera_frame_array[-1] && sub_apa_status[-1]"
           },
           "schedule_group": {
-            "scheduler_name": "TP_PSD"
+            "scheduler_name": "TP_OD"
           }
         },
         {

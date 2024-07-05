@@ -168,5 +168,14 @@ using spFSLinesimpleMsg = std::shared_ptr<FSLinesimpleMsg>;
 using FSLinePointMsg = hobot::message::ProtoMsg<od::FSLinePoint>;
 using spFSLinePointMsg = std::shared_ptr<FSLinePointMsg>;
 
+using QuadParkingSlotsMsg = hobot::message::ProtoMsg<rd::QuadParkingSlots>;
+using spQuadParkingSlotsMsg = std::shared_ptr<QuadParkingSlotsMsg>;
+
+using FsmFusionSlotInfo2LocationMsg = hobot::message::ProtoMsg<fsm::FusionSlotInfo2Location>;
+using spFsmFusionSlotInfo2LocationMsg = std::shared_ptr<FsmFusionSlotInfo2LocationMsg>;
+
+using AphFusionSlotInfo2LocationMsg = hobot::message::ProtoMsg<aph::FusionSlotInfo2Location>;
+using spAphFusionSlotInfo2LocationMsg = std::shared_ptr<AphFusionSlotInfo2LocationMsg>;
+
 } // namespace parking
 } // namespace fanya

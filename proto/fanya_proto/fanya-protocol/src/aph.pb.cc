@@ -44,7 +44,8 @@ struct target_slotDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT target_slotDefaultTypeInternal _target_slot_default_instance_;
 constexpr FusionSlotInfo2Location::FusionSlotInfo2Location(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
-  : m_user_select_slot_label_idx_(0){}
+  : fusionslotinfos_()
+  , slotnum_(0){}
 struct FusionSlotInfo2LocationDefaultTypeInternal {
   constexpr FusionSlotInfo2LocationDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -113,8 +114,10 @@ const uint32_t TableStruct_aph_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(prot
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::aph::FusionSlotInfo2Location, m_user_select_slot_label_idx_),
+  PROTOBUF_FIELD_OFFSET(::aph::FusionSlotInfo2Location, slotnum_),
+  PROTOBUF_FIELD_OFFSET(::aph::FusionSlotInfo2Location, fusionslotinfos_),
   0,
+  ~0u,
   PROTOBUF_FIELD_OFFSET(::aph::FusionSlotInfo, _has_bits_),
   PROTOBUF_FIELD_OFFSET(::aph::FusionSlotInfo, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -149,9 +152,9 @@ const uint32_t TableStruct_aph_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(prot
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 7, -1, sizeof(::aph::apa_status)},
   { 8, 15, -1, sizeof(::aph::target_slot)},
-  { 16, 23, -1, sizeof(::aph::FusionSlotInfo2Location)},
-  { 24, 37, -1, sizeof(::aph::FusionSlotInfo)},
-  { 44, 52, -1, sizeof(::aph::SlotPoint)},
+  { 16, 24, -1, sizeof(::aph::FusionSlotInfo2Location)},
+  { 26, 39, -1, sizeof(::aph::FusionSlotInfo)},
+  { 46, 54, -1, sizeof(::aph::SlotPoint)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -168,29 +171,29 @@ const char descriptor_table_protodef_aph_2eproto[] PROTOBUF_SECTION_VARIABLE(pro
   "H\000\210\001\001B\027\n\025_m_current_apa_status\"Y\n\013target"
   "_slot\022)\n\034m_user_select_slot_label_idx\030\001 "
   "\001(\005H\000\210\001\001B\037\n\035_m_user_select_slot_label_id"
-  "x\"e\n\027FusionSlotInfo2Location\022)\n\034m_user_s"
-  "elect_slot_label_idx\030\001 \001(\005H\000\210\001\001B\037\n\035_m_us"
-  "er_select_slot_label_idx\"\264\002\n\016FusionSlotI"
-  "nfo\022\032\n\002pt\030\001 \003(\0132\016.aph.SlotPoint\022\025\n\010slotT"
-  "ype\030\002 \001(\005H\000\210\001\001\022\033\n\016fusionSlotType\030\003 \001(\005H\001"
-  "\210\001\001\022\026\n\tslotLabel\030\004 \001(\005H\002\210\001\001\022\031\n\014displayLa"
-  "bel\030\005 \001(\005H\003\210\001\001\022\034\n\017slotInnerObType\030\006 \001(\005H"
-  "\004\210\001\001\022\033\n\016slotStatusType\030\007 \001(\005H\005\210\001\001B\013\n\t_sl"
-  "otTypeB\021\n\017_fusionSlotTypeB\014\n\n_slotLabelB"
-  "\017\n\r_displayLabelB\022\n\020_slotInnerObTypeB\021\n\017"
-  "_slotStatusType\"7\n\tSlotPoint\022\016\n\001x\030\001 \001(\005H"
-  "\000\210\001\001\022\016\n\001y\030\002 \001(\005H\001\210\001\001B\004\n\002_xB\004\n\002_y*\375\001\n\rApa"
-  "StatusType\022\022\n\016APA_STATUS_OFF\020\000\022\026\n\022APA_ST"
-  "ATUS_STANDBY\020\001\022\030\n\024APA_STATUS_SEARCHING\020\002"
-  "\022\030\n\024APA_STATUS_EXIT_PARK\020\003\022\025\n\021APA_STATUS"
-  "_ENABLE\020\004\022\027\n\023APA_STATUS_GUIDANCE\020\005\022\025\n\021AP"
-  "A_STATUS_FINISH\020\006\022\024\n\020APA_STATUS_ERROR\020\007\022"
-  "\026\n\022APA_STATUS_PARKING\020\010\022\027\n\023APA_STATUS_RE"
-  "SERVED\020\tb\006proto3"
+  "x\"i\n\027FusionSlotInfo2Location\022\024\n\007slotNum\030"
+  "\001 \001(\005H\000\210\001\001\022,\n\017fusionSlotInfos\030\002 \003(\0132\023.ap"
+  "h.FusionSlotInfoB\n\n\010_slotNum\"\264\002\n\016FusionS"
+  "lotInfo\022\032\n\002pt\030\001 \003(\0132\016.aph.SlotPoint\022\025\n\010s"
+  "lotType\030\002 \001(\005H\000\210\001\001\022\033\n\016fusionSlotType\030\003 \001"
+  "(\005H\001\210\001\001\022\026\n\tslotLabel\030\004 \001(\005H\002\210\001\001\022\031\n\014displ"
+  "ayLabel\030\005 \001(\005H\003\210\001\001\022\034\n\017slotInnerObType\030\006 "
+  "\001(\005H\004\210\001\001\022\033\n\016slotStatusType\030\007 \001(\005H\005\210\001\001B\013\n"
+  "\t_slotTypeB\021\n\017_fusionSlotTypeB\014\n\n_slotLa"
+  "belB\017\n\r_displayLabelB\022\n\020_slotInnerObType"
+  "B\021\n\017_slotStatusType\"7\n\tSlotPoint\022\016\n\001x\030\001 "
+  "\001(\005H\000\210\001\001\022\016\n\001y\030\002 \001(\005H\001\210\001\001B\004\n\002_xB\004\n\002_y*\375\001\n"
+  "\rApaStatusType\022\022\n\016APA_STATUS_OFF\020\000\022\026\n\022AP"
+  "A_STATUS_STANDBY\020\001\022\030\n\024APA_STATUS_SEARCHI"
+  "NG\020\002\022\030\n\024APA_STATUS_EXIT_PARK\020\003\022\025\n\021APA_ST"
+  "ATUS_ENABLE\020\004\022\027\n\023APA_STATUS_GUIDANCE\020\005\022\025"
+  "\n\021APA_STATUS_FINISH\020\006\022\024\n\020APA_STATUS_ERRO"
+  "R\020\007\022\026\n\022APA_STATUS_PARKING\020\010\022\027\n\023APA_STATU"
+  "S_RESERVED\020\tb\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_aph_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_aph_2eproto = {
-  false, false, 936, descriptor_table_protodef_aph_2eproto, "aph.proto", 
+  false, false, 940, descriptor_table_protodef_aph_2eproto, "aph.proto", 
   &descriptor_table_aph_2eproto_once, nullptr, 0, 5,
   schemas, file_default_instances, TableStruct_aph_2eproto::offsets,
   file_level_metadata_aph_2eproto, file_level_enum_descriptors_aph_2eproto, file_level_service_descriptors_aph_2eproto,
@@ -610,14 +613,15 @@ void target_slot::InternalSwap(target_slot* other) {
 class FusionSlotInfo2Location::_Internal {
  public:
   using HasBits = decltype(std::declval<FusionSlotInfo2Location>()._has_bits_);
-  static void set_has_m_user_select_slot_label_idx(HasBits* has_bits) {
+  static void set_has_slotnum(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
 };
 
 FusionSlotInfo2Location::FusionSlotInfo2Location(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned),
+  fusionslotinfos_(arena) {
   SharedCtor();
   if (!is_message_owned) {
     RegisterArenaDtor(arena);
@@ -626,14 +630,15 @@ FusionSlotInfo2Location::FusionSlotInfo2Location(::PROTOBUF_NAMESPACE_ID::Arena*
 }
 FusionSlotInfo2Location::FusionSlotInfo2Location(const FusionSlotInfo2Location& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _has_bits_(from._has_bits_) {
+      _has_bits_(from._has_bits_),
+      fusionslotinfos_(from.fusionslotinfos_) {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  m_user_select_slot_label_idx_ = from.m_user_select_slot_label_idx_;
+  slotnum_ = from.slotnum_;
   // @@protoc_insertion_point(copy_constructor:aph.FusionSlotInfo2Location)
 }
 
 inline void FusionSlotInfo2Location::SharedCtor() {
-m_user_select_slot_label_idx_ = 0;
+slotnum_ = 0;
 }
 
 FusionSlotInfo2Location::~FusionSlotInfo2Location() {
@@ -663,7 +668,8 @@ void FusionSlotInfo2Location::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  m_user_select_slot_label_idx_ = 0;
+  fusionslotinfos_.Clear();
+  slotnum_ = 0;
   _has_bits_.Clear();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
@@ -675,12 +681,25 @@ const char* FusionSlotInfo2Location::_InternalParse(const char* ptr, ::PROTOBUF_
     uint32_t tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // optional int32 m_user_select_slot_label_idx = 1;
+      // optional int32 slotNum = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
-          _Internal::set_has_m_user_select_slot_label_idx(&has_bits);
-          m_user_select_slot_label_idx_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          _Internal::set_has_slotnum(&has_bits);
+          slotnum_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .aph.FusionSlotInfo fusionSlotInfos = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_fusionslotinfos(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<18>(ptr));
         } else
           goto handle_unusual;
         continue;
@@ -714,10 +733,18 @@ uint8_t* FusionSlotInfo2Location::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // optional int32 m_user_select_slot_label_idx = 1;
-  if (_internal_has_m_user_select_slot_label_idx()) {
+  // optional int32 slotNum = 1;
+  if (_internal_has_slotnum()) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_m_user_select_slot_label_idx(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_slotnum(), target);
+  }
+
+  // repeated .aph.FusionSlotInfo fusionSlotInfos = 2;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->_internal_fusionslotinfos_size()); i < n; i++) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, this->_internal_fusionslotinfos(i), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -736,10 +763,17 @@ size_t FusionSlotInfo2Location::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // optional int32 m_user_select_slot_label_idx = 1;
+  // repeated .aph.FusionSlotInfo fusionSlotInfos = 2;
+  total_size += 1UL * this->_internal_fusionslotinfos_size();
+  for (const auto& msg : this->fusionslotinfos_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // optional int32 slotNum = 1;
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_m_user_select_slot_label_idx());
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32SizePlusOne(this->_internal_slotnum());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
@@ -764,8 +798,9 @@ void FusionSlotInfo2Location::MergeFrom(const FusionSlotInfo2Location& from) {
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_has_m_user_select_slot_label_idx()) {
-    _internal_set_m_user_select_slot_label_idx(from._internal_m_user_select_slot_label_idx());
+  fusionslotinfos_.MergeFrom(from.fusionslotinfos_);
+  if (from._internal_has_slotnum()) {
+    _internal_set_slotnum(from._internal_slotnum());
   }
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -785,7 +820,8 @@ void FusionSlotInfo2Location::InternalSwap(FusionSlotInfo2Location* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  swap(m_user_select_slot_label_idx_, other->m_user_select_slot_label_idx_);
+  fusionslotinfos_.InternalSwap(&other->fusionslotinfos_);
+  swap(slotnum_, other->slotnum_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata FusionSlotInfo2Location::GetMetadata() const {

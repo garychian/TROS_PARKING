@@ -67,6 +67,12 @@ using BumpsSerializer = ProtobufSerializer<loc::bumps>;
 using CrossWalksSerializer = ProtobufSerializer<loc::crossWalks>;
 using ArrowsSerializer = ProtobufSerializer<loc::arrows>;
 
+using QuadParkingSlotsSerializer = ProtobufSerializer<rd::QuadParkingSlots>;
+
+using ObstaclesSerializer = ProtobufSerializer<od::Obstacles>;
+using HeaderSerializer = ProtobufSerializer<od::Header>;
+using FSLineSerializer = ProtobufSerializer<od::FSLine>;
+
 struct Args {
   int participant_id = 0;
   int protocol = PROTOCOL_INVALID;
@@ -450,6 +456,70 @@ static void SubE2EventCallback(E2EventType &event,
             << ", participant info is " << info->link_info << std::endl;
 }
 
+// add rd sub topic callback
+static void RdParkingSlotsSubCallbackWithTopic(
+    const std::shared_ptr<QuadParkingSlotsMsg> & rd_quad_parking_slots_msg, const std::string &topic) {
+  std::cout << "rd_quad_parking_slots_msg topic:" << topic
+            << "msg gen_ts: " << rd_quad_parking_slots_msg->GetGenTimestamp()
+            << ",msg done_ts: " << rd_quad_parking_slots_msg->GetDoneTimestamp() << std::endl;
+  TypeWrapper send_time, recv_time;
+  bool res1 = rd_quad_parking_slots_msg->GetExtInfo(ExtendInfoKey::kSendTime, send_time);
+  bool res2 = rd_quad_parking_slots_msg->GetExtInfo(ExtendInfoKey::kRecvTime, recv_time);
+  if (res1 && res2) {
+    std::cout << "recv_time = " << recv_time.GetValueInt64()
+              << ", send time = " << send_time.GetValueInt64() << std::endl;
+    int64_t latency = recv_time.GetValueInt64() - send_time.GetValueInt64();
+    std::cout << "this message latency is " << latency / 1000 << " us"
+              << std::endl;
+  }
+
+  auto proto_ = rd_quad_parking_slots_msg->proto;
+  std::cout << "this message proto info :" << proto_.DebugString() << std::endl;
+
+}
+
+// add od sub topic callback
+static void OdObstaclesSubCallbackWithTopic(
+    const std::shared_ptr<ObstaclesMsg> &od_obstacles_msg, const std::string &topic) {
+  std::cout << "od_obstacles_msg msg topic:" << topic
+            << "msg gen_ts: " << od_obstacles_msg->GetGenTimestamp()
+            << ",msg done_ts: " << od_obstacles_msg->GetDoneTimestamp() << std::endl;
+  TypeWrapper send_time, recv_time;
+  bool res1 = od_obstacles_msg->GetExtInfo(ExtendInfoKey::kSendTime, send_time);
+  bool res2 = od_obstacles_msg->GetExtInfo(ExtendInfoKey::kRecvTime, recv_time);
+  if (res1 && res2) {
+    std::cout << "recv_time = " << recv_time.GetValueInt64()
+              << ", send time = " << send_time.GetValueInt64() << std::endl;
+    int64_t latency = recv_time.GetValueInt64() - send_time.GetValueInt64();
+    std::cout << "this message latency is " << latency / 1000 << " us"
+              << std::endl;
+  }
+
+  auto obstacles_proto = od_obstacles_msg->proto;
+  std::cout << "this message proto info: " << obstacles_proto.DebugString() << std::endl;
+
+}
+
+static void OdFSLineSubCallbackWithTopic(
+    const std::shared_ptr<FSLineMsg> &od_fsline_msg, const std::string &topic) {
+  std::cout << "od_fsline_msg msg topic:" << topic
+            << "msg gen_ts: " << od_fsline_msg->GetGenTimestamp()
+            << ",msg done_ts: " << od_fsline_msg->GetDoneTimestamp() << std::endl;
+  TypeWrapper send_time, recv_time;
+  bool res1 = od_fsline_msg->GetExtInfo(ExtendInfoKey::kSendTime, send_time);
+  bool res2 = od_fsline_msg->GetExtInfo(ExtendInfoKey::kRecvTime, recv_time);
+  if (res1 && res2) {
+    std::cout << "recv_time = " << recv_time.GetValueInt64()
+              << ", send time = " << send_time.GetValueInt64() << std::endl;
+    int64_t latency = recv_time.GetValueInt64() - send_time.GetValueInt64();
+    std::cout << "this message latency is " << latency / 1000 << " us"
+              << std::endl;
+  }
+
+  auto fsline_proto = od_fsline_msg->proto;
+  std::cout << "this message proto info: " << fsline_proto.DebugString() << std::endl;
+}
+
 int main(int argc, char *argv[]) {
   // parse input parameter
   Args args;
@@ -598,11 +668,36 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
+  // sub rd QuadParkingSlots
+  std::shared_ptr<Subscriber<QuadParkingSlotsSerializer>> od_quad_parking_slots_subscriber = 
+    Subscriber<QuadParkingSlotsSerializer>::NewExt(comm_attr, "/psd/quad_parking_slots", 0,
+    RdParkingSlotsSubCallbackWithTopic, args.protocol);
+  if (!od_quad_parking_slots_subscriber) {
+    std::cout << " create subscriber failed" << std::endl;
+    return -1;
+  }
+
+  // sub od topcis
+  std::shared_ptr<Subscriber<ObstaclesSerializer>> od_obstacles_subscriber = 
+    Subscriber<ObstaclesSerializer>::NewExt(comm_attr, "/od/obstacles", 0,
+    OdObstaclesSubCallbackWithTopic, args.protocol);
+  if (!od_obstacles_subscriber) {
+    std::cout << " create subscriber failed" << std::endl;
+    return -1;
+  }
+
+  std::shared_ptr<Subscriber<FSLineSerializer>> od_fsline_subscriber = 
+    Subscriber<FSLineSerializer>::NewExt(comm_attr, "/od/fsline", 0,
+    OdFSLineSubCallbackWithTopic, args.protocol);
+  if (!od_fsline_subscriber) {
+    std::cout << " create subscriber failed" << std::endl;
+    return -1;
+  }
+
   while (1) {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     std::cout << " subscriber is running ..." << std::endl;
   }
-
 
   return 0;
 }

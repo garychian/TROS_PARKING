@@ -34,6 +34,21 @@
               ]
             }
           }
+        },
+        {
+          "port_id": "sub_fusion_slot_info2_location",
+          "topic": "/fsm/fusion_slot_info2_location",
+          "communication": {
+            "domain_id": -65535,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 3
+                }
+              ]
+            }
+          }
         }
       ],
       "outputs": [
@@ -52,6 +67,14 @@
             "domain_id": 0,
             "comm_protocol": "shm"
           }
+        },
+        {
+          "port_id": "pub_fusion_slot_info2_location",
+          "topic": "/aph/fusion_slot_info2_location",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         }
       ],
       "procs": [
@@ -60,7 +83,7 @@
           "proc_type": "MsgCondTriggerProc",
           "disable": false,
           "proc_option": {
-            "expression": "sub_slot_label[-1] && sub_apa_status_req[-1]"
+            "expression": "sub_slot_label[-1] && sub_apa_status_req[-1]&&sub_fusion_slot_info2_location[-1]"
           },
           "schedule_group": {
             "scheduler_name": "TP_APH"

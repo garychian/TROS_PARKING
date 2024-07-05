@@ -37,6 +37,14 @@
           }
         },
         {
+          "port_id": "sub_fusion_slot_info2_location",
+          "topic": "/aph/fusion_slot_info2_location",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
+        },
+        {
           "port_id": "sub_imu_data",
           "topic": "/sen/imu_data",
           "communication": {
@@ -326,7 +334,7 @@
           "proc_type": "MsgCondTriggerProc",
           "disable": false,
           "proc_option": {
-            "expression": "sub_vehicleio_data[-1] && sub_apa_status[-1] && sub_target_slot[-1] && sub_imu_data[-1] && sub_gnss_data[-1] && sub_ins_data[-1] && sub_dual_antenna_data[-1] && sub_psd_image[-1] && sub_camera_frame_array[-1] && sub_apa_ps_info[-1] && sub_apa_ps_rect[-1] && sub_apa_pointI[-1]"
+            "expression": "sub_vehicleio_data[-1] && sub_apa_status[-1] && sub_target_slot[-1] && sub_imu_data[-1] && sub_gnss_data[-1] && sub_ins_data[-1] && sub_dual_antenna_data[-1] && sub_psd_image[-1] && sub_camera_frame_array[-1] && sub_apa_ps_info[-1] && sub_apa_ps_rect[-1] && sub_apa_pointI[-1] && sub_fusion_slot_info2_location[-1]"
           },
           "schedule_group": {
             "scheduler_name": "TP_LOC"
