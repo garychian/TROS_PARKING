@@ -1,0 +1,53 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package can;
+// [END declaration]
+
+enum TrnsShftLvrPos_TCM{
+  Betweenranges = 0x0;
+  Parkrange = 0x1;
+  Reverserange = 0x2;
+  Neutralrange = 0x3;
+  Forwardrangea = 0x4;
+  Forwardrangeb = 0x5;
+  Forwardrangec = 0x6;
+  Forwardranged = 0x7;
+  Forwardrangee = 0x8;
+  Forwardrangef = 0x9;
+  Forwardrangeg = 0xa;
+  Forwardrangeh = 0xb;
+  Forwardrangei = 0xc;
+  Forwardrangej = 0xd;
+  Reserved = 0xe;
+  Leverpositionunknown = 0xf;
+}
+
+message VehicleCanData{
+    optional float VehSpdAvgNDrvn = 1;
+    optional float StrWhAng = 2;
+    optional float IMUYawRtPri = 3;
+    optional float IMULatACCSec = 4;
+    optional float IMUYawRtSec = 5;
+    optional float IMULonAccSec = 6;
+    optional float IIMULatAccPrim = 7;
+    optional float IMULonAccPri = 8;
+    optional float WhlAngVelRRrAuth = 9;
+    optional float WhlAngVelLRrAuth = 10;
+    optional float WhlAngVelRFrtAuth = 11;
+    optional float WhlAngVelLFrtAuth = 12;
+    optional float WhlDistEdgeCntrLRHigFreq = 13;
+    optional float WhlDistEdgeCntrRRHigFreq = 14;
+    optional float WhlDistEdgeCntrRFHigFreq = 15;
+    optional float WhlDistEdgeCntrLFHigFreq = 16;
+    optional TrnsShftLvrPos_TCM trnsShftLvrPos_TCM = 17;
+}
+
+// [START messages]

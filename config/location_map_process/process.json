@@ -5,7 +5,7 @@
   "schedule_config": "schedule.json",
   "process_name": "parking_loc",
   "log": {
-    "log_level": "info",
+    "log_level": "debug",
     "rotate_number": 128,
     "max_size": 256,
     "log_path": "../../log/loc/"

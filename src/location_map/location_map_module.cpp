@@ -40,7 +40,7 @@ LocationMapModule::LocationMapModule(
 void LocationMapModule::InitPortsAndProcs() {
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_vehicleio_data",
-    vehicleiostate::CanSignalUnit);
+    can::VehicleCanData);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_apa_status",
     aph::apa_status);
@@ -162,6 +162,25 @@ void LocationMapModule::MsgCenterProc(
     DFHLOG_I("sub_vehicleio_data msg timestamp: {}",
       msg->GetGenTimestamp());
     // process msg of sub_vehicleio_data
+    auto can_msg = std::dynamic_pointer_cast<CanSignalMsg>(msg);
+    DFHLOG_I("speed: {}", can_msg->proto.vehspdavgndrvn());
+    //auto gear_type = static_cast<can::TrnsShftLvrPos_TCM>(can_msg->proto.trnsshftlvrpos_tcm());
+    DFHLOG_I("gear: {}", can_msg->proto.trnsshftlvrpos_tcm());
+    DFHLOG_I("WheelAngle: {}",can_msg->proto.whlangvellrrauth());
+    DFHLOG_I("yawrate: {}",can_msg->proto.imuyawrtpri());
+    DFHLOG_I("IMULatACCSec: {}",can_msg->proto.imulataccsec());
+    DFHLOG_I("IMUYawRtSec: {}",can_msg->proto.imuyawrtsec());
+    DFHLOG_I("IMULonAccSec: {}",can_msg->proto.imulonaccsec());
+    DFHLOG_I("IIMULatAccPrim: {}",can_msg->proto.iimulataccprim());
+    DFHLOG_I("IMULonAccPri: {}",can_msg->proto.imulonaccpri());
+    DFHLOG_I("FLWheelSpeedInkph: {}",can_msg->proto.whlangvellfrtauth());
+    DFHLOG_I("FRwheelSpeedInkph: {}",can_msg->proto.whlangvellrrauth());
+    DFHLOG_I("RLwheelSpeedInkph: {}",can_msg->proto.whlangvelrfrtauth());
+    DFHLOG_I("RRwheelSpeedInkph: {}",can_msg->proto.whlangvelrrrauth());
+    DFHLOG_I("FLWheelSpeedPulse: {}",can_msg->proto.whldistedgecntrlfhigfreq());
+    DFHLOG_I("FRwheelSpeedPulse: {}",can_msg->proto.whldistedgecntrlrhigfreq());
+    DFHLOG_I("RLwheelSpeedPulse: {}",can_msg->proto.whldistedgecntrrfhigfreq());
+    DFHLOG_I("RRwheelSpeedPulse: {}",can_msg->proto.whldistedgecntrrrhigfreq());
   }
   auto &sub_apa_status_msgs
     = msgs[proc->GetResultIndex("sub_apa_status")];

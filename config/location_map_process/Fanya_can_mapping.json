@@ -1,0 +1,171 @@
+{
+  "signals": [
+    {
+      "ID": 0,
+      "Dbc_Signal_Name": "TrnsShftLvrPos_TCM",
+      "Veh_Signal_Name": "TrnsShftLvrPos_TCM",
+      "value_table": [
+        {
+          "Veh_name": "Leverpositionunknown",
+          "Veh_value": "0xf",
+          "Dbc_value": "0xf"
+        },
+        {
+          "Veh_name": "Reserved",
+          "Veh_value": "0xe",
+          "Dbc_value": "0xe"
+        },
+        {
+          "Veh_name": "Forwardrangej",
+          "Veh_value": "0xd",
+          "Dbc_value": "0xd"
+        },
+        {
+          "Veh_name": "Forwardrangei",
+          "Veh_value": "0xc",
+          "Dbc_value": "0xc"
+        },
+        {
+          "Veh_name": "Forwardrangeh",
+          "Veh_value": "0xb",
+          "Dbc_value": "0xb"
+        },
+        {
+          "Veh_name": "Forwardrangeg",
+          "Veh_value": "0xa",
+          "Dbc_value": "0xa"
+        },
+        {
+          "Veh_name": "Forwardrangef",
+          "Veh_value": "0x9",
+          "Dbc_value": "0x9"
+        },
+        {
+          "Veh_name": "Forwardrangee",
+          "Veh_value": "0x8",
+          "Dbc_value": "0x8"
+        },
+        {
+          "Veh_name": "Forwardranged",
+          "Veh_value": "0x7",
+          "Dbc_value": "0x7"
+        },
+        {
+          "Veh_name": "Forwardrangec",
+          "Veh_value": "0x6",
+          "Dbc_value": "0x6"
+        },
+        {
+          "Veh_name": "Forwardrangeb",
+          "Veh_value": "0x5",
+          "Dbc_value": "0x5"
+        },
+        {
+          "Veh_name": "Forwardrangea",
+          "Veh_value": "0x4",
+          "Dbc_value": "0x4"
+        },
+        {
+          "Veh_name": "Neutralrange",
+          "Veh_value": "0x3",
+          "Dbc_value": "0x3"
+        },
+        {
+          "Veh_name": "Reverserange",
+          "Veh_value": "0x2",
+          "Dbc_value": "0x2"
+        },
+        {
+          "Veh_name": "Parkrange",
+          "Veh_value": "0x1",
+          "Dbc_value": "0x1"
+        },
+        {
+          "Veh_name": "Betweenranges",
+          "Veh_value": "0x0",
+          "Dbc_value": "0x0"
+        }
+      ]
+    },
+    {
+      "ID": 1,
+      "Dbc_Signal_Name": "VehSpdAvgNDrvn",
+      "Veh_Signal_Name": "VehSpdAvgNDrvn"
+    },
+    {
+      "ID": 2,
+      "Dbc_Signal_Name": "StrWhAng",
+      "Veh_Signal_Name": "StrWhAng"
+    },
+    {
+      "ID": 3,
+      "Dbc_Signal_Name": "IMUYawRtPri",
+      "Veh_Signal_Name": "IMUYawRtPri"
+    },
+    {
+      "ID": 4,
+      "Dbc_Signal_Name": "IMULatACCSec",
+      "Veh_Signal_Name": "IMULatACCSec"
+    },
+    {
+      "ID": 5,
+      "Dbc_Signal_Name": "IMUYawRtSec",
+      "Veh_Signal_Name": "IMUYawRtSec"
+    },
+    {
+      "ID": 6,
+      "Dbc_Signal_Name": "IMULonAccSec",
+      "Veh_Signal_Name": "IMULonAccSec"
+    },
+    {
+      "ID": 7,
+      "Dbc_Signal_Name": "IIMULatAccPrim",
+      "Veh_Signal_Name": "IIMULatAccPrim"
+    },
+    {
+      "ID": 8,
+      "Dbc_Signal_Name": "IMULonAccPri",
+      "Veh_Signal_Name": "IMULonAccPri"
+    },
+    {
+      "ID": 9,
+      "Dbc_Signal_Name": "WhlAngVelRRrAuth",
+      "Veh_Signal_Name": "WhlAngVelRRrAuth"
+    },
+    {
+      "ID": 10,
+      "Dbc_Signal_Name": "WhlAngVelLRrAuth",
+      "Veh_Signal_Name": "WhlAngVelLRrAuth"
+    },
+    {
+      "ID": 11,
+      "Dbc_Signal_Name": "WhlAngVelRFrtAuth",
+      "Veh_Signal_Name": "WhlAngVelRFrtAuth"
+    },
+    {
+      "ID": 12,
+      "Dbc_Signal_Name": "WhlAngVelLFrtAuth",
+      "Veh_Signal_Name": "WhlAngVelLFrtAuth"
+    },
+    {
+      "ID": 13,
+      "Dbc_Signal_Name": "WhlDistEdgeCntrLRHigFreq",
+      "Veh_Signal_Name": "WhlDistEdgeCntrLRHigFreq"
+    },
+    {
+      "ID": 14,
+      "Dbc_Signal_Name": "WhlDistEdgeCntrRRHigFreq",
+      "Veh_Signal_Name": "WhlDistEdgeCntrRRHigFreq"
+    },
+    {
+      "ID": 15,
+      "Dbc_Signal_Name": "WhlDistEdgeCntrRFHigFreq",
+      "Veh_Signal_Name": "WhlDistEdgeCntrRFHigFreq"
+    },
+    {
+      "ID": 16,
+      "Dbc_Signal_Name": "WhlDistEdgeCntrLFHigFreq",
+      "Veh_Signal_Name": "WhlDistEdgeCntrLFHigFreq"
+    }
+  ]
+}

@@ -8,5 +8,18 @@
         "fair_type": "ordered"
       }
     }
+  ],
+  "timer_scheduler": [
+    {
+      "scheduler_name": "CanTimer",
+      "thread_num": 1,
+      "configuration": {
+        "timer_thread": {
+          "schedule_policy": "SCHED_RR",
+          "schedule_prio": 10,
+          "cpu_core": [0]
+        }
+      }
+    }
   ]
 }

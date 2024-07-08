@@ -28,7 +28,7 @@
 #include "protocol/target_message.pb.h"
 
 #include "fanya_protocol/loc.pb.h"
-#include "fanya_protocol/can.pb.h"
+#include "fanya_protocol/fanya_can.pb.h"
 #include "fanya_protocol/psd.pb.h"
 #include "fanya_protocol/aph.pb.h"
 #include "fanya_protocol/fsm.pb.h"
@@ -106,6 +106,9 @@ using spCrossWalksMsg = std::shared_ptr<CrossWalksMsg>;
 
 using ArrowsMsg = hobot::message::ProtoMsg<loc::arrows>;
 using spArrowsMsg = std::shared_ptr<ArrowsMsg>;
+
+using CanSignalMsg = hobot::message::ProtoMsg<can::VehicleCanData>;
+using spCanSignalMsg = std::shared_ptr<CanSignalMsg>;
 
 } // namespace parking
 } // namespace fanya

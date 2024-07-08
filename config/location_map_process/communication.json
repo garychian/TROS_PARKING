@@ -1,6 +1,6 @@
 {
   "discovery_option": {
-    "discovery_enable": 0,
+    "discovery_enable": 1,
     "cross_different_subnets": 0,
     "default_eth": "",
     "port_range": "10100-10200",

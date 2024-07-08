@@ -2,7 +2,7 @@
 
 set(HOBOT_BOLE_PROTOCOL_LIB hobot-bole-protocol)
 set(FANYA_PROTO_LIB fanya_protocol)
-set(COMMON_LIB dataflow communication time hlog schedulegroup fmt)
+set(COMMON_LIB dataflow communication time hlog schedulegroup fmt vehicleio)
 
 
 set(TROS_MESSAGE_DIR ${PROJECT_BINARY_DIR}/trosgen)

@@ -7,18 +7,7 @@
       "inputs": [
         {
           "port_id": "sub_vehicleio_data",
-          "topic": "/vec/vehicleio_data",
-          "communication": {
-            "domain_id": 0,
-            "comm_protocol": "zmq_tcp",
-            "comm_attr": {
-              "participants": [
-                {
-                  "id": 1
-                }
-              ]
-            }
-          }
+          "topic": "CanTransModule_can_signal"
         },
         {
           "port_id": "sub_apa_status",
@@ -341,6 +330,35 @@
             "repeat_counts": -1,
             "trigger_type": 0
           }
+        }
+      ]
+    },
+    {
+      "module_id": "CanTransModule",
+      "class_name": "CanTransModule",
+      "package": "../../lib/libloc.so",
+      "global_param_group": "",
+      "user_config": "./veh_client.json",
+      "inputs": [],
+      "outputs": [
+        {
+          "port_id": "can_signal",
+          "topic": "CanTransModule_can_signal"
+        }
+      ],
+      "procs": [
+        {
+          "proc_id": "GetSignalProc",
+          "proc_type": "MsgTimerTriggerProc",
+          "proc_option": {
+            "interval": 10,
+            "repeat_counts": -1,
+            "disable_input_ports": []
+          },
+          "schedule_group": {
+            "scheduler_name":"CanTimer"
+          },
+          "disable": false
         }
       ]
     }
