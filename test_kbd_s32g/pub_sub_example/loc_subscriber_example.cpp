@@ -68,7 +68,7 @@ using CrossWalksSerializer = ProtobufSerializer<loc::crossWalks>;
 using ArrowsSerializer = ProtobufSerializer<loc::arrows>;
 
 using QuadParkingSlotsSerializer = ProtobufSerializer<rd::QuadParkingSlots>;
-
+using ImageSerializer = ProtobufSerializer<rd::Image>;
 using ObstaclesSerializer = ProtobufSerializer<od::Obstacles>;
 using HeaderSerializer = ProtobufSerializer<od::Header>;
 using FSLineSerializer = ProtobufSerializer<od::FSLine>;
@@ -478,6 +478,45 @@ static void RdParkingSlotsSubCallbackWithTopic(
 
 }
 
+// add rd sub topic callback
+static void RdImageSubCallbackWithTopic(
+    const std::shared_ptr<ImageMsg> & rd_image_msg, const std::string &topic) {
+  std::cout << "rd_image_msg topic:" << topic
+            << "msg gen_ts: " << rd_image_msg->GetGenTimestamp()
+            << ",msg done_ts: " << rd_image_msg->GetDoneTimestamp() << std::endl;
+  TypeWrapper send_time, recv_time;
+  bool res1 = rd_image_msg->GetExtInfo(ExtendInfoKey::kSendTime, send_time);
+  bool res2 = rd_image_msg->GetExtInfo(ExtendInfoKey::kRecvTime, recv_time);
+  if (res1 && res2) {
+    std::cout << "recv_time = " << recv_time.GetValueInt64()
+              << ", send time = " << send_time.GetValueInt64() << std::endl;
+    int64_t latency = recv_time.GetValueInt64() - send_time.GetValueInt64();
+    std::cout << "this message latency is " << latency / 1000 << " us"
+              << std::endl;
+  }
+
+  //auto proto_ = rd_image_msg->proto;
+  //std::cout << "this message proto info :" << proto_.DebugString() << std::endl;
+  auto psd_image = std::dynamic_pointer_cast<ImageMsg>(rd_image_msg);
+  // cv::Mat received_image(psd_image->proto.height(), psd_image->proto.width(), CV_8UC3);
+  // std::vector<uint8_t> data_vec(psd_image->proto.data().begin(), psd_image->proto.data().end());
+  // imdecode(data_vec, cv::IMREAD_COLOR, &received_image);
+  static int num = 0;
+  ++num;
+  if (num%2 == 0){
+    num = 0;
+  }
+  std::string image_name = std::string("save_psd_image") + std::to_string(num) + std::string(".yuv");
+  FILE *output = fopen(image_name.c_str(), "wb");
+  // 假定psd_image是一个结构体，包含了proto成员
+  const char *psd_data = psd_image->proto.data().data();
+  size_t psd_size = psd_image->proto.data().size();
+  fwrite(psd_data, 1, psd_size, output);
+  fclose(output);
+  // DFHLOG_I("sub_psd_image msg timestamp: {}, height = {}, width = {}",
+  //   rd_image_msg->GetGenTimestamp(), psd_image->proto.height(), psd_image->proto.width());
+}
+
 // add od sub topic callback
 static void OdObstaclesSubCallbackWithTopic(
     const std::shared_ptr<ObstaclesMsg> &od_obstacles_msg, const std::string &topic) {
@@ -669,10 +708,19 @@ int main(int argc, char *argv[]) {
   }
 
   // sub rd QuadParkingSlots
-  std::shared_ptr<Subscriber<QuadParkingSlotsSerializer>> od_quad_parking_slots_subscriber = 
+  std::shared_ptr<Subscriber<QuadParkingSlotsSerializer>> rd_quad_parking_slots_subscriber = 
     Subscriber<QuadParkingSlotsSerializer>::NewExt(comm_attr, "/psd/quad_parking_slots", 0,
     RdParkingSlotsSubCallbackWithTopic, args.protocol);
-  if (!od_quad_parking_slots_subscriber) {
+  if (!rd_quad_parking_slots_subscriber) {
+    std::cout << " create subscriber failed" << std::endl;
+    return -1;
+  }
+
+  // sub rd image
+  std::shared_ptr<Subscriber<ImageSerializer>> rd_image_subscriber = 
+    Subscriber<ImageSerializer>::NewExt(comm_attr, "/psd/image", 0,
+    RdImageSubCallbackWithTopic, args.protocol);
+  if (!rd_image_subscriber) {
     std::cout << " create subscriber failed" << std::endl;
     return -1;
   }

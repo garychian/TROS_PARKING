@@ -46,6 +46,7 @@ void PerceptionRdMoudle::InitPortsAndProcs() {
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_ps_rect", rd::SApaPSRect);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_pointI", rd::SApaPoint_I);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_psd_image", rd::Image);
+  DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_psd_image_s32g", rd::Image);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_ps_info_s32g", rd::SApaPSInfo);
 
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_quad_parking_slots_s32g",
@@ -60,7 +61,7 @@ void PerceptionRdMoudle::InitPortsAndProcs() {
       "TimerProc", PerceptionRdMoudle, TimerProc,
       hobot::dataflow::ProcType::DF_MSG_TIMER_PROC, DF_VECTOR(),
       DF_VECTOR("pub_apa_ps_rect", "pub_apa_ps_info", "pub_apa_pointI",
-                "pub_psd_image", "pub_apa_ps_info_s32g",
+                "pub_psd_image", "pub_psd_image_s32g","pub_apa_ps_info_s32g",
                 "pub_quad_parking_slots_s32g"));
 }
 
@@ -215,24 +216,29 @@ void PerceptionRdMoudle::TimerProc(
     DFHLOG_I("pub apa_pointI_port info, x = {}", apa_pointI->proto.x());
   }
 
-
    { // do something with output port pub_psd_image
         // fill proto
-        auto rd_image = std::make_shared<ImageMsg>();
-        // image->proto.set_width(1920);
-        // image->SetGenTimestamp(gen_ts);
 
-        std::vector<uint8_t> image_data;
-        static cv::Mat image = cv::imread("test.jpg");
-        imencode(".jpg", image, image_data);
         rd::Time rd_time;
         rd_time.set_nanosec(123);
         rd::Header rd_header;
         rd_header.set_seq(1);
         rd_header.set_frameid("99");
         rd_header.mutable_timestampns()->CopyFrom(rd_time);
+
+        auto rd_image = std::make_shared<ImageMsg>();
+        // image->proto.set_width(1920);
+        // image->SetGenTimestamp(gen_ts);
+
+        std::vector<uint8_t> image_data;
+        static cv::Mat image = cv::imread("test.jpg");
+        //imencode(".jpg", image, image_data);
         // rd::Image rd_image;
-        rd_image->proto.set_data(image_data.data(), image_data.size());
+        //rd_image->proto.set_data(image_data.data(), image_data.size());
+        cv::Mat nv12_image;
+        cv::cvtColor(image, nv12_image, cv::COLOR_BGR2YUV_I420);
+        rd_image->proto.mutable_data()->assign((char*)nv12_image.data, nv12_image.total());
+
         rd_image->proto.mutable_header()->CopyFrom(rd_header);
         rd_image->proto.set_oriheight(123);
         rd_image->proto.set_oriwidth(123);
@@ -255,7 +261,19 @@ void PerceptionRdMoudle::TimerProc(
         pub_image_port->Send(rd_image);
         DFHLOG_I("pub image_port info, width = {}",
                  rd_image->proto.width());
-      }
+
+
+        // pub msg to s32g
+        auto pub_image_port_s32g = proc->GetOutputPort("pub_psd_image_s32g");
+        if (!pub_image_port)
+        {
+          DFHLOG_E("failed to get output port of {}", "pub_psd_image_s32g");
+          return;
+        }
+        pub_image_port_s32g->Send(rd_image);
+        DFHLOG_I("pub pub_image_port_s32g info, width = {}",
+                 rd_image->proto.width());           
+      }     
 
   // pub_quad_parking_slots_s32g
   {

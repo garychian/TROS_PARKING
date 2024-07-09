@@ -47,5 +47,10 @@
     "protocol": "zmq_tcp",
     "link_info": "10.97.109.148:25585",
     "link_type": "connect"
+  },{
+    "id": 4,
+    "protocol": "zmq_tcp",
+    "link_info": "10.97.109.148:25587",
+    "link_type": "connect"
   }]
 }

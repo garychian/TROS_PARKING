@@ -108,6 +108,9 @@ using spCanSignalUnitMsg = std::shared_ptr<CanSignalUnitMsg>;
 using QuadParkingSlotsMsg = hobot::message::ProtoMsg<rd::QuadParkingSlots>;
 using spQuadParkingSlotsMsg = std::shared_ptr<QuadParkingSlotsMsg>;
 
+using ImageMsg = hobot::message::ProtoMsg<rd::Image>;
+using spImageMsg = std::shared_ptr<ImageMsg>;
+
 //add od 
 using ObstaclesMsg = hobot::message::ProtoMsg<od::Obstacles>;
 using spObstaclesMsg = std::shared_ptr<ObstaclesMsg>;
