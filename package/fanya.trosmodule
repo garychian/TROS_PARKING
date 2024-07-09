@@ -241,7 +241,7 @@
       ]
     },
     {
-      "class_name": "ParkingslotDetectMoudle",
+      "class_name": "PerceptionRdMoudle",
       "module_type": 0,
       "inputs": [
         {

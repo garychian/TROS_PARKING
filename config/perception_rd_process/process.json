@@ -6,12 +6,6 @@
   "schedule_config": "schedule.json",
   "process_name": "parking_rd",
   "log_config": "./log_config.json",
-  "log": {
-    "log_level": "info",
-    "rotate_number": 128,
-    "max_size": 256,
-    "log_path": "../../log/psd/"
-  },
   "time": {
     "clock_type": 0,
     "clock_topic": "/Clock",

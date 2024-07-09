@@ -33,7 +33,7 @@ while getopts "m:t:h" opt; do
 done
 
 PROCESS_SENSOR_CENTER="parking_sc"
-PROCESS_DETECTION="parking_psd"
+PROCESS_DETECTION="parking_rd"
 PROCESS_LOCATION="parking_loc"
 PROCESS_APAHANDLE="parking_aph"
 PROCESS_OBJECT_DETECTION="parking_od"

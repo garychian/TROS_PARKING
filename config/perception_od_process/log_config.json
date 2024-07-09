@@ -12,7 +12,7 @@
               "file_name": "parking_od",
               "max_size": 128,
               "rotate_number": 128,
-              "store_path": "../../log/psd/",
+              "store_path": "../../log/od/",
               "dir_format": "process/date"
           }
       }

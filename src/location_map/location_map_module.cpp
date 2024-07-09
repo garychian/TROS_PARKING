@@ -53,6 +53,9 @@ void LocationMapModule::InitPortsAndProcs() {
     aph::FusionSlotInfo2Location);
 
   DF_MODULE_INIT_IDL_INPUT_PORT(
+    "sub_fusion_slot_info2_location",
+    aph::FusionSlotInfo2Location);
+  DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_imu_data",
     sen::IMUData);
   DF_MODULE_INIT_IDL_INPUT_PORT(

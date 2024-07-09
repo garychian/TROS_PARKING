@@ -1,9 +1,9 @@
 {
   "modules": [
     {
-      "class_name": "ParkingslotDetectMoudle",
-      "module_id": "ParkingslotDetectMoudle",
-      "package": "../../lib/libpsd.so",
+      "class_name": "PerceptionRdMoudle",
+      "module_id": "PerceptionRdMoudle",
+      "package": "../../lib/librd.so",
       "inputs": [
         {
           "port_id": "sub_apa_status",
@@ -111,7 +111,7 @@
             "expression": "sub_camera_frame_array[-1] && sub_apa_status[-1] && sub_pad_point[-1] && sub_pad_vehicle_pose[-1]"
           },
           "schedule_group": {
-            "scheduler_name": "TP_PSD"
+            "scheduler_name": "TP_RD"
           }
         },
         {

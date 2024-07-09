@@ -241,7 +241,7 @@
       ]
     },
     {
-      "class_name": "ParkingslotDetectMoudle",
+      "class_name": "PerceptionRdMoudle",
       "module_type": 0,
       "inputs": [
         {
@@ -465,8 +465,8 @@
       ]
     },
     {
-      "class_name": "ParkingslotDetectMoudle",
-      "module_id": "ParkingslotDetectMoudle",
+      "class_name": "PerceptionRdMoudle",
+      "module_id": "PerceptionRdMoudle",
       "package": "../../lib/libpsd.so",
       "inputs": [
         {
@@ -535,8 +535,8 @@
       {
         "type": "module",
         "module_type": 0,
-        "class_name": "ParkingslotDetectMoudle",
-        "module_id": "ParkingslotDetectMoudle"
+        "class_name": "PerceptionRdMoudle",
+        "module_id": "PerceptionRdMoudle"
       }
     ]
   },
@@ -1190,7 +1190,7 @@
       },
       "attrs": {
         "text": {
-          "text": "ParkingslotDetectMoudle"
+          "text": "PerceptionRdMoudle"
         }
       },
       "visible": true,
@@ -1383,8 +1383,8 @@
         "D9291U0_X8sVZ4yk_EYej"
       ],
       "mapping": {
-        "class_name": "ParkingslotDetectMoudle",
-        "module_id": "ParkingslotDetectMoudle",
+        "class_name": "PerceptionRdMoudle",
+        "module_id": "PerceptionRdMoudle",
         "procPaintIdMap": {
           "MsgCenterProc": "M2qSvlObO7KQLeeX5vRPv"
         },
