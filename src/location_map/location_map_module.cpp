@@ -48,6 +48,9 @@ void LocationMapModule::InitPortsAndProcs() {
     "sub_target_slot",
     aph::target_slot);
   DF_MODULE_INIT_IDL_INPUT_PORT(
+    "sub_fusion_slot_info2_location",
+    aph::FusionSlotInfo2Location);
+  DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_imu_data",
     sen::IMUData);
   DF_MODULE_INIT_IDL_INPUT_PORT(
@@ -118,7 +121,7 @@ void LocationMapModule::InitPortsAndProcs() {
     LocationMapModule,
     MsgCenterProc,
     hobot::dataflow::ProcType::DF_MSG_COND_PROC,
-    DF_VECTOR("sub_vehicleio_data", "sub_apa_status", "sub_target_slot", "sub_imu_data", "sub_gnss_data", "sub_ins_data", "sub_dual_antenna_data", "sub_psd_image", "sub_camera_frame_array", "sub_apa_ps_info", "sub_apa_ps_rect", "sub_apa_pointI"),
+    DF_VECTOR("sub_vehicleio_data", "sub_apa_status", "sub_target_slot", "sub_imu_data", "sub_gnss_data", "sub_ins_data", "sub_dual_antenna_data", "sub_psd_image", "sub_camera_frame_array", "sub_apa_ps_info", "sub_apa_ps_rect", "sub_apa_pointI","sub_fusion_slot_info2_location"),
     DF_VECTOR());
 
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
@@ -193,6 +196,27 @@ void LocationMapModule::MsgCenterProc(
         msg->GetGenTimestamp(), target_slot->proto.m_user_select_slot_label_idx());
     }
   }
+
+  // sub   fusion_slot_info2_location_msgs
+  auto &sub_fusion_slot_info2_location_msgs
+    = msgs[proc->GetResultIndex("sub_fusion_slot_info2_location")];
+  for (auto &msg : *(sub_fusion_slot_info2_location_msgs.get())) {
+    if (nullptr == msg) {
+      continue;
+    }
+    DFHLOG_I("sub_fusion_slot_info2_location msg timestamp: {}",
+      msg->GetGenTimestamp());
+    // process msg of AphFusionSlotInfo2LocationMsg
+    auto target_slot = std::dynamic_pointer_cast<AphFusionSlotInfo2LocationMsg>(sub_fusion_slot_info2_location_msgs->at(0));
+    if (target_slot && target_slot->proto.has_slotnum()){
+      // DFHLOG_I("sub sub_fusion_slot_info2_location msg timestamp: {}, apa_status = {}",
+      //   msg->GetGenTimestamp(), target_slot->proto.slotnum());
+
+      DFHLOG_W("sub sub_fusion_slot_info2_location msg timestamp: {}, proto_info = {}",
+        msg->GetGenTimestamp(), target_slot->proto.DebugString());  
+    }
+  }
+
   auto &sub_imu_data_msgs
     = msgs[proc->GetResultIndex("sub_imu_data")];
   for (auto &msg : *(sub_imu_data_msgs.get())) {

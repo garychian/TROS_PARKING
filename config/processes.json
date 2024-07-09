@@ -1,7 +1,7 @@
 {
   "processes": [
     {
-      "process_name": "perception_rd_process ",
+      "process_name": "perception_rd_process",
       "process_cfg": "perception_rd_process/process.json"
     },
     {

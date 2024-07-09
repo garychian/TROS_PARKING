@@ -3,3 +3,4 @@ output
 deploy_path
 release
 *.zip
+.vscode

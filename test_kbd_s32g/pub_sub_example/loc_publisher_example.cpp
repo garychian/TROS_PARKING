@@ -11,17 +11,17 @@
 // NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See Apache v2.0 for more details.
 
+#include <chrono>
 #include <iostream>
 #include <thread>
-#include <chrono>
 
 #include "communication/common/comm_log.h"
 #include "communication/publisher.h"
 #include "communication/subscriber.h"
 #include "communication/wait_set/scope_guard.h"
-#include "schedulegroup/global_scheduler/global_scheduler.h"
-#include "schedulegroup/errors.h"
 #include "proto_msg_all.h"
+#include "schedulegroup/errors.h"
+#include "schedulegroup/global_scheduler/global_scheduler.h"
 
 using hobot::communication::COMM_CODE_OK;
 using hobot::communication::CommAttr;
@@ -50,11 +50,14 @@ using hobot::communication::ProtobufSerializer;
 
 // for proto serialize
 
-using CanSignalUnitSerializer = ProtobufSerializer<vehicleiostate::CanSignalUnit>;
+using CanSignalUnitSerializer =
+    ProtobufSerializer<vehicleiostate::CanSignalUnit>;
 using IMUDataSerializer = ProtobufSerializer<sen::IMUData>;
 using GNSSDataSerializer = ProtobufSerializer<sen::GNSSData>;
 using INSDataSerializer = ProtobufSerializer<sen::INSData>;
 using DualAntennaDataSerializer = ProtobufSerializer<sen::DualAntennaData>;
+using FusionSlotInfo2LocationSerializer =
+    ProtobufSerializer<fsm::FusionSlotInfo2Location>;
 
 struct Args {
   int participant_id = 0;
@@ -82,7 +85,8 @@ void PrintUsage() {
 // only support positive integer, return -1 if illegal
 int Atoi(char *str_num) {
   std::string int_max = std::to_string(INT_MAX);
-  if (strlen(str_num) > int_max.size()) return -1;
+  if (strlen(str_num) > int_max.size())
+    return -1;
   for (int i = 0; i < strlen(str_num); ++i) {
     if (str_num[i] < '0' || str_num[i] > '9') {
       return -1;
@@ -127,37 +131,37 @@ bool ParseCmd(int argc, char **argv, Args &args) {
 
 bool MatchParticipantId(Args &args, CommAttr &comm_attr) {
   switch (args.protocol) {
-    case PROTOCOL_ZMQ_TCP:
-      if (!args.is_dynamic) {
-        if (args.participant_id == 0)
-          comm_attr.participant_attrs_.push_back(ParticipantAttr{2});
-        else
-          comm_attr.participant_attrs_.push_back(
-              ParticipantAttr{args.participant_id});
-      }
+  case PROTOCOL_ZMQ_TCP:
+    if (!args.is_dynamic) {
+      if (args.participant_id == 0)
+        comm_attr.participant_attrs_.push_back(ParticipantAttr{2});
+      else
+        comm_attr.participant_attrs_.push_back(
+            ParticipantAttr{args.participant_id});
+    }
+    args.pub_interval = 10;
+    return true;
+  case PROTOCOL_ZMQ_IPC:
+    if (!args.is_dynamic) {
+      if (args.participant_id == 0)
+        comm_attr.participant_attrs_.push_back(ParticipantAttr{1});
+      else
+        comm_attr.participant_attrs_.push_back(
+            ParticipantAttr{args.participant_id});
+    }
+    args.pub_interval = 10;
+    return true;
+  case PROTOCOL_SHM:
+    if (args.is_dynamic) {
       args.pub_interval = 10;
       return true;
-    case PROTOCOL_ZMQ_IPC:
-      if (!args.is_dynamic) {
-        if (args.participant_id == 0)
-          comm_attr.participant_attrs_.push_back(ParticipantAttr{1});
-        else
-          comm_attr.participant_attrs_.push_back(
-              ParticipantAttr{args.participant_id});
-      }
-      args.pub_interval = 10;
-      return true;
-    case PROTOCOL_SHM:
-      if (args.is_dynamic) {
-        args.pub_interval = 10;
-        return true;
-      }
-      std::cout << "using protocol shm must turn on dynamic discovery"
-                << std::endl;
-      return false;
-    default:
-      std::cout << "invalid protocol type: " << args.protocol << std::endl;
-      return false;
+    }
+    std::cout << "using protocol shm must turn on dynamic discovery"
+              << std::endl;
+    return false;
+  default:
+    std::cout << "invalid protocol type: " << args.protocol << std::endl;
+    return false;
   }
 }
 
@@ -165,7 +169,7 @@ bool MatchParticipantId(Args &args, CommAttr &comm_attr) {
 EventType g_pub_event = EventType(2);
 void pub_connlisteners(const std::shared_ptr<LinkInfo> participants,
                        EventType event) {
-  const std::string& protocol = participants->protocol;
+  const std::string &protocol = participants->protocol;
   std::cout << "connection status changed, participant info:\n"
             << "            participant id: " << participants->id << std::endl
             << "                  protocol: " << participants->protocol
@@ -185,8 +189,8 @@ void pub_connlisteners(const std::shared_ptr<LinkInfo> participants,
   }
 }
 
-int main(int argc, char** argv) {
-  
+int main(int argc, char **argv) {
+
   hobot::schedulegroup::GlobalSchedulerParam param;
   int32_t create_ret = hobot::schedulegroup::GlobalScheduler::Init(param);
 
@@ -217,13 +221,9 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-  auto can_signal_unit_publisher =
-      Publisher<CanSignalUnitSerializer>::New(can_signal_unit_comm_attr,
-                                          "/vec/vehicleio_data",
-                                          0,
-                                          can_signal_unit_args.protocol,
-                                          &error_code,
-                                          pub_connlisteners);
+  auto can_signal_unit_publisher = Publisher<CanSignalUnitSerializer>::New(
+      can_signal_unit_comm_attr, "/vec/vehicleio_data", 0,
+      can_signal_unit_args.protocol, &error_code, pub_connlisteners);
   if (!can_signal_unit_publisher) {
     std::cout << " create publisher failed";
     return -1;
@@ -239,19 +239,15 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-  auto imu_data_publisher =
-      Publisher<IMUDataSerializer>::New(imu_data_comm_attr,
-                                          "/sen/imu_data",
-                                          0,
-                                          imu_data_args.protocol,
-                                          &error_code,
-                                          pub_connlisteners);
+  auto imu_data_publisher = Publisher<IMUDataSerializer>::New(
+      imu_data_comm_attr, "/sen/imu_data", 0, imu_data_args.protocol,
+      &error_code, pub_connlisteners);
   if (!imu_data_publisher) {
     std::cout << " create publisher failed";
     return -1;
   }
 
-// pub GNSSData
+  // pub GNSSData
   CommAttr gnss_data_comm_attr;
   Args gnss_data_args;
   gnss_data_args.protocol = PROTOCOL_ZMQ_TCP;
@@ -261,13 +257,9 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-  auto gnss_data_publisher =
-      Publisher<GNSSDataSerializer>::New(gnss_data_comm_attr,
-                                          "/sen/gnss_data",
-                                          0,
-                                          gnss_data_args.protocol,
-                                          &error_code,
-                                          pub_connlisteners);
+  auto gnss_data_publisher = Publisher<GNSSDataSerializer>::New(
+      gnss_data_comm_attr, "/sen/gnss_data", 0, gnss_data_args.protocol,
+      &error_code, pub_connlisteners);
   if (!gnss_data_publisher) {
     std::cout << " create publisher failed";
     return -1;
@@ -283,13 +275,9 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-  auto ins_data_publisher =
-      Publisher<INSDataSerializer>::New(ins_data_comm_attr,
-                                          "/sen/ins_data",
-                                          0,
-                                          ins_data_args.protocol,
-                                          &error_code,
-                                          pub_connlisteners);
+  auto ins_data_publisher = Publisher<INSDataSerializer>::New(
+      ins_data_comm_attr, "/sen/ins_data", 0, ins_data_args.protocol,
+      &error_code, pub_connlisteners);
   if (!ins_data_publisher) {
     std::cout << " create publisher failed";
     return -1;
@@ -301,24 +289,42 @@ int main(int argc, char** argv) {
   dual_antenna_data_args.protocol = PROTOCOL_ZMQ_TCP;
   dual_antenna_data_args.participant_id = 7;
 
-  if (!MatchParticipantId(dual_antenna_data_args, dual_antenna_data_comm_attr)) {
+  if (!MatchParticipantId(dual_antenna_data_args,
+                          dual_antenna_data_comm_attr)) {
     return -1;
   }
 
-  auto dual_antenna_data_publisher =
-      Publisher<DualAntennaDataSerializer>::New(dual_antenna_data_comm_attr,
-                                          "/sen/dual_antenna_data",
-                                          0,
-                                          dual_antenna_data_args.protocol,
-                                          &error_code,
-                                          pub_connlisteners);
+  auto dual_antenna_data_publisher = Publisher<DualAntennaDataSerializer>::New(
+      dual_antenna_data_comm_attr, "/sen/dual_antenna_data", 0,
+      dual_antenna_data_args.protocol, &error_code, pub_connlisteners);
   if (!dual_antenna_data_publisher) {
     std::cout << " create publisher failed";
     return -1;
   }
 
-  while (true){
-    
+  // pub FusionSlotInfo2Location
+  CommAttr fusion_slot_info2_location_comm_attr;
+  Args fusion_slot_info2_location_args;
+  fusion_slot_info2_location_args.protocol = PROTOCOL_ZMQ_TCP;
+  fusion_slot_info2_location_args.participant_id = 12;
+
+  if (!MatchParticipantId(fusion_slot_info2_location_args,
+                          fusion_slot_info2_location_comm_attr)) {
+    return -1;
+  }
+
+  auto fusion_slot_info2_location_publisher =
+      Publisher<FusionSlotInfo2LocationSerializer>::New(
+          fusion_slot_info2_location_comm_attr,
+          "/fsm/fusion_slot_info2_location", -65535,
+          fusion_slot_info2_location_args.protocol, &error_code,
+          pub_connlisteners);
+  if (!fusion_slot_info2_location_publisher) {
+    std::cout << " create publisher failed";
+    return -1;
+  }
+
+  while (true) {
     {
       auto gen_ts = GetTimeStamp();
       auto msg = std::make_shared<CanSignalUnitMsg>();
@@ -328,10 +334,10 @@ int main(int argc, char** argv) {
       auto ret = can_signal_unit_publisher->Pub(msg);
       if (ret != COMM_CODE_OK) {
         std::cout << "pub failed, reason: " << ErrorMsg(ret) << std::endl;
-      }else{
-        std::cout << "pub CanSignalUnitMsg successful, ts = " << gen_ts << std::endl;
+      } else {
+        std::cout << "pub CanSignalUnitMsg successful, ts = " << gen_ts
+                  << std::endl;
       }
-
     }
 
     {
@@ -342,8 +348,8 @@ int main(int argc, char** argv) {
       auto ret = imu_data_publisher->Pub(msg);
       if (ret != COMM_CODE_OK) {
         std::cout << "pub failed, reason: " << ErrorMsg(ret) << std::endl;
-      }else{
-        std::cout << "pub IMUDataMsg successful, ts = " <<  gen_ts << std::endl;
+      } else {
+        std::cout << "pub IMUDataMsg successful, ts = " << gen_ts << std::endl;
       }
     }
 
@@ -355,8 +361,8 @@ int main(int argc, char** argv) {
       auto ret = gnss_data_publisher->Pub(msg);
       if (ret != COMM_CODE_OK) {
         std::cout << "pub failed, reason: " << ErrorMsg(ret) << std::endl;
-      }else{
-        std::cout << "pub GNSSDataMsg successful, ts = " <<  gen_ts << std::endl;
+      } else {
+        std::cout << "pub GNSSDataMsg successful, ts = " << gen_ts << std::endl;
       }
     }
 
@@ -368,8 +374,8 @@ int main(int argc, char** argv) {
       auto ret = ins_data_publisher->Pub(msg);
       if (ret != COMM_CODE_OK) {
         std::cout << "pub failed, reason: " << ErrorMsg(ret) << std::endl;
-      }else{
-        std::cout << "pub INSDataMsg successful, ts = " <<  gen_ts << std::endl;
+      } else {
+        std::cout << "pub INSDataMsg successful, ts = " << gen_ts << std::endl;
       }
     }
 
@@ -381,8 +387,36 @@ int main(int argc, char** argv) {
       auto ret = dual_antenna_data_publisher->Pub(msg);
       if (ret != COMM_CODE_OK) {
         std::cout << "pub failed, reason: " << ErrorMsg(ret) << std::endl;
-      }else{
-        std::cout << "pub DualAntennaDataMsg successful, ts = " <<  gen_ts << std::endl;
+      } else {
+        std::cout << "pub DualAntennaDataMsg successful, ts = " << gen_ts
+                  << std::endl;
+      }
+    }
+
+    {
+
+      // fill proto
+      fsm::SlotPoint fsm_slot_point;
+      fsm_slot_point.set_x(123);
+      fsm_slot_point.set_y(123);
+
+      fsm::FusionSlotInfo fsm_fusion_slot_info;
+      fsm_fusion_slot_info.add_pt()->CopyFrom(fsm_slot_point);
+      fsm_fusion_slot_info.set_slotlabel(123);
+      // todo other property
+      auto gen_ts = GetTimeStamp();
+      auto msg = std::make_shared<FusionSlotInfo2LocationMsg>();
+      msg->proto.set_slotnum(123);
+      msg->proto.add_fusionslotinfos()->CopyFrom(fsm_fusion_slot_info);
+      msg->SetGenTimestamp(gen_ts);
+
+      // msg->proto.set_apastatusreq(fsm::apaStatusReqType::enable);
+      auto ret = fusion_slot_info2_location_publisher->Pub(msg);
+      if (ret != COMM_CODE_OK) {
+        std::cout << "pub failed, reason: " << ErrorMsg(ret) << std::endl;
+      } else {
+        std::cout << "pub FusionSlotInfo2LocationMsg successful, ts = "
+                  << gen_ts << std::endl;
       }
     }
 

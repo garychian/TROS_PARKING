@@ -44,18 +44,24 @@ void ApaHandleModule::InitPortsAndProcs() {
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_apa_status_req",
     fsm::Apastatusreq);
+  DF_MODULE_INIT_IDL_INPUT_PORT(
+    "sub_fusion_slot_info2_location",
+    fsm::FusionSlotInfo2Location);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
     "pub_apa_status",
     aph::apa_status);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
     "pub_target_slot",
     aph::target_slot);
+  DF_MODULE_INIT_IDL_OUTPUT_PORT(
+    "pub_fusion_slot_info2_location",
+    aph::FusionSlotInfo2Location);  
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
     "MsgCenterProc",
     ApaHandleModule,
     MsgCenterProc,
     hobot::dataflow::ProcType::DF_MSG_COND_PROC,
-    DF_VECTOR("sub_slot_label", "sub_apa_status_req"),
+    DF_VECTOR("sub_slot_label", "sub_apa_status_req","sub_fusion_slot_info2_location"),
     DF_VECTOR());
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
     "TimerProc",
@@ -63,7 +69,7 @@ void ApaHandleModule::InitPortsAndProcs() {
     TimerProc,
     hobot::dataflow::ProcType::DF_MSG_TIMER_PROC,
     DF_VECTOR(),
-    DF_VECTOR("pub_apa_status", "pub_target_slot"));
+    DF_VECTOR("pub_apa_status", "pub_target_slot","pub_fusion_slot_info2_location"));
 }
 
 int32_t ApaHandleModule::Init() {
@@ -116,6 +122,17 @@ void ApaHandleModule::MsgCenterProc(
     // process msg of sub_apa_status_req
   }
 
+  auto &sub_fusion_slot_info2_location_msgs
+    = msgs[proc->GetResultIndex("sub_fusion_slot_info2_location")];
+  for (auto &msg : *(sub_fusion_slot_info2_location_msgs.get())) {
+    if (nullptr == msg) {
+      continue;
+    }
+    DFHLOG_I("sub_fusion_slot_info2_location msg timestamp: {}",
+      msg->GetGenTimestamp());
+    // process msg of sub_apa_status_req
+  }
+
 }
 
 void ApaHandleModule::TimerProc(
@@ -161,6 +178,32 @@ void ApaHandleModule::TimerProc(
                           target_slot->GetGenTimestamp(), 
                           target_slot->proto.m_user_select_slot_label_idx());
   }
+
+  // pub HeaderMsg
+      {
+        // fill proto
+        aph::SlotPoint aph_slot_point;
+        aph_slot_point.set_x(123);
+        aph_slot_point.set_y(123);
+
+        aph::FusionSlotInfo aph_fusion_slot_info;
+        aph_fusion_slot_info.add_pt()->CopyFrom(aph_slot_point);
+        aph_fusion_slot_info.set_slotlabel(123);
+        //todo other property
+
+        auto fusion_slot_info2_location_msg = std::make_shared<AphFusionSlotInfo2LocationMsg>();
+        fusion_slot_info2_location_msg->proto.set_slotnum(123);
+        fusion_slot_info2_location_msg->proto.add_fusionslotinfos()->CopyFrom(aph_fusion_slot_info);
+        fusion_slot_info2_location_msg->SetGenTimestamp(gen_ts);
+        auto fusion_slot_info2_location_msg_port_s32g = proc->GetOutputPort("pub_fusion_slot_info2_location");
+        if (!fusion_slot_info2_location_msg_port_s32g)
+        {
+          DFHLOG_E("failed to get output port of {}", "fusion_slot_info2_location_msg");
+          return;
+        }
+        fusion_slot_info2_location_msg_port_s32g->Send(fusion_slot_info2_location_msg);
+        DFHLOG_W("Pub fusion_slot_info2_location_msg,Success!!! ");
+      }
 
 }
 

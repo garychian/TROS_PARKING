@@ -38,7 +38,8 @@ message target_slot {
 }
 
 message FusionSlotInfo2Location {
-  optional int32 m_user_select_slot_label_idx= 1;
+    optional int32 slotNum= 1;
+    repeated FusionSlotInfo fusionSlotInfos= 2;
 }
 
 message FusionSlotInfo {

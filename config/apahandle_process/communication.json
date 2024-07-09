@@ -39,14 +39,19 @@
     {
       "id": 1,
       "protocol": "zmq_tcp",
-      "link_info": "192.168.2.10:15555",
-      "link_type": ""
+      "link_info": "0.0.0.0:25580",
+      "link_type": "bind"
     },
     {
       "id": 2,
       "protocol": "zmq_tcp",
-      "link_info": "192.168.2.10:15556",
-      "link_type": ""
+      "link_info": "0.0.0.0:25581",
+      "link_type": "bind"
+    },{
+      "id": 3,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:25586",
+      "link_type": "bind"
     }
   ]
 }

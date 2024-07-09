@@ -539,19 +539,38 @@ class FusionSlotInfo2Location final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kMUserSelectSlotLabelIdxFieldNumber = 1,
+    kFusionSlotInfosFieldNumber = 2,
+    kSlotNumFieldNumber = 1,
   };
-  // optional int32 m_user_select_slot_label_idx = 1;
-  bool has_m_user_select_slot_label_idx() const;
+  // repeated .aph.FusionSlotInfo fusionSlotInfos = 2;
+  int fusionslotinfos_size() const;
   private:
-  bool _internal_has_m_user_select_slot_label_idx() const;
+  int _internal_fusionslotinfos_size() const;
   public:
-  void clear_m_user_select_slot_label_idx();
-  int32_t m_user_select_slot_label_idx() const;
-  void set_m_user_select_slot_label_idx(int32_t value);
+  void clear_fusionslotinfos();
+  ::aph::FusionSlotInfo* mutable_fusionslotinfos(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::aph::FusionSlotInfo >*
+      mutable_fusionslotinfos();
   private:
-  int32_t _internal_m_user_select_slot_label_idx() const;
-  void _internal_set_m_user_select_slot_label_idx(int32_t value);
+  const ::aph::FusionSlotInfo& _internal_fusionslotinfos(int index) const;
+  ::aph::FusionSlotInfo* _internal_add_fusionslotinfos();
+  public:
+  const ::aph::FusionSlotInfo& fusionslotinfos(int index) const;
+  ::aph::FusionSlotInfo* add_fusionslotinfos();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::aph::FusionSlotInfo >&
+      fusionslotinfos() const;
+
+  // optional int32 slotNum = 1;
+  bool has_slotnum() const;
+  private:
+  bool _internal_has_slotnum() const;
+  public:
+  void clear_slotnum();
+  int32_t slotnum() const;
+  void set_slotnum(int32_t value);
+  private:
+  int32_t _internal_slotnum() const;
+  void _internal_set_slotnum(int32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:aph.FusionSlotInfo2Location)
@@ -563,7 +582,8 @@ class FusionSlotInfo2Location final :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  int32_t m_user_select_slot_label_idx_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::aph::FusionSlotInfo > fusionslotinfos_;
+  int32_t slotnum_;
   friend struct ::TableStruct_aph_2eproto;
 };
 // -------------------------------------------------------------------
@@ -1053,32 +1073,72 @@ inline void target_slot::set_m_user_select_slot_label_idx(int32_t value) {
 
 // FusionSlotInfo2Location
 
-// optional int32 m_user_select_slot_label_idx = 1;
-inline bool FusionSlotInfo2Location::_internal_has_m_user_select_slot_label_idx() const {
+// optional int32 slotNum = 1;
+inline bool FusionSlotInfo2Location::_internal_has_slotnum() const {
   bool value = (_has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
-inline bool FusionSlotInfo2Location::has_m_user_select_slot_label_idx() const {
-  return _internal_has_m_user_select_slot_label_idx();
+inline bool FusionSlotInfo2Location::has_slotnum() const {
+  return _internal_has_slotnum();
 }
-inline void FusionSlotInfo2Location::clear_m_user_select_slot_label_idx() {
-  m_user_select_slot_label_idx_ = 0;
+inline void FusionSlotInfo2Location::clear_slotnum() {
+  slotnum_ = 0;
   _has_bits_[0] &= ~0x00000001u;
 }
-inline int32_t FusionSlotInfo2Location::_internal_m_user_select_slot_label_idx() const {
-  return m_user_select_slot_label_idx_;
+inline int32_t FusionSlotInfo2Location::_internal_slotnum() const {
+  return slotnum_;
 }
-inline int32_t FusionSlotInfo2Location::m_user_select_slot_label_idx() const {
-  // @@protoc_insertion_point(field_get:aph.FusionSlotInfo2Location.m_user_select_slot_label_idx)
-  return _internal_m_user_select_slot_label_idx();
+inline int32_t FusionSlotInfo2Location::slotnum() const {
+  // @@protoc_insertion_point(field_get:aph.FusionSlotInfo2Location.slotNum)
+  return _internal_slotnum();
 }
-inline void FusionSlotInfo2Location::_internal_set_m_user_select_slot_label_idx(int32_t value) {
+inline void FusionSlotInfo2Location::_internal_set_slotnum(int32_t value) {
   _has_bits_[0] |= 0x00000001u;
-  m_user_select_slot_label_idx_ = value;
+  slotnum_ = value;
 }
-inline void FusionSlotInfo2Location::set_m_user_select_slot_label_idx(int32_t value) {
-  _internal_set_m_user_select_slot_label_idx(value);
-  // @@protoc_insertion_point(field_set:aph.FusionSlotInfo2Location.m_user_select_slot_label_idx)
+inline void FusionSlotInfo2Location::set_slotnum(int32_t value) {
+  _internal_set_slotnum(value);
+  // @@protoc_insertion_point(field_set:aph.FusionSlotInfo2Location.slotNum)
+}
+
+// repeated .aph.FusionSlotInfo fusionSlotInfos = 2;
+inline int FusionSlotInfo2Location::_internal_fusionslotinfos_size() const {
+  return fusionslotinfos_.size();
+}
+inline int FusionSlotInfo2Location::fusionslotinfos_size() const {
+  return _internal_fusionslotinfos_size();
+}
+inline void FusionSlotInfo2Location::clear_fusionslotinfos() {
+  fusionslotinfos_.Clear();
+}
+inline ::aph::FusionSlotInfo* FusionSlotInfo2Location::mutable_fusionslotinfos(int index) {
+  // @@protoc_insertion_point(field_mutable:aph.FusionSlotInfo2Location.fusionSlotInfos)
+  return fusionslotinfos_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::aph::FusionSlotInfo >*
+FusionSlotInfo2Location::mutable_fusionslotinfos() {
+  // @@protoc_insertion_point(field_mutable_list:aph.FusionSlotInfo2Location.fusionSlotInfos)
+  return &fusionslotinfos_;
+}
+inline const ::aph::FusionSlotInfo& FusionSlotInfo2Location::_internal_fusionslotinfos(int index) const {
+  return fusionslotinfos_.Get(index);
+}
+inline const ::aph::FusionSlotInfo& FusionSlotInfo2Location::fusionslotinfos(int index) const {
+  // @@protoc_insertion_point(field_get:aph.FusionSlotInfo2Location.fusionSlotInfos)
+  return _internal_fusionslotinfos(index);
+}
+inline ::aph::FusionSlotInfo* FusionSlotInfo2Location::_internal_add_fusionslotinfos() {
+  return fusionslotinfos_.Add();
+}
+inline ::aph::FusionSlotInfo* FusionSlotInfo2Location::add_fusionslotinfos() {
+  ::aph::FusionSlotInfo* _add = _internal_add_fusionslotinfos();
+  // @@protoc_insertion_point(field_add:aph.FusionSlotInfo2Location.fusionSlotInfos)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::aph::FusionSlotInfo >&
+FusionSlotInfo2Location::fusionslotinfos() const {
+  // @@protoc_insertion_point(field_list:aph.FusionSlotInfo2Location.fusionSlotInfos)
+  return fusionslotinfos_;
 }
 
 // -------------------------------------------------------------------

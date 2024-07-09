@@ -33,14 +33,16 @@ while getopts "m:t:h" opt; do
 done
 
 PROCESS_SENSOR_CENTER="parking_sc"
-PROCESS_DETECTION="parking_psd"
+PROCESS_DETECTION="parking_rd"
 PROCESS_LOCATION="parking_loc"
 PROCESS_APAHANDLE="parking_aph"
+PROCESS_OBJECT_DETECTION="parking_od"
 # kill before run
 PID_SENSOR_CENTER=$(ps | grep $PROCESS_SENSOR_CENTER | grep -v grep | awk '{print $1}')
 PID_DETECTION=$(ps | grep $PROCESS_DETECTION | grep -v grep | awk '{print $1}')
 PID_LOCATION=$(ps | grep $PROCESS_LOCATION | grep -v grep | awk '{print $1}')
 PID_APAHANDLE=$(ps | grep $PROCESS_APAHANDLE | grep -v grep | awk '{print $1}')
+PID_OBJECT_DETECTION=$(ps | grep $PROCESS_OBJECT_DETECTION | grep -v grep | awk '{print $1}')   
 
 if [[ "$TARGET" == "0" ]];then
   kill -9 $PID_SENSOR_CENTER
@@ -55,6 +57,8 @@ elif [[ "$TARGET" == "3" ]];then
   kill -9 $PID_DETECTION
 elif [[ "$TARGET" == "4" ]];then
   kill -9 $PID_LOCATION
+elif [[ "$TARGET" == "5" ]];then                                                                                    
+  kill -9 $PID_OBJECT_DETECTION 
 else
   echo "invalid mode = $MODE, exit!"
   exit 1
@@ -104,7 +108,9 @@ elif [[ "$TARGET" == "4" ]];then
   ./$MAINBOARD -c process.json -w config/location_map_process
 elif [[ "$TARGET" == "5" ]];then
   ./$MAINBOARD -c process.json -w config/perception_od_process
-else
+elif [[ "$TARGET" == "5" ]];then                                                                                    
+  ./$MAINBOARD -c process.json -w config/perception_od_process                                                      
+else 
   echo "invalid mode = $MODE, exit!"
   exit 1
 fi

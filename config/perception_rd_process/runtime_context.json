@@ -1,9 +1,9 @@
 {
   "modules": [
     {
-      "class_name": "ParkingslotDetectMoudle",
-      "module_id": "ParkingslotDetectMoudle",
-      "package": "../../lib/libpsd.so",
+      "class_name": "PerceptionRdMoudle",
+      "module_id": "PerceptionRdMoudle",
+      "package": "../../lib/librd.so",
       "inputs": [
         {
           "port_id": "sub_apa_status",
@@ -47,8 +47,6 @@
             "comm_protocol": "shm"
           }
         },
-
-        
           {
             "port_id": "pub_apa_ps_info_s32g",
             "topic": "/psd/apa_ps_info",
@@ -64,8 +62,6 @@
               }
             }
           },
-
-
         {
           "port_id": "pub_apa_ps_rect",
           "topic": "/psd/apa_ps_rect",
@@ -89,6 +85,21 @@
             "domain_id": 0,
             "comm_protocol": "shm"
           }
+        },
+        {
+          "port_id": "pub_quad_parking_slots_s32g",
+          "topic": "/psd/quad_parking_slots",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 3
+                }
+              ]
+            }
+          }
         }
       ],
       "procs": [
@@ -100,7 +111,7 @@
             "expression": "sub_camera_frame_array[-1] && sub_apa_status[-1] && sub_pad_point[-1] && sub_pad_vehicle_pose[-1]"
           },
           "schedule_group": {
-            "scheduler_name": "TP_PSD"
+            "scheduler_name": "TP_RD"
           }
         },
         {
