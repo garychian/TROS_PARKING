@@ -18,7 +18,7 @@ target_include_directories(loc
     ${PROJECT_SOURCE_DIR}/src
     ${TROS_MESSAGE_DIR})
 
-target_link_libraries(loc ${COMMON_LIB} ${FANYA_PROTO_LIB} ${HOBOT_BOLE_PROTOCOL_LIB} ${PROTO})
+target_link_libraries(loc ${COMMON_LIB} ${FANYA_PROTO_LIB} ${HOBOT_BOLE_PROTOCOL_LIB} ${PROTO} opencv_world)
 
 # install stage
 install(TARGETS loc  DESTINATION ${TROS_INSTALL_LIB})

@@ -215,20 +215,47 @@ void PerceptionRdMoudle::TimerProc(
     DFHLOG_I("pub apa_pointI_port info, x = {}", apa_pointI->proto.x());
   }
 
-  {  // do something with output port pub_psd_image
-    // fill proto
-    auto image = std::make_shared<ImageMsg>();
-    image->proto.set_width(1920);
-    image->SetGenTimestamp(gen_ts);
-    // pub msg
-    auto pub_image_port = proc->GetOutputPort("pub_psd_image");
-    if (!pub_image_port) {
-      DFHLOG_E("failed to get output port of {}", "pub_psd_image");
-      return;
-    }
-    pub_image_port->Send(image);
-    DFHLOG_I("pub image_port info, width = {}", image->proto.width());
-  }
+
+   { // do something with output port pub_psd_image
+        // fill proto
+        auto rd_image = std::make_shared<ImageMsg>();
+        // image->proto.set_width(1920);
+        // image->SetGenTimestamp(gen_ts);
+
+        std::vector<uint8_t> image_data;
+        static cv::Mat image = cv::imread("test.jpg");
+        imencode(".jpg", image, image_data);
+        rd::Time rd_time;
+        rd_time.set_nanosec(123);
+        rd::Header rd_header;
+        rd_header.set_seq(1);
+        rd_header.set_frameid("99");
+        rd_header.mutable_timestampns()->CopyFrom(rd_time);
+        // rd::Image rd_image;
+        rd_image->proto.set_data(image_data.data(), image_data.size());
+        rd_image->proto.mutable_header()->CopyFrom(rd_header);
+        rd_image->proto.set_oriheight(123);
+        rd_image->proto.set_oriwidth(123);
+        rd_image->proto.set_height(image.rows);
+        rd_image->proto.set_width(image.cols);
+        rd_image->proto.set_encoding("jpg");
+        rd_image->proto.set_step(123);
+        // rd_image->proto.mutable_data()->CopyFrom(rd_data);
+        rd_image->proto.set_phyaddr(123);
+        rd_image->proto.set_viraddr(123);
+        rd_image->proto.set_memtype(rd::Memtype::cambriconVgu);
+
+        // pub msg
+        auto pub_image_port = proc->GetOutputPort("pub_psd_image");
+        if (!pub_image_port)
+        {
+          DFHLOG_E("failed to get output port of {}", "pub_psd_image");
+          return;
+        }
+        pub_image_port->Send(rd_image);
+        DFHLOG_I("pub image_port info, width = {}",
+                 rd_image->proto.width());
+      }
 
   // pub_quad_parking_slots_s32g
   {
@@ -251,25 +278,6 @@ void PerceptionRdMoudle::TimerProc(
     rd_approx_box_points.set_linelen(123);
     rd_approx_box_points.set_linescore(123);
     rd_approx_box_points.set_hasborderpoint(true);
-
-    rd::Data_Row rd_data_rw;
-    rd_data_rw.add_value(123);
-
-    rd::Data rd_data;
-    rd_data.add_pt()->CopyFrom(rd_data_rw);
-
-    rd::Image rd_image;
-    rd_image.mutable_header()->CopyFrom(rd_header);
-    rd_image.set_oriheight(123);
-    rd_image.set_oriwidth(123);
-    rd_image.set_height(123);
-    rd_image.set_width(123);
-    rd_image.set_encoding("utf-8");
-    rd_image.set_step(123);
-    rd_image.mutable_data()->CopyFrom(rd_data);
-    rd_image.set_phyaddr(123);
-    rd_image.set_viraddr(123);
-    rd_image.set_memtype(rd::Memtype::cambriconVgu);
 
     rd::QuadParkingSlot rd_quad_parking_slot;
     rd_quad_parking_slot.mutable_tl()->CopyFrom(rd_point2f);

@@ -667,8 +667,8 @@ class Image final :
 
   enum : int {
     kEncodingFieldNumber = 6,
-    kHeaderFieldNumber = 1,
     kDataFieldNumber = 8,
+    kHeaderFieldNumber = 1,
     kOriHeightFieldNumber = 2,
     kOriWidthFieldNumber = 3,
     kHeightFieldNumber = 4,
@@ -696,6 +696,24 @@ class Image final :
   std::string* _internal_mutable_encoding();
   public:
 
+  // optional bytes data = 8;
+  bool has_data() const;
+  private:
+  bool _internal_has_data() const;
+  public:
+  void clear_data();
+  const std::string& data() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_data(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_data();
+  PROTOBUF_NODISCARD std::string* release_data();
+  void set_allocated_data(std::string* data);
+  private:
+  const std::string& _internal_data() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_data(const std::string& value);
+  std::string* _internal_mutable_data();
+  public:
+
   // optional .rd.Header header = 1;
   bool has_header() const;
   private:
@@ -713,24 +731,6 @@ class Image final :
   void unsafe_arena_set_allocated_header(
       ::rd::Header* header);
   ::rd::Header* unsafe_arena_release_header();
-
-  // optional .rd.Data data = 8;
-  bool has_data() const;
-  private:
-  bool _internal_has_data() const;
-  public:
-  void clear_data();
-  const ::rd::Data& data() const;
-  PROTOBUF_NODISCARD ::rd::Data* release_data();
-  ::rd::Data* mutable_data();
-  void set_allocated_data(::rd::Data* data);
-  private:
-  const ::rd::Data& _internal_data() const;
-  ::rd::Data* _internal_mutable_data();
-  public:
-  void unsafe_arena_set_allocated_data(
-      ::rd::Data* data);
-  ::rd::Data* unsafe_arena_release_data();
 
   // optional uint32 oriHeight = 2;
   bool has_oriheight() const;
@@ -846,8 +846,8 @@ class Image final :
   ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr encoding_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr data_;
   ::rd::Header* header_;
-  ::rd::Data* data_;
   uint32_t oriheight_;
   uint32_t oriwidth_;
   uint32_t height_;
@@ -3091,7 +3091,7 @@ inline void SApaPSRect::set_iscenetype(int32_t value) {
 
 // optional .rd.Header header = 1;
 inline bool Image::_internal_has_header() const {
-  bool value = (_has_bits_[0] & 0x00000002u) != 0;
+  bool value = (_has_bits_[0] & 0x00000004u) != 0;
   PROTOBUF_ASSUME(!value || header_ != nullptr);
   return value;
 }
@@ -3100,7 +3100,7 @@ inline bool Image::has_header() const {
 }
 inline void Image::clear_header() {
   if (header_ != nullptr) header_->Clear();
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline const ::rd::Header& Image::_internal_header() const {
   const ::rd::Header* p = header_;
@@ -3118,14 +3118,14 @@ inline void Image::unsafe_arena_set_allocated_header(
   }
   header_ = header;
   if (header) {
-    _has_bits_[0] |= 0x00000002u;
+    _has_bits_[0] |= 0x00000004u;
   } else {
-    _has_bits_[0] &= ~0x00000002u;
+    _has_bits_[0] &= ~0x00000004u;
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:rd.Image.header)
 }
 inline ::rd::Header* Image::release_header() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000004u;
   ::rd::Header* temp = header_;
   header_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
@@ -3141,13 +3141,13 @@ inline ::rd::Header* Image::release_header() {
 }
 inline ::rd::Header* Image::unsafe_arena_release_header() {
   // @@protoc_insertion_point(field_release:rd.Image.header)
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000004u;
   ::rd::Header* temp = header_;
   header_ = nullptr;
   return temp;
 }
 inline ::rd::Header* Image::_internal_mutable_header() {
-  _has_bits_[0] |= 0x00000002u;
+  _has_bits_[0] |= 0x00000004u;
   if (header_ == nullptr) {
     auto* p = CreateMaybeMessage<::rd::Header>(GetArenaForAllocation());
     header_ = p;
@@ -3171,9 +3171,9 @@ inline void Image::set_allocated_header(::rd::Header* header) {
       header = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, header, submessage_arena);
     }
-    _has_bits_[0] |= 0x00000002u;
+    _has_bits_[0] |= 0x00000004u;
   } else {
-    _has_bits_[0] &= ~0x00000002u;
+    _has_bits_[0] &= ~0x00000004u;
   }
   header_ = header;
   // @@protoc_insertion_point(field_set_allocated:rd.Image.header)
@@ -3388,93 +3388,72 @@ inline void Image::set_step(uint32_t value) {
   // @@protoc_insertion_point(field_set:rd.Image.step)
 }
 
-// optional .rd.Data data = 8;
+// optional bytes data = 8;
 inline bool Image::_internal_has_data() const {
-  bool value = (_has_bits_[0] & 0x00000004u) != 0;
-  PROTOBUF_ASSUME(!value || data_ != nullptr);
+  bool value = (_has_bits_[0] & 0x00000002u) != 0;
   return value;
 }
 inline bool Image::has_data() const {
   return _internal_has_data();
 }
 inline void Image::clear_data() {
-  if (data_ != nullptr) data_->Clear();
-  _has_bits_[0] &= ~0x00000004u;
+  data_.ClearToEmpty();
+  _has_bits_[0] &= ~0x00000002u;
 }
-inline const ::rd::Data& Image::_internal_data() const {
-  const ::rd::Data* p = data_;
-  return p != nullptr ? *p : reinterpret_cast<const ::rd::Data&>(
-      ::rd::_Data_default_instance_);
-}
-inline const ::rd::Data& Image::data() const {
+inline const std::string& Image::data() const {
   // @@protoc_insertion_point(field_get:rd.Image.data)
   return _internal_data();
 }
-inline void Image::unsafe_arena_set_allocated_data(
-    ::rd::Data* data) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(data_);
-  }
-  data_ = data;
-  if (data) {
-    _has_bits_[0] |= 0x00000004u;
-  } else {
-    _has_bits_[0] &= ~0x00000004u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:rd.Image.data)
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void Image::set_data(ArgT0&& arg0, ArgT... args) {
+ _has_bits_[0] |= 0x00000002u;
+ data_.SetBytes(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:rd.Image.data)
 }
-inline ::rd::Data* Image::release_data() {
-  _has_bits_[0] &= ~0x00000004u;
-  ::rd::Data* temp = data_;
-  data_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::rd::Data* Image::unsafe_arena_release_data() {
-  // @@protoc_insertion_point(field_release:rd.Image.data)
-  _has_bits_[0] &= ~0x00000004u;
-  ::rd::Data* temp = data_;
-  data_ = nullptr;
-  return temp;
-}
-inline ::rd::Data* Image::_internal_mutable_data() {
-  _has_bits_[0] |= 0x00000004u;
-  if (data_ == nullptr) {
-    auto* p = CreateMaybeMessage<::rd::Data>(GetArenaForAllocation());
-    data_ = p;
-  }
-  return data_;
-}
-inline ::rd::Data* Image::mutable_data() {
-  ::rd::Data* _msg = _internal_mutable_data();
+inline std::string* Image::mutable_data() {
+  std::string* _s = _internal_mutable_data();
   // @@protoc_insertion_point(field_mutable:rd.Image.data)
-  return _msg;
+  return _s;
 }
-inline void Image::set_allocated_data(::rd::Data* data) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete data_;
+inline const std::string& Image::_internal_data() const {
+  return data_.Get();
+}
+inline void Image::_internal_set_data(const std::string& value) {
+  _has_bits_[0] |= 0x00000002u;
+  data_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* Image::_internal_mutable_data() {
+  _has_bits_[0] |= 0x00000002u;
+  return data_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* Image::release_data() {
+  // @@protoc_insertion_point(field_release:rd.Image.data)
+  if (!_internal_has_data()) {
+    return nullptr;
   }
-  if (data) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper<::rd::Data>::GetOwningArena(data);
-    if (message_arena != submessage_arena) {
-      data = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, data, submessage_arena);
-    }
-    _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] &= ~0x00000002u;
+  auto* p = data_.ReleaseNonDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (data_.IsDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited())) {
+    data_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void Image::set_allocated_data(std::string* data) {
+  if (data != nullptr) {
+    _has_bits_[0] |= 0x00000002u;
   } else {
-    _has_bits_[0] &= ~0x00000004u;
+    _has_bits_[0] &= ~0x00000002u;
   }
-  data_ = data;
+  data_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), data,
+      GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (data_.IsDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited())) {
+    data_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:rd.Image.data)
 }
 

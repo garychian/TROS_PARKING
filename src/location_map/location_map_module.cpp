@@ -268,8 +268,21 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_I("sub_psd_image msg timestamp: {}",
-      msg->GetGenTimestamp());
+    auto psd_image = std::dynamic_pointer_cast<ImageMsg>(msg);
+    cv::Mat received_image(psd_image->proto.height(), psd_image->proto.width(), CV_8UC3);
+    std::vector<uint8_t> data_vec(psd_image->proto.data().begin(), psd_image->proto.data().end());
+    imdecode(data_vec, cv::IMREAD_COLOR, &received_image);
+
+    static int num = 0;
+    ++num;
+    if (num%2 == 0){
+      num = 0;
+    }
+    std::string image_name = std::string("save_psd_image_") + std::to_string(num) + std::string(".jpg");
+
+    imwrite(image_name.c_str(), received_image);
+    DFHLOG_I("sub_psd_image msg timestamp: {}, height = {}, width = {}",
+      msg->GetGenTimestamp(), psd_image->proto.height(), psd_image->proto.width());
     // process msg of sub_psd_image
   }
   auto &sub_camera_frame_array_msgs

@@ -50,8 +50,8 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT SApaPSRectDefaultTypeInternal _
 constexpr Image::Image(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : encoding_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
+  , data_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , header_(nullptr)
-  , data_(nullptr)
   , oriheight_(0u)
   , oriwidth_(0u)
   , height_(0u)
@@ -264,14 +264,14 @@ const uint32_t TableStruct_rd_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(proto
   PROTOBUF_FIELD_OFFSET(::rd::Image, phyaddr_),
   PROTOBUF_FIELD_OFFSET(::rd::Image, viraddr_),
   PROTOBUF_FIELD_OFFSET(::rd::Image, memtype_),
-  1,
+  2,
   3,
   4,
   5,
   6,
   0,
   8,
-  2,
+  1,
   7,
   10,
   9,
@@ -455,70 +455,70 @@ const char descriptor_table_protodef_rd_2eproto[] PROTOBUF_SECTION_VARIABLE(prot
   "\006pstype\030\002 \001(\0162\n.rd.PstypeH\000\210\001\001\022\022\n\005label\030"
   "\003 \001(\005H\001\210\001\001\022\026\n\tiSlotType\030\004 \001(\005H\002\210\001\001\022\027\n\niS"
   "ceneType\030\005 \001(\005H\003\210\001\001B\t\n\007_pstypeB\010\n\006_label"
-  "B\014\n\n_iSlotTypeB\r\n\013_iSceneType\"\224\003\n\005Image\022"
+  "B\014\n\n_iSlotTypeB\r\n\013_iSceneType\"\212\003\n\005Image\022"
   "\037\n\006header\030\001 \001(\0132\n.rd.HeaderH\000\210\001\001\022\026\n\toriH"
   "eight\030\002 \001(\rH\001\210\001\001\022\025\n\010oriWidth\030\003 \001(\rH\002\210\001\001\022"
   "\023\n\006height\030\004 \001(\rH\003\210\001\001\022\022\n\005width\030\005 \001(\rH\004\210\001\001"
   "\022\025\n\010encoding\030\006 \001(\tH\005\210\001\001\022\021\n\004step\030\007 \001(\rH\006\210"
-  "\001\001\022\033\n\004data\030\010 \001(\0132\010.rd.DataH\007\210\001\001\022\024\n\007phyAd"
-  "dr\030\t \001(\004H\010\210\001\001\022\024\n\007virAddr\030\n \001(\004H\t\210\001\001\022!\n\007m"
-  "emtype\030\013 \001(\0162\013.rd.MemtypeH\n\210\001\001B\t\n\007_heade"
-  "rB\014\n\n_oriHeightB\013\n\t_oriWidthB\t\n\007_heightB"
-  "\010\n\006_widthB\013\n\t_encodingB\007\n\005_stepB\007\n\005_data"
-  "B\n\n\010_phyAddrB\n\n\010_virAddrB\n\n\010_memtype\"Z\n\n"
-  "SApaPSInfo\022$\n\014WorldoutRect\030\001 \003(\0132\016.rd.SA"
-  "paPSRect\022\027\n\nullFrameId\030\002 \001(\003H\000\210\001\001B\r\n\013_ul"
-  "lFrameId\"\310\001\n\020QuadParkingSlots\022\037\n\006header\030"
-  "\001 \001(\0132\n.rd.HeaderH\000\210\001\001\022\035\n\020frameTimeStamp"
-  "Ns\030\002 \001(\004H\001\210\001\001\022\025\n\010sensorId\030\003 \001(\005H\002\210\001\001\0220\n\023"
-  "quadParkingSlotList\030\004 \003(\0132\023.rd.QuadParki"
-  "ngSlotB\t\n\007_headerB\023\n\021_frameTimeStampNsB\013"
-  "\n\t_sensorId\"x\n\006Header\022\020\n\003seq\030\001 \001(\rH\000\210\001\001\022"
-  "\"\n\013timestampNs\030\002 \001(\0132\010.rd.TimeH\001\210\001\001\022\024\n\007f"
-  "rameId\030\003 \001(\tH\002\210\001\001B\006\n\004_seqB\016\n\014_timestampN"
-  "sB\n\n\010_frameId\"(\n\004Time\022\024\n\007nanoSec\030\001 \001(\004H\000"
-  "\210\001\001B\n\n\010_nanoSec\"\305\007\n\017QuadParkingSlot\022\034\n\002t"
-  "l\030\001 \001(\0132\013.rd.Point2fH\000\210\001\001\022\034\n\002tr\030\002 \001(\0132\013."
-  "rd.Point2fH\001\210\001\001\022\034\n\002bl\030\003 \001(\0132\013.rd.Point2f"
-  "H\002\210\001\001\022\034\n\002br\030\004 \001(\0132\013.rd.Point2fH\003\210\001\001\022\027\n\nc"
-  "onfidence\030\005 \001(\002H\004\210\001\001\022\022\n\005label\030\006 \001(\rH\005\210\001\001"
-  "\022\025\n\010filtered\030\007 \001(\010H\006\210\001\001\022\025\n\010slotType\030\010 \001("
-  "\005H\007\210\001\001\022\020\n\003sTl\030\t \001(\002H\010\210\001\001\022\020\n\003sTr\030\n \001(\002H\t\210"
-  "\001\001\022\020\n\003sBl\030\013 \001(\002H\n\210\001\001\022\020\n\003sBr\030\014 \001(\002H\013\210\001\001\022\037"
-  "\n\005dirIn\030\r \001(\0132\013.rd.Point2fH\014\210\001\001\022\"\n\010dirWi"
-  "dth\030\016 \001(\0132\013.rd.Point2fH\r\210\001\001\022#\n\tdirLength"
-  "\030\017 \001(\0132\013.rd.Point2fH\016\210\001\001\022 \n\006center\030\020 \001(\013"
-  "2\013.rd.Point2fH\017\210\001\001\022\026\n\toppModify\030\021 \001(\010H\020\210"
-  "\001\001\022\027\n\nisComplete\030\022 \001(\010H\021\210\001\001\022\022\n\005width\030\023 \001"
-  "(\002H\022\210\001\001\022\023\n\006length\030\024 \001(\002H\023\210\001\001\022\026\n\tisVisite"
-  "d\030\025 \001(\010H\024\210\001\001\022%\n\003pTl\030\026 \001(\0132\023.rd.ApproxBox"
-  "PointsH\025\210\001\001\022%\n\003pTr\030\027 \001(\0132\023.rd.ApproxBoxP"
-  "ointsH\026\210\001\001\022%\n\003pBl\030\030 \001(\0132\023.rd.ApproxBoxPo"
-  "intsH\027\210\001\001\022%\n\003pBr\030\031 \001(\0132\023.rd.ApproxBoxPoi"
-  "ntsH\030\210\001\001B\005\n\003_tlB\005\n\003_trB\005\n\003_blB\005\n\003_brB\r\n\013"
-  "_confidenceB\010\n\006_labelB\013\n\t_filteredB\013\n\t_s"
-  "lotTypeB\006\n\004_sTlB\006\n\004_sTrB\006\n\004_sBlB\006\n\004_sBrB"
-  "\010\n\006_dirInB\013\n\t_dirWidthB\014\n\n_dirLengthB\t\n\007"
-  "_centerB\014\n\n_oppModifyB\r\n\013_isCompleteB\010\n\006"
-  "_widthB\t\n\007_lengthB\014\n\n_isVisitedB\006\n\004_pTlB"
-  "\006\n\004_pTrB\006\n\004_pBlB\006\n\004_pBr\"5\n\007Point2f\022\016\n\001x\030"
-  "\001 \001(\002H\000\210\001\001\022\016\n\001y\030\002 \001(\002H\001\210\001\001B\004\n\002_xB\004\n\002_y\"\204"
-  "\002\n\017ApproxBoxPoints\022\037\n\005point\030\001 \001(\0132\013.rd.P"
-  "oint2fH\000\210\001\001\022\027\n\nborderDist\030\002 \001(\002H\001\210\001\001\022\027\n\n"
-  "pointScore\030\003 \001(\002H\002\210\001\001\022\024\n\007lineLen\030\004 \001(\002H\003"
-  "\210\001\001\022\026\n\tlineScore\030\005 \001(\002H\004\210\001\001\022\033\n\016hasBorder"
-  "Point\030\006 \001(\010H\005\210\001\001B\010\n\006_pointB\r\n\013_borderDis"
-  "tB\r\n\013_pointScoreB\n\n\010_lineLenB\014\n\n_lineSco"
-  "reB\021\n\017_hasBorderPoint\"6\n\004Data\022\030\n\002pt\030\001 \003("
-  "\0132\014.rd.Data.Row\032\024\n\003Row\022\r\n\005value\030\001 \003(\005*L\n"
-  "\006Pstype\022\024\n\020PARALLEL_PARKING\020\000\022\024\n\020VERTICA"
-  "L_PARKING\020\001\022\026\n\022DIAGONAL_PARKING_1\020\002*5\n\007M"
-  "emtype\022\010\n\004host\020\000\022\020\n\014cambriconVgu\020\001\022\016\n\nho"
-  "rizonIon\020\002b\006proto3"
+  "\001\001\022\021\n\004data\030\010 \001(\014H\007\210\001\001\022\024\n\007phyAddr\030\t \001(\004H\010"
+  "\210\001\001\022\024\n\007virAddr\030\n \001(\004H\t\210\001\001\022!\n\007memtype\030\013 \001"
+  "(\0162\013.rd.MemtypeH\n\210\001\001B\t\n\007_headerB\014\n\n_oriH"
+  "eightB\013\n\t_oriWidthB\t\n\007_heightB\010\n\006_widthB"
+  "\013\n\t_encodingB\007\n\005_stepB\007\n\005_dataB\n\n\010_phyAd"
+  "drB\n\n\010_virAddrB\n\n\010_memtype\"Z\n\nSApaPSInfo"
+  "\022$\n\014WorldoutRect\030\001 \003(\0132\016.rd.SApaPSRect\022\027"
+  "\n\nullFrameId\030\002 \001(\003H\000\210\001\001B\r\n\013_ullFrameId\"\310"
+  "\001\n\020QuadParkingSlots\022\037\n\006header\030\001 \001(\0132\n.rd"
+  ".HeaderH\000\210\001\001\022\035\n\020frameTimeStampNs\030\002 \001(\004H\001"
+  "\210\001\001\022\025\n\010sensorId\030\003 \001(\005H\002\210\001\001\0220\n\023quadParkin"
+  "gSlotList\030\004 \003(\0132\023.rd.QuadParkingSlotB\t\n\007"
+  "_headerB\023\n\021_frameTimeStampNsB\013\n\t_sensorI"
+  "d\"x\n\006Header\022\020\n\003seq\030\001 \001(\rH\000\210\001\001\022\"\n\013timesta"
+  "mpNs\030\002 \001(\0132\010.rd.TimeH\001\210\001\001\022\024\n\007frameId\030\003 \001"
+  "(\tH\002\210\001\001B\006\n\004_seqB\016\n\014_timestampNsB\n\n\010_fram"
+  "eId\"(\n\004Time\022\024\n\007nanoSec\030\001 \001(\004H\000\210\001\001B\n\n\010_na"
+  "noSec\"\305\007\n\017QuadParkingSlot\022\034\n\002tl\030\001 \001(\0132\013."
+  "rd.Point2fH\000\210\001\001\022\034\n\002tr\030\002 \001(\0132\013.rd.Point2f"
+  "H\001\210\001\001\022\034\n\002bl\030\003 \001(\0132\013.rd.Point2fH\002\210\001\001\022\034\n\002b"
+  "r\030\004 \001(\0132\013.rd.Point2fH\003\210\001\001\022\027\n\nconfidence\030"
+  "\005 \001(\002H\004\210\001\001\022\022\n\005label\030\006 \001(\rH\005\210\001\001\022\025\n\010filter"
+  "ed\030\007 \001(\010H\006\210\001\001\022\025\n\010slotType\030\010 \001(\005H\007\210\001\001\022\020\n\003"
+  "sTl\030\t \001(\002H\010\210\001\001\022\020\n\003sTr\030\n \001(\002H\t\210\001\001\022\020\n\003sBl\030"
+  "\013 \001(\002H\n\210\001\001\022\020\n\003sBr\030\014 \001(\002H\013\210\001\001\022\037\n\005dirIn\030\r "
+  "\001(\0132\013.rd.Point2fH\014\210\001\001\022\"\n\010dirWidth\030\016 \001(\0132"
+  "\013.rd.Point2fH\r\210\001\001\022#\n\tdirLength\030\017 \001(\0132\013.r"
+  "d.Point2fH\016\210\001\001\022 \n\006center\030\020 \001(\0132\013.rd.Poin"
+  "t2fH\017\210\001\001\022\026\n\toppModify\030\021 \001(\010H\020\210\001\001\022\027\n\nisCo"
+  "mplete\030\022 \001(\010H\021\210\001\001\022\022\n\005width\030\023 \001(\002H\022\210\001\001\022\023\n"
+  "\006length\030\024 \001(\002H\023\210\001\001\022\026\n\tisVisited\030\025 \001(\010H\024\210"
+  "\001\001\022%\n\003pTl\030\026 \001(\0132\023.rd.ApproxBoxPointsH\025\210\001"
+  "\001\022%\n\003pTr\030\027 \001(\0132\023.rd.ApproxBoxPointsH\026\210\001\001"
+  "\022%\n\003pBl\030\030 \001(\0132\023.rd.ApproxBoxPointsH\027\210\001\001\022"
+  "%\n\003pBr\030\031 \001(\0132\023.rd.ApproxBoxPointsH\030\210\001\001B\005"
+  "\n\003_tlB\005\n\003_trB\005\n\003_blB\005\n\003_brB\r\n\013_confidenc"
+  "eB\010\n\006_labelB\013\n\t_filteredB\013\n\t_slotTypeB\006\n"
+  "\004_sTlB\006\n\004_sTrB\006\n\004_sBlB\006\n\004_sBrB\010\n\006_dirInB"
+  "\013\n\t_dirWidthB\014\n\n_dirLengthB\t\n\007_centerB\014\n"
+  "\n_oppModifyB\r\n\013_isCompleteB\010\n\006_widthB\t\n\007"
+  "_lengthB\014\n\n_isVisitedB\006\n\004_pTlB\006\n\004_pTrB\006\n"
+  "\004_pBlB\006\n\004_pBr\"5\n\007Point2f\022\016\n\001x\030\001 \001(\002H\000\210\001\001"
+  "\022\016\n\001y\030\002 \001(\002H\001\210\001\001B\004\n\002_xB\004\n\002_y\"\204\002\n\017ApproxB"
+  "oxPoints\022\037\n\005point\030\001 \001(\0132\013.rd.Point2fH\000\210\001"
+  "\001\022\027\n\nborderDist\030\002 \001(\002H\001\210\001\001\022\027\n\npointScore"
+  "\030\003 \001(\002H\002\210\001\001\022\024\n\007lineLen\030\004 \001(\002H\003\210\001\001\022\026\n\tlin"
+  "eScore\030\005 \001(\002H\004\210\001\001\022\033\n\016hasBorderPoint\030\006 \001("
+  "\010H\005\210\001\001B\010\n\006_pointB\r\n\013_borderDistB\r\n\013_poin"
+  "tScoreB\n\n\010_lineLenB\014\n\n_lineScoreB\021\n\017_has"
+  "BorderPoint\"6\n\004Data\022\030\n\002pt\030\001 \003(\0132\014.rd.Dat"
+  "a.Row\032\024\n\003Row\022\r\n\005value\030\001 \003(\005*L\n\006Pstype\022\024\n"
+  "\020PARALLEL_PARKING\020\000\022\024\n\020VERTICAL_PARKING\020"
+  "\001\022\026\n\022DIAGONAL_PARKING_1\020\002*5\n\007Memtype\022\010\n\004"
+  "host\020\000\022\020\n\014cambriconVgu\020\001\022\016\n\nhorizonIon\020\002"
+  "b\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_rd_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_rd_2eproto = {
-  false, false, 2618, descriptor_table_protodef_rd_2eproto, "rd.proto", 
+  false, false, 2608, descriptor_table_protodef_rd_2eproto, "rd.proto", 
   &descriptor_table_rd_2eproto_once, nullptr, 0, 12,
   schemas, file_default_instances, TableStruct_rd_2eproto::offsets,
   file_level_metadata_rd_2eproto, file_level_enum_descriptors_rd_2eproto, file_level_service_descriptors_rd_2eproto,
@@ -1127,7 +1127,7 @@ class Image::_Internal {
   using HasBits = decltype(std::declval<Image>()._has_bits_);
   static const ::rd::Header& header(const Image* msg);
   static void set_has_header(HasBits* has_bits) {
-    (*has_bits)[0] |= 2u;
+    (*has_bits)[0] |= 4u;
   }
   static void set_has_oriheight(HasBits* has_bits) {
     (*has_bits)[0] |= 8u;
@@ -1147,9 +1147,8 @@ class Image::_Internal {
   static void set_has_step(HasBits* has_bits) {
     (*has_bits)[0] |= 256u;
   }
-  static const ::rd::Data& data(const Image* msg);
   static void set_has_data(HasBits* has_bits) {
-    (*has_bits)[0] |= 4u;
+    (*has_bits)[0] |= 2u;
   }
   static void set_has_phyaddr(HasBits* has_bits) {
     (*has_bits)[0] |= 128u;
@@ -1165,10 +1164,6 @@ class Image::_Internal {
 const ::rd::Header&
 Image::_Internal::header(const Image* msg) {
   return *msg->header_;
-}
-const ::rd::Data&
-Image::_Internal::data(const Image* msg) {
-  return *msg->data_;
 }
 Image::Image(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
@@ -1191,15 +1186,18 @@ Image::Image(const Image& from)
     encoding_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_encoding(), 
       GetArenaForAllocation());
   }
+  data_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    data_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_data()) {
+    data_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_data(), 
+      GetArenaForAllocation());
+  }
   if (from._internal_has_header()) {
     header_ = new ::rd::Header(*from.header_);
   } else {
     header_ = nullptr;
-  }
-  if (from._internal_has_data()) {
-    data_ = new ::rd::Data(*from.data_);
-  } else {
-    data_ = nullptr;
   }
   ::memcpy(&oriheight_, &from.oriheight_,
     static_cast<size_t>(reinterpret_cast<char*>(&viraddr_) -
@@ -1211,6 +1209,10 @@ inline void Image::SharedCtor() {
 encoding_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   encoding_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+data_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  data_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), "", GetArenaForAllocation());
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&header_) - reinterpret_cast<char*>(this)),
@@ -1228,8 +1230,8 @@ Image::~Image() {
 inline void Image::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   encoding_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  data_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (this != internal_default_instance()) delete header_;
-  if (this != internal_default_instance()) delete data_;
 }
 
 void Image::ArenaDtor(void* object) {
@@ -1254,12 +1256,11 @@ void Image::Clear() {
       encoding_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000002u) {
-      GOOGLE_DCHECK(header_ != nullptr);
-      header_->Clear();
+      data_.ClearNonDefaultToEmpty();
     }
     if (cached_has_bits & 0x00000004u) {
-      GOOGLE_DCHECK(data_ != nullptr);
-      data_->Clear();
+      GOOGLE_DCHECK(header_ != nullptr);
+      header_->Clear();
     }
   }
   if (cached_has_bits & 0x000000f8u) {
@@ -1346,10 +1347,11 @@ const char* Image::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::inte
         } else
           goto handle_unusual;
         continue;
-      // optional .rd.Data data = 8;
+      // optional bytes data = 8;
       case 8:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
-          ptr = ctx->ParseMessage(_internal_mutable_data(), ptr);
+          auto str = _internal_mutable_data();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -1459,12 +1461,10 @@ uint8_t* Image::_InternalSerialize(
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(7, this->_internal_step(), target);
   }
 
-  // optional .rd.Data data = 8;
+  // optional bytes data = 8;
   if (_internal_has_data()) {
-    target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(
-        8, _Internal::data(this), target, stream);
+    target = stream->WriteBytesMaybeAliased(
+        8, this->_internal_data(), target);
   }
 
   // optional uint64 phyAddr = 9;
@@ -1511,18 +1511,18 @@ size_t Image::ByteSizeLong() const {
           this->_internal_encoding());
     }
 
-    // optional .rd.Header header = 1;
+    // optional bytes data = 8;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *header_);
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
+          this->_internal_data());
     }
 
-    // optional .rd.Data data = 8;
+    // optional .rd.Header header = 1;
     if (cached_has_bits & 0x00000004u) {
       total_size += 1 +
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-          *data_);
+          *header_);
     }
 
     // optional uint32 oriHeight = 2;
@@ -1597,10 +1597,10 @@ void Image::MergeFrom(const Image& from) {
       _internal_set_encoding(from._internal_encoding());
     }
     if (cached_has_bits & 0x00000002u) {
-      _internal_mutable_header()->::rd::Header::MergeFrom(from._internal_header());
+      _internal_set_data(from._internal_data());
     }
     if (cached_has_bits & 0x00000004u) {
-      _internal_mutable_data()->::rd::Data::MergeFrom(from._internal_data());
+      _internal_mutable_header()->::rd::Header::MergeFrom(from._internal_header());
     }
     if (cached_has_bits & 0x00000008u) {
       oriheight_ = from.oriheight_;
@@ -1655,6 +1655,11 @@ void Image::InternalSwap(Image* other) {
       &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       &encoding_, lhs_arena,
       &other->encoding_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      &data_, lhs_arena,
+      &other->data_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
       PROTOBUF_FIELD_OFFSET(Image, viraddr_)

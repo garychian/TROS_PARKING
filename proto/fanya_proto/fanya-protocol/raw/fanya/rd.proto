@@ -47,7 +47,7 @@ message Image {
   optional uint32	width = 5;
   optional string encoding = 6;
   optional uint32	step = 7;
-  optional Data	data = 8;
+  optional bytes	data = 8;
   optional uint64	phyAddr = 9;
   optional uint64	virAddr = 10;
   optional Memtype	memtype = 11;
