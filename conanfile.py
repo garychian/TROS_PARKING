@@ -36,7 +36,7 @@ class PackageConanFile(ConanFile):
         ("dataflow/1.13.3@bole/stable", "override"),
         ("convert_assistant/2.5.3@thirdparty/stable"),
         ("vehicleio/[1.13.8]@bole/stable"),
-        ("fanya-protocol/1.0.0@ltc/fanya")
+        ("fanya-protocol/1.0.2@ltc/fanya")
     ]
 
     def set_version(self):

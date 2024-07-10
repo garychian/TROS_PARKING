@@ -1,0 +1,82 @@
+{
+  "modules": [
+    {
+      "class_name": "PerceptionOdMoudle",
+      "module_id": "PerceptionOdMoudle",
+      "package": "../../lib/libod.so",
+      "inputs": [
+        {
+          "port_id": "sub_apa_status",
+          "topic": "/aph/apa_status",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
+        },
+        {
+          "port_id": "sub_camera_frame_array",
+          "topic": "/sec/camera_frame_array",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "port_id": "pub_obstacles",
+          "topic": "/od/obstacles",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+                "participants": [
+                  {
+                    "id": 1
+                  }
+                ]
+              }
+          }
+        },
+          {
+            "port_id": "pub_fsline_msg",
+            "topic": "/od/fsline",
+            "communication": {
+              "domain_id": 0,
+              "comm_protocol": "zmq_tcp",
+              "comm_attr": {
+                "participants": [
+                  {
+                    "id": 2
+                  }
+                ]
+              }
+            }
+          }
+      ],
+      "procs": [
+        {
+          "proc_id": "MsgCenterProc",
+          "proc_type": "MsgCondTriggerProc",
+          "disable": false,
+          "proc_option": {
+            "expression": "sub_camera_frame_array[-1] && sub_apa_status[-1]"
+          },
+          "schedule_group": {
+            "scheduler_name": "TP_OD"
+          }
+        },
+        {
+          "proc_id": "TimerProc",
+          "disable": false,
+          "proc_type": "MsgTimerTriggerProc",
+          "proc_option": {
+            "interval": 20,
+            "repeat_counts": -1,
+            "trigger_type": 0
+          }
+        }
+      ]
+    }
+  ]
+}

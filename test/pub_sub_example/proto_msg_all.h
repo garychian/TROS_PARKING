@@ -24,7 +24,7 @@
 
 #include "fanya_protocol/aph.pb.h"
 #include "fanya_protocol/fsm.pb.h"
-#include "fanya_protocol/psd.pb.h"
+#include "fanya_protocol/rd.pb.h"
 #include "fanya_protocol/loc.pb.h"
 #include "fanya_protocol/sen.pb.h"
 

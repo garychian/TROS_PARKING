@@ -82,6 +82,8 @@ set(TROS_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/output/parking)
 set(TROS_INSTALL_BIN ${CMAKE_SOURCE_DIR}/output/parking/bin)
 set(TROS_INSTALL_LIB ${CMAKE_SOURCE_DIR}/output/parking/lib)
 
+install(FILES ${CMAKE_SOURCE_DIR}/rss/test.jpg DESTINATION ${CMAKE_SOURCE_DIR}/output/parking)
+
 add_subdirectory(src)
 
 set(VECHICLEIO_DIR "${CMAKE_SOURCE_DIR}/vehicleio")

@@ -47,6 +47,14 @@ void LocationMapModule::InitPortsAndProcs() {
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_target_slot",
     aph::target_slot);
+
+  DF_MODULE_INIT_IDL_INPUT_PORT(
+    "sub_fusion_slot_info2_location",
+    aph::FusionSlotInfo2Location);
+
+  DF_MODULE_INIT_IDL_INPUT_PORT(
+    "sub_fusion_slot_info2_location",
+    aph::FusionSlotInfo2Location);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_imu_data",
     sen::IMUData);
@@ -61,19 +69,19 @@ void LocationMapModule::InitPortsAndProcs() {
     sen::DualAntennaData);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_psd_image",
-    psd::Image);
+    rd::Image);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_camera_frame_array",
     camera_frame::CameraFrameArray);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_apa_ps_info",
-    psd::SApaPSInfo);
+    rd::SApaPSInfo);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_apa_ps_rect",
-    psd::SApaPSRect);
+    rd::SApaPSRect);
   DF_MODULE_INIT_IDL_INPUT_PORT(
     "sub_apa_pointI",
-    psd::SApaPoint_I);
+    rd::SApaPoint_I);
   DF_MODULE_INIT_IDL_OUTPUT_PORT(
     "pub_pad_realtime_loc",
     loc::padRealTimeLocation);
@@ -118,7 +126,7 @@ void LocationMapModule::InitPortsAndProcs() {
     LocationMapModule,
     MsgCenterProc,
     hobot::dataflow::ProcType::DF_MSG_COND_PROC,
-    DF_VECTOR("sub_vehicleio_data", "sub_apa_status", "sub_target_slot", "sub_imu_data", "sub_gnss_data", "sub_ins_data", "sub_dual_antenna_data", "sub_psd_image", "sub_camera_frame_array", "sub_apa_ps_info", "sub_apa_ps_rect", "sub_apa_pointI"),
+    DF_VECTOR("sub_vehicleio_data", "sub_apa_status", "sub_target_slot", "sub_imu_data", "sub_gnss_data", "sub_ins_data", "sub_dual_antenna_data", "sub_psd_image", "sub_camera_frame_array", "sub_apa_ps_info", "sub_apa_ps_rect", "sub_apa_pointI","sub_fusion_slot_info2_location"),
     DF_VECTOR());
 
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
@@ -212,6 +220,27 @@ void LocationMapModule::MsgCenterProc(
         msg->GetGenTimestamp(), target_slot->proto.m_user_select_slot_label_idx());
     }
   }
+
+  // sub   fusion_slot_info2_location_msgs
+  auto &sub_fusion_slot_info2_location_msgs
+    = msgs[proc->GetResultIndex("sub_fusion_slot_info2_location")];
+  for (auto &msg : *(sub_fusion_slot_info2_location_msgs.get())) {
+    if (nullptr == msg) {
+      continue;
+    }
+    DFHLOG_I("sub_fusion_slot_info2_location msg timestamp: {}",
+      msg->GetGenTimestamp());
+    // process msg of AphFusionSlotInfo2LocationMsg
+    auto target_slot = std::dynamic_pointer_cast<AphFusionSlotInfo2LocationMsg>(sub_fusion_slot_info2_location_msgs->at(0));
+    if (target_slot && target_slot->proto.has_slotnum()){
+      // DFHLOG_I("sub sub_fusion_slot_info2_location msg timestamp: {}, apa_status = {}",
+      //   msg->GetGenTimestamp(), target_slot->proto.slotnum());
+
+      DFHLOG_W("sub sub_fusion_slot_info2_location msg timestamp: {}, proto_info = {}",
+        msg->GetGenTimestamp(), target_slot->proto.DebugString());  
+    }
+  }
+
   auto &sub_imu_data_msgs
     = msgs[proc->GetResultIndex("sub_imu_data")];
   for (auto &msg : *(sub_imu_data_msgs.get())) {
@@ -258,8 +287,26 @@ void LocationMapModule::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_I("sub_psd_image msg timestamp: {}",
-      msg->GetGenTimestamp());
+    auto psd_image = std::dynamic_pointer_cast<ImageMsg>(msg);
+    // cv::Mat received_image(psd_image->proto.height(), psd_image->proto.width(), CV_8UC3);
+    // std::vector<uint8_t> data_vec(psd_image->proto.data().begin(), psd_image->proto.data().end());
+    // imdecode(data_vec, cv::IMREAD_COLOR, &received_image);
+
+    static int num = 0;
+    ++num;
+    if (num%2 == 0){
+      num = 0;
+    }
+    // std::string image_name = std::string("save_psd_image_") + std::to_string(num) + std::string(".jpg");
+    // imwrite(image_name.c_str(), received_image);
+
+    std::string image_name = std::string("save_psd_image") + std::to_string(num) + std::string(".yuv");
+    std::ofstream output(image_name, std::ios::out | std::ios::binary);
+    output.write(psd_image->proto.data().data(), psd_image->proto.data().size());
+    output.close();
+
+    DFHLOG_I("sub_psd_image msg timestamp: {}, height = {}, width = {}",
+      msg->GetGenTimestamp(), psd_image->proto.height(), psd_image->proto.width());
     // process msg of sub_psd_image
   }
   auto &sub_camera_frame_array_msgs

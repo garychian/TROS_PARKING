@@ -9,8 +9,8 @@ file(GLOB_RECURSE SOURCES *.cpp
   ${TROS_MESSAGE_DIR}/proto/*.cpp
   ${TROS_MESSAGE_DIR}/proto/*.cc)
 
-add_library(loc SHARED ${SOURCES})
-target_include_directories(loc
+add_library(od SHARED ${SOURCES})
+target_include_directories(od
   PUBLIC
     ${PROJECT_SOURCE_DIR}/include
   PRIVATE
@@ -18,8 +18,7 @@ target_include_directories(loc
     ${PROJECT_SOURCE_DIR}/src
     ${TROS_MESSAGE_DIR})
 
-target_link_libraries(loc ${COMMON_LIB} ${FANYA_PROTO_LIB} ${HOBOT_BOLE_PROTOCOL_LIB} ${PROTO} opencv_world)
+target_link_libraries(od ${COMMON_LIB} ${HOBOT_BOLE_PROTOCOL_LIB} ${FANYA_PROTO_LIB} ${PROTO})
 
 # install stage
-install(TARGETS loc  DESTINATION ${TROS_INSTALL_LIB})
-
+install(TARGETS od  DESTINATION ${TROS_INSTALL_LIB})

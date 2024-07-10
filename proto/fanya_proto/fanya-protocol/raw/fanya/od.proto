@@ -1,0 +1,209 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+package od;
+// [END declaration]
+
+
+// [START messages]
+
+message Obstacles {
+  optional Header	header = 1;
+  repeated ObstacleCylindrical	cylindricalObstalces = 2;
+  repeated ObstacleCube	cubeObstacles = 3;
+  repeated ObstacleRaw	rawObjects = 4;
+  repeated UssRange	rangeUnitArray = 5;    
+}
+
+message Header {
+  optional uint32	seq = 1;
+  optional Time	timestampNs = 2; 
+  optional string frameId = 3;   
+}
+
+message Time {
+  optional uint64	nanoSec = 1;
+}
+
+
+
+message ObstacleCylindrical {
+  optional string 	camera = 1;
+  optional int32	label = 2;
+  optional float	typeConfidence = 3;
+  optional float	existenceConfidence = 4;
+  optional int32	trackId = 5;
+  optional Vector3d	Center = 6;
+  optional float	radius = 7;
+  optional float	height = 8;
+  optional Vector3d	direction = 9;
+  optional MotionInfo	motionInfo = 10;
+  repeated ObstacleTrajectory trajectory = 11;
+  optional int32	staticState = 12;
+  optional float	attrScore = 13;
+}
+
+message Vector3d {
+  optional float	x = 1;
+  optional float	y = 2;
+  optional float	z = 3;
+
+}
+
+
+
+message MotionInfo {
+  optional bool	isValid = 1;
+  optional int32	motionStatus = 2;
+  optional Vector3d	center = 3;
+  optional Matrix3f	centerUncertainty = 4;
+  optional Vector3d	velocity = 5;
+  optional Matrix3f	velocityUncertainty = 6;
+  optional Vector3d	acceleration = 7;
+  optional Matrix3f	accelerationUncertainty = 8;
+  optional Vector3f	jerk = 9;
+  optional Matrix3f	jerkUncertainty = 10;
+  optional float	velocityHeading = 11;
+  optional float	velocityHeadingUncertainty = 12;
+  optional float	velocityHeadingRate = 13;
+  optional float	velocityHeadingRateUncertainty = 14;
+}
+
+message Point2f {
+  optional float	x = 1;
+  optional float	y = 2;
+}
+
+message Vector3f {
+  optional float	x = 1;
+  optional float	y = 2;
+  optional float	z = 3;
+
+}
+
+message Matrix3f {
+  optional Vector3f	x = 1;
+  optional Vector3f	y = 2;
+  optional Vector3f	z = 3;
+
+}
+
+message ObstacleCube {
+  optional string 	camera = 1; 
+  optional int32	label = 2;
+  optional float	typeConfidence = 3;
+  optional float	existenceConfidence = 4;
+  optional int32	trackId = 5;
+  optional Vector3d	Center = 6;
+  optional Vector3d	shape = 7;
+  optional Vector3d	direction = 8;
+  optional MotionInfo	motionInfo = 9;
+  repeated ObstacleTrajectory	trajectory = 10;
+}
+
+enum MotionStatus {
+  Unknown = 0; 
+  Moving = 1;
+  Still = 2;
+}
+
+message ObstacleTrajectory {
+  optional MotionStatus	motionStatus = 1;
+  optional float	confidence = 2;
+  repeated ObstacleTrajectoryPoint	points = 3;
+}
+
+message ObstacleTrajectoryPoint {
+  optional uint64	deltaTNs = 1;
+  optional Vector3f	center = 2;
+  optional Vector3f	direction = 3;
+}
+
+message ObstacleRaw {
+  optional string 	camera = 1;
+  optional int32	label = 2;
+  optional float	typeConfidence = 3;
+  optional float	existenceConfidence = 4;
+  optional Bbox2D	box2D = 5;
+  optional DirectionInfo	directionInfo = 6;
+  repeated Point2f	landmark = 7;
+  repeated float	landmarkScores = 8;
+  repeated Point2f	landmark4 = 9;
+  repeated float	landmark4Scores = 10;
+  repeated Point2f	landmark9 = 11;
+  repeated float	landmark9Scores = 12;
+  optional PositionInfo	positionInfo = 13;
+  repeated float	box3D = 14;
+  optional int32	staticState = 15;
+  optional float	attrScore = 16;
+}
+
+message Bbox2D {
+  optional bool	initialized = 1;
+  optional float	topLeftX = 2;
+  optional float	topLeftY = 3;
+  optional float	bottomRightX = 4;
+  optional float	bottomRightY = 5;
+  optional float	confidence = 6;
+}
+
+message DirectionInfo {
+  optional bool	isValid = 1;
+  optional Vector3f	directionYpr = 2;
+  optional Matrix3f	directionYprUncertainty = 3;
+  optional float	yaw = 4;
+  optional float	yawUncertainty = 5;
+  optional float	yawRate = 6;
+  optional float	yawRateUncertainty = 7;
+  optional int32	surface = 8;
+  optional float	surfaceScore = 9;
+}
+
+message UssRange {
+  optional string 	distanceId = 1;
+  optional uint64	recvTimeNs = 2;
+  optional uint32	distance = 3;
+  optional bool	isValid = 4;
+  optional Vector3f	position = 5;
+  
+}
+
+message PositionInfo {
+  optional bool	isValid = 1;
+  optional Vector3f	position = 2;
+}
+
+message FSLine {
+  repeated FSLinesimple fsLine = 1;
+}
+
+message FSLinesimple {
+  optional Header	header = 1;
+  optional uint64	frameTimestampNs = 2;
+  repeated FSLinePoint	fsLinepoints = 3;
+}
+
+enum SpaceLabel {
+  vehicle = 0;
+  pedestrian = 1;
+  RoadEdge = 2;
+  Wall = 3;
+  TrafficCone = 4;
+  Other = 5;
+}
+
+message FSLinePoint {
+  optional Point2f	coordinate = 1;
+  optional SpaceLabel	pointLabel = 2;  
+}
+
+
+
+// [END messages]

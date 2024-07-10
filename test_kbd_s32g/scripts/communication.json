@@ -78,7 +78,7 @@
     }
   ],
   "tool_switch" : 0,
-  "log_level" : "info",
+  "log_level" : "debug",
 
   "comm_debug_config": {
     "comm_debug_enable": false,
@@ -150,6 +150,57 @@
       "protocol": "zmq_tcp",
       "link_info": "10.97.109.147:25583",
       "link_type": "connect",
+      "link_options": {
+        "ZMQ_SNDHWM": 15,
+        "ZMQ_RCVHWM": 15
+      }
+    },
+    {
+      "id": 9,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:25585",
+      "link_type": "bind",
+      "link_options": {
+        "ZMQ_SNDHWM": 15,
+        "ZMQ_RCVHWM": 15
+      }
+    },
+
+    {
+      "id": 10,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:25590",
+      "link_type": "bind",
+      "link_options": {
+        "ZMQ_SNDHWM": 15,
+        "ZMQ_RCVHWM": 15
+      }
+    },
+    {
+      "id": 11,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:25591",
+      "link_type": "bind",
+      "link_options": {
+        "ZMQ_SNDHWM": 15,
+        "ZMQ_RCVHWM": 15
+      }
+    },
+    {
+      "id": 12,
+      "protocol": "zmq_tcp",
+      "link_info": "10.97.109.147:25586",
+      "link_type": "connect",
+      "link_options": {
+        "ZMQ_SNDHWM": 15,
+        "ZMQ_RCVHWM": 15
+      }
+    },
+    {
+      "id": 13,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:25587",
+      "link_type": "bind",
       "link_options": {
         "ZMQ_SNDHWM": 15,
         "ZMQ_RCVHWM": 15

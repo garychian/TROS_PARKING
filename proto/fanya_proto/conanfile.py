@@ -5,7 +5,7 @@ import os
 
 class ProtocolConan(ConanFile):
     name = "fanya-protocol"
-    version = "1.0.0"
+    version = "1.0.2"
     settings = "os", "compiler", "build_type", "arch"
     options = {"accelerate_type": ["none",
                                    "pb_pb",

@@ -215,8 +215,8 @@ int main(int argc, char** argv) {
   ErrorCode error_code;
   auto slot_label_publisher =
       Publisher<SlotlabelSerializer>::New(slot_label_comm_attr,
-                                          "/fsm/slot_label",
-                                          0,
+                                          "/fsm/slot_labe",
+                                          -65535,
                                           slot_label_args.protocol,
                                           &error_code,
                                           pub_connlisteners);
@@ -237,7 +237,7 @@ int main(int argc, char** argv) {
   auto apa_status_req_publisher =
       Publisher<ApastatusreqSerializer>::New(apa_status_req_comm_attr,
                                           "/fsm/apa_status_req",
-                                          0,
+                                          -65535,
                                           apa_status_req_args.protocol,
                                           &error_code,
                                           pub_connlisteners);

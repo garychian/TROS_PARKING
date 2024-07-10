@@ -20,12 +20,12 @@
 
 namespace fanya {
 namespace parking {
-class ParkingslotDetectMoudle:
+class PerceptionOdMoudle:
   public hobot::dataflow::Module{
  public:
-  explicit ParkingslotDetectMoudle(
+  explicit PerceptionOdMoudle(
     const hobot::dataflow::ModuleOption &module_option);
-  ~ParkingslotDetectMoudle() = default;
+  ~PerceptionOdMoudle() = default;
   void InitPortsAndProcs() override;
   int32_t Start() override;
   int32_t Stop() override;

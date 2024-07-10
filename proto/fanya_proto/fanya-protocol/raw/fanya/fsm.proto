@@ -10,8 +10,8 @@
 syntax = "proto3";
 package fsm;
 // [END declaration]
-
-message Slotlabel{
+// [START messages]
+message Slotlabel {
     optional int32 targetSlotLabel = 1;
 }
 
@@ -25,8 +25,27 @@ enum apaStatusReqType {
     Finish = 6;
     error = 7;
 }
-message Apastatusreq{
+message Apastatusreq {
     optional apaStatusReqType apaStatusReq= 1;
 }
 
-// [START messages]
+message FusionSlotInfo2Location {
+    optional int32 slotNum= 1;
+    repeated FusionSlotInfo fusionSlotInfos= 2;
+}
+
+message FusionSlotInfo {
+    repeated SlotPoint pt= 1;
+    optional int32 slotType= 2;
+    optional int32 fusionSlotType= 3;
+    optional int32 slotLabel= 4;
+    optional int32 displayLabel= 5;
+    optional int32 slotInnerObType= 6;
+    optional int32 slotStatusType= 7;
+}
+
+message SlotPoint {
+    optional int32 x= 1;
+    optional int32 y= 2;
+}
+

@@ -1,0 +1,20 @@
+{
+  "app_name": "parking_sc",
+  "prefix_format": "[%L][%P][%n][%H:%M:%S:%E][%s:%#][%k]",
+  "global_level": "log_info",
+  "module_level": [
+  ],
+  "sink": [
+      {
+          "sink_name": "tmg",
+          "enable": 1,
+          "options": {
+              "file_name": "parking_sc",
+              "max_size": 128,
+              "rotate_number": 128,
+              "store_path": "../../log/sensors/",
+              "dir_format": "process/date"
+          }
+      }
+  ]
+}
