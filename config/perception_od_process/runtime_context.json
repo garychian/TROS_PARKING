@@ -15,7 +15,7 @@
         },
         {
           "port_id": "sub_camera_frame_array",
-          "topic": "/sec/camera_frame_array",
+          "topic": "/apa/apa_image",
           "communication": {
             "domain_id": 0,
             "comm_protocol": "shm"

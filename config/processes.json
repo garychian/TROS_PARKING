@@ -13,10 +13,6 @@
       "process_cfg": "apahandle_process/process.json"
     },
     {
-      "process_name": "sensorcenter_process",
-      "process_cfg": "sensorcenter_process/process.json"
-    },
-    {
       "process_name": "perception_od_process",
       "process_cfg": "perception_od_process/process.json"
     }
