@@ -1,0 +1,30 @@
+{
+  "cam_index": 0,
+  "pipeline_id": 6,
+  "cam_cfg_file": "fanya_1920_1536/hb_j5dev.json",
+  "vio_cfg_file": "fanya_1920_1536/vpm_config.json",
+  "isp_cap" : 0,
+  "isp_cap_commit" : "bit[2]-ispinfo(ctx ae awb),bit[1]-ae,bit[0]-awb, 1-able, 0-disable",
+  "camera_type" : 0,
+  "camera_type_commit" : " 0 - normal camera, 1 - TOF camera",
+  "raw_able" : false,
+  "raw_able_commit" : "true: grab camera raw data",
+  "conditional": false,
+  "conditional_com": "true - Get the latest frame from Pym, false = Get the oldest frame from Pym",
+  "calibation_file": "./config/sensor_center/camera/calibation.json",
+  "gdc_cfg" : [
+    {
+      "gdc_name" : "semi_cyl",
+      "gdc_id" : 0,
+      "gdc_cfg" : "fanya_1920_1536/gdc_bin/camera_0_gdc.bin",
+      "input_from_module": 2,
+      "input_from_module_commits": "0-sif, 1-ipu, 2-pym",
+      "input_with": 1920,
+      "input_height": 1536,
+      "output_width": 704,
+      "output_height": 576,
+      "output_stride": 704,
+      "enable" : true
+    }
+  ]
+}

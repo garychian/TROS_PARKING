@@ -31,7 +31,7 @@
         },
         {
           "port_id": "sub_camera_frame_array",
-          "topic": "/sec/camera_frame_array",
+          "topic": "/apa/apa_image",
           "communication": {
             "domain_id": 0,
             "comm_protocol": "shm"
@@ -47,6 +47,23 @@
             "comm_protocol": "shm"
           }
         },
+
+        {
+          "port_id": "pub_apa_ps_info_s32g",
+          "topic": "/psd/apa_ps_info",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 2
+                }
+              ]
+            }
+          }
+      },
+
         {
           "port_id": "pub_apa_ps_rect",
           "topic": "/psd/apa_ps_rect",

@@ -54,6 +54,8 @@ def conan_build(conan_command):
 
 def cmake_build(cmake_command):
     run_command("pwd")
+    # import pdb
+    # pdb.set_trace()
     cmake_compiler_command = \
         "cmake -DCONAN_ENABLE=OFF -DINDEPENDENT_COMPILATION=ON {} ..".format(
             cmake_command)

@@ -35,5 +35,22 @@
   ],
   "tool_switch": 0,
   "log_level": "info",
-  "participants": []
+  "participants": [
+    {
+      "id": 2,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:25584",
+      "link_type": ""
+    },
+    {
+      "id": 0,
+      "protocol": "zmq_tcp",
+      "link_info": "0.0.0.0:5575",
+      "link_type": "",
+      "link_options": {
+        "ZMQ_SNDHWM": 15,
+        "ZMQ_RCVHWM": 15
+      }
+    }
+  ]
 }
