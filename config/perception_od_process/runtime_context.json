@@ -20,6 +20,14 @@
             "domain_id": 0,
             "comm_protocol": "shm"
           }
+        },
+        {
+          "port_id": "apa_image_in",
+          "topic": "/apa/apa_image",
+          "communication": {
+            "domain_id": 0,
+            "comm_protocol": "shm"
+          }
         }
       ],
       "outputs": [

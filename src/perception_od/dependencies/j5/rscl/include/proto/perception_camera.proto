@@ -1,0 +1,327 @@
+// Copyright (C) 2020 by SenseTime Group Limited. All rights reserved.
+// Jiang Qinhong <jiangqinhong@sensetime.com>
+
+syntax = "proto2";
+package senseAD.perception.camera;
+
+import "perception_camera_kernel.proto";
+
+message OperatorSharedParameter {
+    repeated ImageMetaParam image_meta = 1;
+}
+
+message PipelineParameter {
+    optional string name = 1;
+    optional uint32 num_workers = 2 [default = 1];
+    repeated OperatorParameter operators = 5;
+    optional string root_path = 6 [default = ""];
+    optional VehicleParameter vehicle_param = 7;
+    optional OccupancyParameter occupancy_param = 8;
+    optional OperatorSharedParameter shared_param = 9;
+}
+
+message OccupancyParameter {
+    optional float fps = 1 [default = 10];
+    optional float refresh_interval_ms = 2;
+    optional uint32 times = 3 [default = 100];
+}
+
+message ViewTransformerParameter {
+    optional string bev_config_file = 1 [default = ""];
+    required string blob_name = 2;
+    required string predictor_name = 3;
+    required string data_output_name = 4;
+    required string data_output_blob = 5;
+}
+
+message OperatorParameter {
+    required string name = 1;
+    required string type = 2;
+    repeated string top = 3;
+    optional string bottom = 4;
+    optional string vehicle_path = 5;
+    optional OperatorSharedParameter shared_param = 6;
+
+    // AVP region
+    optional NNForwardParameter nn_forward_param = 150;
+    optional MMLightSegParameter mm_light_seg_param = 151;
+    optional AvpParkingSlotParameter avp_parking_slot_param = 152;
+    optional SaveDetectResultParameter save_detect_result_param = 153;
+    optional CVProcessParameter cv_process_param = 154;
+    optional MMDetectParameter mm_detect_param = 155;
+    optional ObstacleEstimateParameter obstacle_estimate_param = 156;
+    optional ObstacleFusionParameter obstacle_fusion_param = 157;
+    optional OccupancyGridParameter occupancy_grid_parameter = 158;
+    optional FreespacePostParameter free_space_post_param = 159;
+    optional FusionSlotParameter fusion_parking_slot_param = 160;
+    optional MotByteTrackParameter mot_byte_track_param = 161;
+    optional ViewTransformerParameter view_transformer_param = 162;
+    optional SpaceParkingSlotParameter space_parking_slot_param = 163;
+    optional LimiterFusionParameter limiter_fusion_param = 164;
+    optional VoxelPoolingBevParameter voxel_pooling_bev_param = 165;
+    optional MMLightSegFilterParameter mm_light_seg_filter_param = 166;
+    optional BevObstaclesFilterParameter bev_obstacles_filter_param = 167;
+    // AVP region end
+}
+
+message VehicleParameter {
+    required string sensor_config_folder = 1
+        [default = "config/vehicle/HONDA-001"];
+}
+
+message BaseEstimatorParameter {
+    required string type = 1;
+    optional string name = 2 [default = "dummy_estimator"];
+    optional bool is_master_estimator = 7 [default = true];
+    optional AVPHeightBasedEstimatorParameter
+        avp_height_based_estimator_param = 8;
+}
+
+message AvpDepthEstimationFisheyeParameter {
+    repeated BaseEstimatorParameter estimator_param = 1;
+    repeated string camera_name = 2;
+    repeated uint32 camera_id = 3;
+    optional bool delete_depth_invalid_objects = 4 [default = false];
+    repeated string object_label_list = 5;
+}
+
+message AVPHeightBasedEstimatorParameter {
+    optional float object_real_height = 1;
+    optional bool base_keypoint = 2 [default = false];
+}
+
+message SaveDetectResultParameter {
+    required string output_file = 1;
+    required string camera_name = 2;
+}
+
+message NNForwardParameter {
+    optional uint32 gpu_id = 1;
+    required string model_path = 2;
+    repeated string data_input_name = 3;
+    repeated string net_input_blob = 4;
+    required string license_path = 5;
+    optional bool output_on_device = 7 [default = false];
+    optional float quantize_scale = 8;
+}
+
+message MMLightSegParameter {
+    required string predictor_name = 1;
+    required string camera_name = 2;
+    repeated string seg_names = 3;
+    repeated string seg_blobs = 4;
+    message MMLightSegResize {
+        required uint32 width = 1;
+        required uint32 height = 2;
+    }
+    optional MMLightSegResize seg_resize = 5;
+    repeated uint32 seg_label_expand = 6;
+    optional uint32 connected_area_thr = 7 [default = 0];
+}
+
+message MMLightSegFilterParameter {
+    optional uint32 connected_area_thr = 1 [default = 0];
+    optional uint32 check_area_top = 2 [default = 0];
+    optional uint32 check_area_left = 3 [default = 0];
+    optional uint32 check_area_right = 4 [default = 0];
+    optional uint32 check_area_bottom = 5 [default = 0];
+    optional string seg_name = 6 [default = "freespace_raw"];
+    optional uint32 split_idx = 7 [default = 0];
+    optional uint32 traversal_step = 8 [default = 1];
+}
+
+message AvpParkingSlotParameter {
+    required string camera_name = 1;
+    required string predictor_name = 2;
+    repeated string output_blobs = 3;
+    required float confidence_threshold = 4;
+    required int32 forward_input_h = 5;
+    required int32 forward_input_w = 6;
+    required int32 topk = 7;
+    required float iou_threshold = 8;
+    required int32 camera_image_h = 9;
+    required int32 camera_image_w = 10;
+    required float corner_confidence_threshold = 11;
+    required float corner_dist_threshold = 12;
+    repeated float length_range = 13;
+    repeated float width_range = 14;
+    required float length_width_ratio = 15;
+    optional float vertical_threshold = 16 [default = 0.15];
+    repeated float length_complete_range = 17;
+    repeated float length_2_range = 18;
+    repeated float score_range = 19;
+    optional float point_border_dist_thres = 20;
+    optional float line_border_dist_thres = 21;
+    optional float point_border_dist_complete_h2 = 22;
+    optional float direction_score_thr1 = 23;
+    optional float direction_score_thr2 = 24;
+    optional float vp_maxh = 25;
+    optional float slant_maxh = 26;
+    optional float supplement_corner_dis_threshold = 27;
+    repeated float car_length_range = 28;
+    repeated float car_width_range = 29;
+    optional float point_border_dis_thres_for_score_modify = 30;
+    repeated float car_contour = 31;
+    optional uint32 ps_line_label = 32 [default = 2];
+    repeated float vp_slot_sizes = 33;
+    repeated float slant_slot_size = 34;
+    optional bool post_output_parking_slot = 35;
+    optional bool filter_slot_corners_under_car = 36 [default = true];
+}
+
+message IPMStitchingProcessParameter{
+    required double ground_width = 1;
+    required double ground_height = 2;
+    required double focal_length = 3;
+    required double half_car_width = 4;
+    required double half_car_height = 5;
+    required string mask_method = 6;
+    required string fisheye_front_camera = 7;
+    required string fisheye_rear_camera = 8;
+    required string fisheye_left_camera = 9;
+    required string fisheye_right_camera = 10;
+    repeated PinholeProcessParameter pinhole_process_param = 11;
+}
+
+message CVProcessParameter {
+    repeated string camera_input = 1;
+    required string camera_output = 2;
+    repeated KernelParamWrapper kernels = 3;
+    repeated string split_output = 4;
+    repeated string output_to_batch = 5;
+    optional bool input_from_cvprocess = 6 [default = false];
+}
+
+message MMDetectParameter {
+    repeated string camera_name = 1;
+    repeated string output_blobs = 2;
+    required string predictor_name = 3;
+    required string bbox_decoder = 4;
+    optional string embedding_blob = 5;
+    optional string vehicle_path = 6;
+    optional BboxDecoderRetinaNetParam retina_param = 11;
+    optional BboxDecoderYOLOXParam yolox_param = 12;
+    optional BboxDecoderPoseParam pose_param = 13;
+    optional PointDecoderYOLOXParam yolox_point_param = 14;
+    optional PointDecoderYoloxV2Param yolox_point_v2_param = 15;
+    optional PointDecoderYoloxMono3dParam yolox_mono3d_param = 16;
+    optional BboxDecoderBevParam bev_param = 17;
+}
+
+message FreespacePostParameter {
+    repeated string camera_name = 1;
+    repeated string seg_names = 2;
+}
+
+message ObstacleEstimateParameter {
+    repeated string from = 1;
+    required string to = 2;
+    // configure file path for obstacle estimation
+    required string config_path = 3;
+    // whether to save data to tmp files
+    required bool save_data_to_file = 4;
+    required bool evaluation = 5;
+    optional string json_path = 6;
+}
+
+message ObstacleFusionParameter {
+    repeated string from = 1;
+    required string to = 2;
+    // configure file path for obstacle fusion
+    required string config_path = 3;
+    //whether to save data to tmp files
+    required bool save_data_to_file = 4;
+    required bool evaluation = 5;
+    optional string json_path = 6;
+    optional string slot_json_path = 7;
+    required string show = 8;
+    optional bool save_input_to_json = 9 [default = false];
+    optional string input_json_path = 10 [default = '/tmp/logs/fusion_input.json'];
+}
+
+message OccupancyGridCameraInfo {
+    required string camera = 1;
+    required string freespace_seg = 2;
+    optional string pixel_occ = 3;
+}
+
+message OccupancyGridParameter {
+    optional float pixel_interval = 1;
+    repeated OccupancyGridCameraInfo camera_info = 2;
+    // occlusion
+    optional string occlusion_bin = 3;
+    optional float occlude_theta_thres_deg = 4 [default = 3.0];
+    optional float occlude_phi_thres_deg = 5 [default = 22.5];
+    optional float occlude_dist_thres = 6 [default = 0.3];
+    // map
+    optional uint32 block_depth = 7;
+    optional float grid_scale = 8;
+    // grid config
+    optional float score_decline_coeff = 10 [default = 0.8];
+    optional float occ_score_thres = 11 [default = -1.5];
+    optional float free_score_thres = 12 [default = 1.5];
+    optional float update_dist_diff_thres = 13 [default = 0.1];
+    optional float always_update_dist_thres = 14 [default = 0.0];
+    repeated string update_with_objects = 15;
+    optional bool fill_objects_inside = 16;
+    optional uint32 error_thr = 17;
+    optional float valid_range = 18;
+    optional string frenet_folder = 19;
+    optional string system_save_traj_path = 20;
+    optional float p2l_p2p_ratio = 22;
+}
+
+message LimiterFusionParameter {
+    repeated string from = 1;
+    required string config_path = 2;
+    required bool evaluation = 3;
+    optional string slot_json_path = 4;
+}
+
+message FusionSlotParameter {
+    required string fusion_camera_name = 1;
+    optional float vertical_release_dis = 2 [default = 2.5];
+    optional float level_release_dis = 3 [default = 3.5];
+    optional uint32 slot_fs_contour_count_thr = 4 [default = 4];
+    optional uint32 slot_entry_fs_contour_count_thr = 5 [default = 4];
+    optional float veh_iou_thr = 6 [default = 0.2];
+}
+
+message SpaceParkingSlotParameter {
+    optional float vertical_slot_width = 1 [default = 25];
+    optional float level_slot_width = 2 [default = 24];
+}
+
+message MotByteTrackParameter {
+    repeated string camera_name = 1;
+    repeated string obj_labels = 2;
+    repeated float obj_score_thrs_high = 3;
+    repeated float obj_score_thrs_low = 4;
+    repeated float track_score_thrs = 5;
+    optional float match_iou_thrs_high = 6;
+    optional float match_iou_thrs_low = 7;
+    optional float match_iou_thrs_tentative = 8;
+    optional uint32 num_tentatives = 9;
+    optional uint32 num_frames_retain = 10;
+    optional uint32 min_change_frames = 11;
+    optional float init_track_thr = 12;
+    optional bool weight_iou_with_det_scores = 13;
+}
+
+message VoxelPoolingBevParameter {
+    optional uint32 max_seed_num = 1 [default = 24];
+    optional uint32 valid_index_num = 2 [default = 16372];
+    required string blob_name = 3;
+    required string predictor_name = 4;
+    required string data_output_name = 5;
+    required string data_output_blob = 6;
+}
+
+message BevObstaclesFilterParameter {
+    optional float dis_thr_x = 1 [default = 10.0];
+    optional float dis_thr_y = 2 [default = 10.0];
+    optional uint32 area_thr = 3 [default = 90000];
+    optional float w_iou_thr = 4 [default = 0.5];
+    optional float h_iou_thr = 5 [default = 0.3];
+    repeated string od_camera_names = 6;
+}

@@ -18,8 +18,45 @@
 #include "dataflow/module/module_option.h"
 #include "dataflow/module/proc.h"
 
+#include "rscl/perception_od.h"
+#include "ad_rscl/ad_rscl.h"
+#include "ad_msg_idl/std_msgs/raw_data.capnp.h"
+
+#include "communication/common/types.h"
+#include "message/proto/proto_serializer.hpp"
+#include "common/proto_msg_all.h"
+#include "common/timestamp.h"
+
+using hobot::communication::ProtobufSerializer;
+using hobot::communication::ProtoMsg;
+
+using ImageSerial = ProtobufSerializer<rd::Image>;
+using ImageMsg = ProtoMsg<rd::Image>;
+
+using RawObstacleSerial = ProtobufSerializer<od::Obstacles>;
+using RawObstacleMsg = ProtoMsg<od::Obstacles>;
+
 namespace fanya {
 namespace parking {
+
+struct Point2f
+{
+  float32_t x;
+  float32_t y;
+};
+
+struct ObstacleRaw
+{
+  std::string camera;
+  int32_t label;
+  float32_t typeConfidence;
+  float32_t existenceConfidence;
+
+  std::vector<Point2f> landmark4;
+  std::vector<float32_t> landmark4Scores;
+};
+
+
 class PerceptionOdMoudle:
   public hobot::dataflow::Module{
  public:
@@ -39,6 +76,27 @@ class PerceptionOdMoudle:
     const hobot::dataflow::MessageLists &msgs);
  protected:
   int32_t Init() override;
+ private:
+  std::shared_ptr<senseAD::avp_perception::PerceptionOdComponent> perception_OD_comp_;
+
+  std::shared_ptr<hobot::communication::Publisher<RawObstacleSerial>> publisher_;
+  std::shared_ptr<hobot::communication::Subscriber<RawObstacleSerial>> subscriber_;
+
+  std::shared_ptr<hobot::communication::Publisher<ImageSerial>> front_camera_publisher_;
+  std::shared_ptr<hobot::communication::Subscriber<ImageSerial>> front_camera_subscriber_;
+
+  std::shared_ptr<hobot::communication::Publisher<ImageSerial>> rear_camera_publisher_;
+  std::shared_ptr<hobot::communication::Subscriber<ImageSerial>> rear_camera_subscriber_;
+
+  std::shared_ptr<hobot::communication::Publisher<ImageSerial>> left_camera_publisher_;
+  std::shared_ptr<hobot::communication::Subscriber<ImageSerial>> left_camera_subscriber_;
+
+  std::shared_ptr<hobot::communication::Publisher<ImageSerial>> right_camera_publisher_;
+  std::shared_ptr<hobot::communication::Subscriber<ImageSerial>> right_camera_subscriber_;
+ 
+ public:
+  cv::Mat resizedMat;
+  cv::Mat NV12ResizedMat;
 };
 
 }  // namespace parking

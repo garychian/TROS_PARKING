@@ -25,7 +25,7 @@ class PackageConanFile(ConanFile):
         ("gperftools/2.10.0@thirdparty/stable"),
         ("opencv/3.4.5@thirdparty/stable"),
         ("nlohmann_json/3.7.3@thirdparty/stable"),
-        ("hobot-bole-protocol/1.7.64.1@bole/stable"),
+        ("hobot-bole-protocol/1.4.43@bole/stable"),
         ("easy_dnn/1.10.6@bole/stable", "override"),
         ("sensors/1.13.9@bole/stable"),
         ("sm_client/1.9.10@tros/stable", "override"),

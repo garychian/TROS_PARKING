@@ -1,0 +1,22 @@
+# dynamic library path: defines the path to the dynamic library.
+# like: /home/xxx/xxx.so or ../include/xxx.so
+dynamic-library-paths:
+  - /opt/senseauto/senseauto-framework-sdk/active/lib/libfy_j5_msg_bridge_example.so
+
+# bridges: defines the bridges to be loaded.
+# topic-name: defines the topic name, used to create subscriber and publisher.
+#   It should be unique in the bridges,
+#   because it will be used as the key to find message-type.
+# NOTE: topic-name must be lower case;
+#       because ROS only valid characters are a-z, A-Z, 0-9, / and _.
+# message-type: defines the message type,
+#   it should be the same as the message type defined in the dynamic library.
+bridges:
+  - key: "/demo/j5" # local
+    message-type: TestImage # custom class name, for dynamic load.
+    topic-name: "test_fyj5" 
+    node-name: "1"
+  - key: "/demo/j5" # local
+    message-type: TestImage # custom class name, for dynamic load.
+    topic-name: "test_fyj5" 
+    node-name: "1"
