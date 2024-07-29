@@ -1,0 +1,11 @@
+syntax = "proto2";
+package simple_proto;
+
+
+message SimpleImage{
+  optional int32 height = 1;
+  optional int32 width = 2;
+  optional int32 channel = 3;
+  optional string image_desc = 4;
+}
+

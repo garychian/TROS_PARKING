@@ -23,6 +23,18 @@
 #include "dataflow/module_loader/register_module_macro.h"
 #include "message/proto/proto_serializer.hpp"
 
+#include "common/utils.h"
+#include "perception_rd/dependencies/j5/j5dvb_system/include/vio/hb_vpm_data_info.h"
+#include "ad_msg_bridge/manager/inner_process_communication_pipe.h"
+#include "communication/publisher.h"
+#include "communication/subscriber.h"
+#include "communication/common/comm_log.h"
+#include "communication/wait_set/scope_guard.h"
+#include <communication/common/types.h>
+#include "communication/common/compiler_features.h"
+#include "hb_mem_mgr.h"
+#include "proto_msg_all.h"
+
 /**
  * To resolve unused warning, you can delete
  * the marco after variables actually used.
@@ -31,6 +43,118 @@
 
 namespace fanya {
 namespace parking {
+
+    int save_pred_img(QuadParkingSlots parking_slots, std::vector<uchar> &buffer, cv::Mat bgr_mat); 
+
+    using hobot::communication::COMM_CODE_OK;
+    using hobot::communication::CommAttr;
+    using hobot::communication::CompositeOption;
+    using hobot::communication::ErrorCode;
+    using hobot::communication::ErrorMsg;
+    using hobot::communication::EventType;
+    using hobot::communication::LinkInfo;
+    using hobot::communication::ParticipantAttr;
+    using hobot::communication::Publisher;
+    using hobot::communication::ScopeGuard;
+    using hobot::communication::Subscriber;
+
+    using hobot::communication::HistoryQoSPolicyKind;
+    using hobot::communication::ProtobufSerializer;
+    using hobot::communication::ProtoMsg;
+    using hobot::communication::QosAdaptor;
+    using hobot::communication::QosCapability;
+    using hobot::communication::ReliabilityQosPolicyKind;
+
+    using hobot::communication::PROTOCOL_COMPOSITE;
+    using hobot::communication::PROTOCOL_DDS;
+    using hobot::communication::PROTOCOL_HYBRID;
+    using hobot::communication::PROTOCOL_INTRA;
+    using hobot::communication::PROTOCOL_INVALID;
+    using hobot::communication::PROTOCOL_PCIE;
+    using hobot::communication::PROTOCOL_SDIO;
+    using hobot::communication::PROTOCOL_SHM;
+    using hobot::communication::PROTOCOL_ZMQ_EPGM;
+    using hobot::communication::PROTOCOL_ZMQ_IPC;
+    using hobot::communication::PROTOCOL_ZMQ_TCP;
+
+    struct Args
+    {
+      int participant_id = 0;
+      int protocol = PROTOCOL_INVALID;
+      // the speed of different protocols is different, to avoid lose message, some
+      // protocol must sleep a while during between each request
+      int pub_interval = 0;
+      bool is_dynamic = false;
+    };
+
+    static QuadParkingSlots saved_parking_slots_info;
+    static int64_t seq = 0;
+
+    static void SimpleSlotSubCallback(const std::shared_ptr<QuadpldMsg> &quadpld_msg)
+    {
+      std::cout << "[PSD]j5 callback arriverd!" << std::endl;
+      std::cout << "[PSD]Slot size:" << quadpld_msg->proto.quadparkingslotlist_size() << std::endl;
+
+      saved_parking_slots_info.header.frameId = quadpld_msg->proto.header().frameid();
+      saved_parking_slots_info.header.seq = seq;
+      seq++;
+      // saved_parking_slots_info.frameTimeStampNs = quadpld_msg->proto.header().timestampns().nanosec();
+      saved_parking_slots_info.frameTimeStampNs = quadpld_msg->proto.frametimestampns();
+      std::cout << "[PSD]GLOBAL_Slot FrameId:" << saved_parking_slots_info.header.frameId << std::endl;
+      std::cout << "[PSD]GLOBAL_Slot seq:" << saved_parking_slots_info.header.seq << std::endl;
+      std::cout << "[PSD]GLOBAL_Slot frameTimeStampNs:" << saved_parking_slots_info.frameTimeStampNs << std::endl;
+
+  
+      if (quadpld_msg->proto.quadparkingslotlist_size() != 0)
+      {
+        saved_parking_slots_info.quadParkingSlotList.resize(quadpld_msg->proto.quadparkingslotlist_size());
+        for (int i = 0; i < saved_parking_slots_info.quadParkingSlotList.size(); i++)
+        {
+          saved_parking_slots_info.quadParkingSlotList[i].confidence = quadpld_msg->proto.quadparkingslotlist(i).confidence();
+          saved_parking_slots_info.quadParkingSlotList[i].label = quadpld_msg->proto.quadparkingslotlist(i).label();
+          saved_parking_slots_info.quadParkingSlotList[i].slotType = quadpld_msg->proto.quadparkingslotlist(i).slottype();
+          saved_parking_slots_info.quadParkingSlotList[i].filtered = quadpld_msg->proto.quadparkingslotlist(i).filtered();
+          saved_parking_slots_info.quadParkingSlotList[i].isComlete = quadpld_msg->proto.quadparkingslotlist(i).iscomplete();
+          saved_parking_slots_info.quadParkingSlotList[i].width = quadpld_msg->proto.quadparkingslotlist(i).width();
+          saved_parking_slots_info.quadParkingSlotList[i].length = quadpld_msg->proto.quadparkingslotlist(i).length();
+          saved_parking_slots_info.quadParkingSlotList[i].isVisited = quadpld_msg->proto.quadparkingslotlist(i).isvisited();
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " confidence:" << saved_parking_slots_info.quadParkingSlotList[i].confidence << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " label:" << saved_parking_slots_info.quadParkingSlotList[i].label << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " slotType:" << saved_parking_slots_info.quadParkingSlotList[i].slotType << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " filtered:" << saved_parking_slots_info.quadParkingSlotList[i].filtered << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " isComlete:" << saved_parking_slots_info.quadParkingSlotList[i].isComlete << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " width:" << saved_parking_slots_info.quadParkingSlotList[i].width << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " length:" << saved_parking_slots_info.quadParkingSlotList[i].length << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " isVisited:" << saved_parking_slots_info.quadParkingSlotList[i].isVisited << std::endl;
+        
+          saved_parking_slots_info.quadParkingSlotList[i].tl.x = quadpld_msg->proto.quadparkingslotlist(i).tl().x();
+          saved_parking_slots_info.quadParkingSlotList[i].tl.y = quadpld_msg->proto.quadparkingslotlist(i).tl().y();
+          saved_parking_slots_info.quadParkingSlotList[i].br.x = quadpld_msg->proto.quadparkingslotlist(i).br().x();
+          saved_parking_slots_info.quadParkingSlotList[i].br.y = quadpld_msg->proto.quadparkingslotlist(i).br().y();
+          saved_parking_slots_info.quadParkingSlotList[i].tr.x = quadpld_msg->proto.quadparkingslotlist(i).tr().x();
+          saved_parking_slots_info.quadParkingSlotList[i].tr.y = quadpld_msg->proto.quadparkingslotlist(i).tr().y();
+          saved_parking_slots_info.quadParkingSlotList[i].bl.x = quadpld_msg->proto.quadparkingslotlist(i).bl().x();
+          saved_parking_slots_info.quadParkingSlotList[i].bl.y = quadpld_msg->proto.quadparkingslotlist(i).bl().y();
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " tl.x:" << saved_parking_slots_info.quadParkingSlotList[i].tl.x << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " tl.y:" << saved_parking_slots_info.quadParkingSlotList[i].tl.y << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " br.x:" << saved_parking_slots_info.quadParkingSlotList[i].br.x << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " br.y:" << saved_parking_slots_info.quadParkingSlotList[i].br.y << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " tr.x:" << saved_parking_slots_info.quadParkingSlotList[i].tr.x << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " tr.y:" << saved_parking_slots_info.quadParkingSlotList[i].tr.y << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " bl.x:" << saved_parking_slots_info.quadParkingSlotList[i].bl.x << std::endl;
+          std::cout << "[PSD]GLOBAL_Slot:"<< i << " bl.y:" << saved_parking_slots_info.quadParkingSlotList[i].bl.y << std::endl;
+        }
+      
+      }
+    }
+    
+
+static void SimpleImageSubCallback(const std::shared_ptr<ImageMsg> &image_msg)
+{
+  std::cout << "[PSD]j5 image callback arriverd!" << std::endl;
+  senseAD::ad_msg_bridge::GetGlobalCommunicationPipe()->NotifyPipe("/sensor/camera/ipm_stitc", image_msg.get());
+  std::cout << "[PSD]j5 image callback sucess!" << std::endl;
+}
 
 PerceptionRdMoudle::PerceptionRdMoudle(
     const hobot::dataflow::ModuleOption &module_option)
@@ -65,13 +189,167 @@ void PerceptionRdMoudle::InitPortsAndProcs() {
                 "pub_quad_parking_slots_s32g"));
 }
 
-int32_t PerceptionRdMoudle::Init() { return 0; }
+EventType g_pub_event = EventType(2);
+    void pub_connlisteners(const std::shared_ptr<LinkInfo> participants,
+                           EventType event)
+    {
+      const std::string &protocol = participants->protocol;
+      std::cout << "connection status changed, participant info:\n"
+                << "            participant id: " << participants->id << std::endl
+                << "                  protocol: " << participants->protocol
+                << std::endl
+                << "                 link info: " << participants->link_info
+                << std::endl;
+      COHLOGI("****pub_connlisteners call succefull!");
+      g_pub_event = event;
+      if (event == EventType::EVENT_CONNECTED)
+      {
+        COHLOGI("++++++ {} Pub connected succeful! ++++", protocol);
+      }
+      if (event == EventType::EVENT_CONNECT_FAILED)
+      {
+        COHLOGI("----- {} Pub connected failed!! -----", protocol);
+      }
+      if (event == EventType::EVENT_DISCONNECTED)
+      {
+        COHLOGI("========{} Pub disconnected! ======", protocol);
+      }
+    }
+
+int32_t PerceptionRdMoudle::Init() { 
+   /************************SUB FROM PERCEPTION***************************/
+      hobot::communication::Init("communication.json");
+      std::string version = hobot::communication::GetVersion();
+      std::cout << "communication version is " << version << "\n";
+
+      std::cout << "mock example begin ..." << std::endl;
+
+      auto rt = senseAD::rscl::GetCurRuntime();
+      DFHLOG_I("Init Runtime");
+      int argc = 1;
+      const char *test[] = {"j5_test_node", nullptr};
+      char **argv = const_cast<char **>(test);
+      // std::string process_name = "j5 test node";
+      rt->Init(argc, argv);
+      DFHLOG_I("Init Component");
+      // #if TEST_1
+
+      // e_ = std::make_shared<PubComponent>("j5");
+      perceptioncomp_ = std::make_shared<senseAD::avp_perception::PerceptionRdComponent>();
+
+      CommAttr comm_attr;
+      comm_attr.qos_.qos_profile_.reliability_qos_policy.kind =
+          ReliabilityQosPolicyKind::RELIABILITY_BEST_EFFORT;
+      comm_attr.qos_.qos_profile_.history_qos_policy.kind =
+          HistoryQoSPolicyKind::HISTORY_KEEP_LAST;
+      comm_attr.qos_.qos_profile_.history_qos_policy.depth = 5;
+      std::string topic = "/parking/perception/camera/parking_bboxes";
+      ErrorCode error_code;
+
+      publisher_ = Publisher<QuadpldSerial>::New(comm_attr,
+                                                 topic,
+                                                 0,
+                                                 PROTOCOL_SHM,
+                                                 &error_code,
+                                                 pub_connlisteners);
+      if (!publisher_)
+      {
+        std::cout << " create publisher failed";
+        return -1;
+      }
+
+      if (hb_mem_module_open() != 0)
+      {
+        std::cout << "hb_mem_module_open failed" << std::endl;
+        return 1;
+      }
+
+      senseAD::ad_msg_bridge::GetGlobalCommunicationPipe()->RegPipe("/parking/perception/camera/parking_bboxes", [this](const void *ptr, const size_t)
+                                                                    {
+                                                                  std::cout<< "[PSD]In Reg Pipe aaaaaaaa"<<std::endl;
+                                                                  auto out_ptr = reinterpret_cast<const QuadpldMsg *>(ptr);
+                                                                  auto msg = std::make_shared<QuadpldMsg>();
+                                                                  *msg = *out_ptr;
+                                                                  std::cout<< "[PSD]In Reg Pipe"<<std::endl;
+                                                                  this->publisher_->Pub(msg); });
+
+      // std::shared_ptr<apaSlotListInfo> fanya::parking::ParkingslotDetectMoudle::saved_parking_slots_info_ptr = nullptr;
+      CommAttr sub_comm_attr;
+      sub_comm_attr.qos_.qos_profile_.reliability_qos_policy.kind =
+          ReliabilityQosPolicyKind::RELIABILITY_BEST_EFFORT;
+      sub_comm_attr.qos_.qos_profile_.history_qos_policy.kind =
+          HistoryQoSPolicyKind::HISTORY_KEEP_LAST;
+      sub_comm_attr.qos_.qos_profile_.history_qos_policy.depth = 5;
+      subscriber_ = Subscriber<QuadpldSerial>::New(
+          sub_comm_attr, topic, 0, SimpleSlotSubCallback, PROTOCOL_SHM);
+
+      // std::cout<<"[PSDTEST] TEST ullframeid:"<<subscriber_->Take().get()->proto.ullframeid();
+
+      DFHLOG_I("SUB REGISTER!");
+      /************************SUB FROM PERCEPTION***************************/
+
+      /************************PUB FROM J5***************************/
+      CommAttr image_comm_attr;
+      image_comm_attr.qos_.qos_profile_.reliability_qos_policy.kind =
+          ReliabilityQosPolicyKind::RELIABILITY_BEST_EFFORT;
+      image_comm_attr.qos_.qos_profile_.history_qos_policy.kind =
+          HistoryQoSPolicyKind::HISTORY_KEEP_LAST;
+      image_comm_attr.qos_.qos_profile_.history_qos_policy.depth = 5;
+      Args image_data_args;
+      image_data_args.protocol = PROTOCOL_ZMQ_TCP;
+      image_data_args.participant_id = 7;
+      std::string image_topic = "/sensor/camera/ipm_stitc";
+      ErrorCode image_error_code;
+
+      std::cout << "[PSD]Before crete Image sub " << std::endl;
+      image_subscriber_ = Subscriber<ImageSerial>::New(
+          image_comm_attr, image_topic, 0, SimpleImageSubCallback, PROTOCOL_SHM);
+
+      if (!image_subscriber_)
+      {
+        std::cout << "[PSD] create subscriber failed";
+        return -1;
+      }
+
+      image_publisher_ = Publisher<ImageSerial>::New(image_comm_attr,
+                                                     "/sensor/camera/ipm_stitc",
+                                                     0,
+                                                     // image_data_args.protocol,
+                                                     PROTOCOL_SHM,
+                                                     &image_error_code,
+                                                     pub_connlisteners);
+      if (!image_publisher_)
+      {
+        std::cout << "[PSD]create publisher failed";
+        return -1;
+      }
+      std::cout << "[PSD] After create Image sub" << std::endl;
+
+      if (hb_mem_module_open() != 0)
+      {
+        std::cout << "[PSD]hb_mem_module_open failed" << std::endl;
+        return 1;
+      }
+
+      /************************PUB FROM J5***************************/
+  return 0; 
+}
 
 int32_t PerceptionRdMoudle::Start() {
+  senseAD::rscl::component::ComponentConfig cfg;
+  cfg.config_file_path = "./bridge.yaml";
+  cfg.timer_conf.set_interval_ms(1000);
+  perceptioncomp_->Initialize(cfg);
+      
   return hobot::dataflow::Module::Start();
 }
 
 int32_t PerceptionRdMoudle::Stop() {
+  perceptioncomp_->Shutdown();
+  printf("Finish Shutdown\n");
+  hobot::communication::DeInit();
+  hb_mem_module_close();
+
   return hobot::dataflow::Module::Stop();
 }
 
@@ -136,6 +414,7 @@ void PerceptionRdMoudle::MsgCenterProc(
 
   auto &sub_camera_frame_array_msgs =
       msgs[proc->GetResultIndex("sub_camera_frame_array")];
+  auto gen_image_ts = GetTimeStamp(); 
   for (auto &msg : *(sub_camera_frame_array_msgs.get())) {
     if (nullptr == msg) {
       continue;
@@ -143,202 +422,229 @@ void PerceptionRdMoudle::MsgCenterProc(
     DFHLOG_I("sub_camera_frame_array msg timestamp: {}",
              msg->GetGenTimestamp());
     // process msg of sub_camera_frame_array
+    std::shared_ptr<CameraFrameArrayProtoMsg> camera_array_msg = 
+            std::dynamic_pointer_cast<CameraFrameArrayProtoMsg>(msg);
+
+    if (!camera_array_msg || camera_array_msg->proto.gdc_frame_size() == 0)
+    {
+      DFHLOG_E("Empty ipm frame, return.");
+      return;
+    }
+    else
+    {
+      // test_camera = true;
+      DFHLOG_W("get camera_array_msg OK.");
+      spImageProtoMsg ipm_msg = std::make_shared<ImageProtoMsg>();
+      // fill ipm msg
+      FillArrayMsgToIpmBuffer(ipm_msg, camera_array_msg);
+
+      // std::shared_ptr<DNNTensor> input_tensor = std::make_shared<DNNTensor>();
+      address_info_t addr_info;
+      if (!GetImageProtoAddrInfo(ipm_msg, addr_info))
+      {
+        DFHLOG_E("Get image proto addr info failed.");
+        return;
+      }
+      int32_t width = addr_info.width;
+      int32_t height = addr_info.height;
+      int32_t mem_size = width * height;
+
+      cv::Mat image_nv12(height * 1.5, width, CV_8UC1);
+      cv::Mat rgb_mat(height, width, CV_8UC3);
+      int32_t size;
+      size = width * height;
+
+      int32_t new_width = 352;
+      int32_t new_height = 352;
+
+      auto y_addr = image_nv12.data;
+      auto u_addr = y_addr + size;
+      auto v_addr = u_addr + size / 4;
+      auto srcBuf = addr_info.addr[0];
+      auto srcBuf1 = addr_info.addr[1];
+      std::memcpy(y_addr, srcBuf, size);
+      for (int i = 0; i < size / 4; ++i)
+      {
+        *u_addr++ = *srcBuf1++;
+        *v_addr++ = *srcBuf1++;
+      }
+
+      cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
+      cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
+      cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
+
+      uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
+      /**************************PUB******************************/
+      auto image = std::make_shared<ImageMsg>();
+      
+      rd::Time image_time;
+      image_time.set_nanosec(gen_image_ts);
+      rd::Header od_header;
+      od_header.mutable_timestampns()->CopyFrom(image_time);
+
+      image->proto.mutable_header()->CopyFrom(od_header);
+      image->proto.set_height(new_height);
+      image->proto.set_width(new_width);
+      image->proto.set_phyaddr(addr_value);
+      image->proto.set_viraddr(addr_value);
+      std::cout << "[PSD]Image timestamp:" << gen_image_ts << std::endl;
+      std::cout << "[PSD]Image height:" << new_height << std::endl;
+      std::cout << "[PSD]Image width:" << new_width << std::endl;
+      std::cout << "[PSD]Image paddr:" << addr_info.paddr[0] << std::endl;
+      std::cout << "[PSD]Image vaddr:" << addr_value << std::endl;
+
+      auto ret = image_publisher_->Pub(image);
+      std::cout << "[PSD] After Image pub" << std::endl;
+      
+      if (ret != COMM_CODE_OK)
+      {
+        std::cout << "[PSD]pub failed, reason: " << ErrorMsg(ret) << std::endl;
+      }
+      else
+      {
+        std::cout << "[PSD]pub Image successful! " << std::endl;
+      }
+      /**************************PUB******************************/
+    }
   }
 }
 
 void PerceptionRdMoudle::TimerProc(
     hobot::dataflow::spMsgResourceProc proc,
     const hobot::dataflow::MessageLists &msgs) {
-  auto gen_ts = GetTimeStamp();
-  {  // do something with output port pub_apa_ps_info
-    // fill proto
-    auto apa_ps_info = std::make_shared<SApaPSInfoMsg>();
-    apa_ps_info->proto.set_ullframeid(88);
-    apa_ps_info->SetGenTimestamp(gen_ts);
-    // pub msg
-    auto pub_apa_ps_info_port = proc->GetOutputPort("pub_apa_ps_info");
-    if (!pub_apa_ps_info_port) {
-      DFHLOG_E("failed to get output port of {}", "pub_apa_ps_info");
-      return;
-    }
-
-    auto pub_apa_ps_rect_port_s32g =
-        proc->GetOutputPort("pub_apa_ps_info_s32g");
-    if (!pub_apa_ps_rect_port_s32g) {
-      DFHLOG_E("pub_apa_ps_rect_port_s32g failed to get output port of {}",
-               "pub_apa_ps_rect");
-      return;
-    }
-
-    pub_apa_ps_info_port->Send(apa_ps_info);
-    pub_apa_ps_rect_port_s32g->Send(apa_ps_info);
-    DFHLOG_W("pub pub_apa_ps_info_port info, ullframeid = {}",
-             apa_ps_info->proto.ullframeid());
-  }
-
-  {  // do something with output port pub_apa_ps_rect
-    // fill proto
-    auto apa_ps_rect = std::make_shared<SApaPSRectMsg>();
-    apa_ps_rect->proto.set_label(88);
-    apa_ps_rect->SetGenTimestamp(gen_ts);
-    // pub msg
-    auto pub_apa_ps_rect_port = proc->GetOutputPort("pub_apa_ps_rect");
-    if (!pub_apa_ps_rect_port) {
-      DFHLOG_E("failed to get output port of {}", "pub_apa_ps_rect");
-      return;
-    }
-
-    // auto pub_apa_ps_rect_port_s32g =
-    // proc->GetOutputPort("pub_apa_ps_info_s32g"); if
-    // (!pub_apa_ps_rect_port_s32g) {
-    //   DFHLOG_E("pub_apa_ps_rect_port_s32g failed to get output port of {}",
-    //   "pub_apa_ps_rect"); return;
-    // }
-
-    pub_apa_ps_rect_port->Send(apa_ps_rect);
-    // pub_apa_ps_rect_port_s32g->Send(apa_ps_rect);
-    DFHLOG_I("pub apa_ps_rect_port info, label = {}",
-             apa_ps_rect->proto.label());
-  }
-
-  {  // do something with output port pub_apa_pointI
-    // fill proto
-    auto apa_pointI = std::make_shared<SApaPoint_IMsg>();
-    apa_pointI->proto.set_x(88);
-    apa_pointI->SetGenTimestamp(gen_ts);
-    // pub msg
-    auto pub_apa_pointI_port = proc->GetOutputPort("pub_apa_pointI");
-    if (!pub_apa_pointI_port) {
-      DFHLOG_E("failed to get output port of {}", "pub_apa_pointI");
-      return;
-    }
-    pub_apa_pointI_port->Send(apa_pointI);
-    DFHLOG_I("pub apa_pointI_port info, x = {}", apa_pointI->proto.x());
-  }
-
-   { // do something with output port pub_psd_image
-        // fill proto
-
-        rd::Time rd_time;
-        rd_time.set_nanosec(123);
+  
+ { // PUB FROM J5 TO S32G
+        // do something with output port pub_apa_ps_info
+        // fill proto vector<int> fusion_out_rect_id;
+        // static int slot_id = 0;
+        auto apa_ps_info = std::make_shared<QuadParkingSlotsMsg>();
+        
         rd::Header rd_header;
-        rd_header.set_seq(1);
-        rd_header.set_frameid("99");
-        rd_header.mutable_timestampns()->CopyFrom(rd_time);
+        rd_header.set_seq(saved_parking_slots_info.header.seq);
+        rd_header.set_frameid(saved_parking_slots_info.header.frameId);
+        apa_ps_info->proto.mutable_header()->CopyFrom(rd_header);
 
-        auto rd_image = std::make_shared<ImageMsg>();
-        // image->proto.set_width(1920);
-        // image->SetGenTimestamp(gen_ts);
+        apa_ps_info->proto.set_frametimestampns(saved_parking_slots_info.frameTimeStampNs);
+        apa_ps_info->proto.set_sensorid(saved_parking_slots_info.sensorId);
 
-        std::vector<uint8_t> image_data;
-        static cv::Mat image = cv::imread("test.jpg");
-        //imencode(".jpg", image, image_data);
-        // rd::Image rd_image;
-        //rd_image->proto.set_data(image_data.data(), image_data.size());
-        cv::Mat nv12_image;
-        cv::cvtColor(image, nv12_image, cv::COLOR_BGR2YUV_I420);
-        rd_image->proto.mutable_data()->assign((char*)nv12_image.data, nv12_image.total());
-
-        rd_image->proto.mutable_header()->CopyFrom(rd_header);
-        rd_image->proto.set_oriheight(123);
-        rd_image->proto.set_oriwidth(123);
-        rd_image->proto.set_height(image.rows);
-        rd_image->proto.set_width(image.cols);
-        rd_image->proto.set_encoding("jpg");
-        rd_image->proto.set_step(123);
-        // rd_image->proto.mutable_data()->CopyFrom(rd_data);
-        rd_image->proto.set_phyaddr(123);
-        rd_image->proto.set_viraddr(123);
-        rd_image->proto.set_memtype(rd::Memtype::cambriconVgu);
-
-        // pub msg
-        auto pub_image_port = proc->GetOutputPort("pub_psd_image");
-        if (!pub_image_port)
+        std::cout << "*********fusion_out size**********" << saved_parking_slots_info.quadParkingSlotList.size() << std::endl;
+        // 一级子结构体 repeated为 数组形式
+        if (saved_parking_slots_info.quadParkingSlotList.size() != 0)
         {
-          DFHLOG_E("failed to get output port of {}", "pub_psd_image");
+          for (int i = 0; i < saved_parking_slots_info.quadParkingSlotList.size(); i++)
+          {
+            rd::QuadParkingSlot *sapa_ps_rect = apa_ps_info->proto.add_quadparkingslotlist();
+            sapa_ps_rect->set_confidence(saved_parking_slots_info.quadParkingSlotList[i].confidence);
+            sapa_ps_rect->set_label(saved_parking_slots_info.quadParkingSlotList[i].label);
+            sapa_ps_rect->set_filtered(saved_parking_slots_info.quadParkingSlotList[i].filtered);
+            sapa_ps_rect->set_slottype(saved_parking_slots_info.quadParkingSlotList[i].slotType);
+            sapa_ps_rect->set_width(saved_parking_slots_info.quadParkingSlotList[i].width);
+            sapa_ps_rect->set_length(saved_parking_slots_info.quadParkingSlotList[i].length);
+            sapa_ps_rect->set_isvisited(saved_parking_slots_info.quadParkingSlotList[i].isVisited);
+          
+            
+              // 二级子结构体 repeated为 数组形式
+              rd::Point2f point_tl;
+              point_tl.set_x(saved_parking_slots_info.quadParkingSlotList[i].tl.x);
+              point_tl.set_y(saved_parking_slots_info.quadParkingSlotList[i].tl.y);
+              sapa_ps_rect->mutable_tl()->CopyFrom(point_tl);
+              std::cout << "666 point_tl.x: " << saved_parking_slots_info.quadParkingSlotList[i].tl.x << std::endl;
+              std::cout << "667 point_tl.y: " << saved_parking_slots_info.quadParkingSlotList[i].tl.y << std::endl;
+
+              rd::Point2f point_tr;
+              point_tr.set_x(saved_parking_slots_info.quadParkingSlotList[i].tr.x);
+              point_tr.set_y(saved_parking_slots_info.quadParkingSlotList[i].tr.y);
+              sapa_ps_rect->mutable_tr()->CopyFrom(point_tr);
+              std::cout << "666 point_tr.x: " << saved_parking_slots_info.quadParkingSlotList[i].tr.x << std::endl;
+              std::cout << "667 point_tr.y: " << saved_parking_slots_info.quadParkingSlotList[i].tr.y << std::endl;
+
+              rd::Point2f point_bl;
+              point_bl.set_x(saved_parking_slots_info.quadParkingSlotList[i].bl.x);
+              point_bl.set_y(saved_parking_slots_info.quadParkingSlotList[i].bl.y);
+              sapa_ps_rect->mutable_bl()->CopyFrom(point_bl);
+              std::cout << "666 point_bl.x: " << saved_parking_slots_info.quadParkingSlotList[i].bl.x << std::endl;
+              std::cout << "667 point_bl.y: " << saved_parking_slots_info.quadParkingSlotList[i].bl.y << std::endl;
+
+              rd::Point2f point_br;
+              point_br.set_x(saved_parking_slots_info.quadParkingSlotList[i].br.x);
+              point_br.set_y(saved_parking_slots_info.quadParkingSlotList[i].br.y);
+              sapa_ps_rect->mutable_br()->CopyFrom(point_br);
+              std::cout << "666 point_br.x: " << saved_parking_slots_info.quadParkingSlotList[i].br.x << std::endl;
+              std::cout << "667 point_br.y: " << saved_parking_slots_info.quadParkingSlotList[i].br.y << std::endl;
+            
+          }
+        }
+
+        auto pub_apa_ps_rect_port_s32g = proc->GetOutputPort("pub_apa_ps_info_s32g");
+        if (!pub_apa_ps_rect_port_s32g)
+        {
+          DFHLOG_E("pub_apa_ps_rect_port_s32g failed to get output port of {}", "pub_apa_ps_rect");
           return;
         }
-        pub_image_port->Send(rd_image);
-        DFHLOG_I("pub image_port info, width = {}",
-                 rd_image->proto.width());
 
+        // pub_apa_ps_info_port->Send(apa_ps_info);
+        pub_apa_ps_rect_port_s32g->Send(apa_ps_info);
+        DFHLOG_W("pub pub_apa_ps_info_port info, ullframeid = {}",
+                 apa_ps_info->proto.header().frameid());
+      }
 
-        // pub msg to s32g
-        auto pub_image_port_s32g = proc->GetOutputPort("pub_psd_image_s32g");
-        if (!pub_image_port)
-        {
-          DFHLOG_E("failed to get output port of {}", "pub_psd_image_s32g");
-          return;
-        }
-        pub_image_port_s32g->Send(rd_image);
-        DFHLOG_I("pub pub_image_port_s32g info, width = {}",
-                 rd_image->proto.width());           
-      }     
+      // SEND TO HVIZ
+  //     std::vector<uchar> buffer;
+     
+  //     if (!NV12ResizedMat.empty())
+  //     {
+  //       save_pred_img(saved_parking_slots_info, buffer, NV12ResizedMat);
+  //       {
 
-  // pub_quad_parking_slots_s32g
-  {
-    // fill proto
-    rd::Time rd_time;
-    rd_time.set_nanosec(123);
-    rd::Header rd_header;
-    rd_header.set_seq(1);
-    rd_header.set_frameid("99");
-    rd_header.mutable_timestampns()->CopyFrom(rd_time);
+  //         // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
+  //         uint64_t send_start = GetTimeStamp();
+  //         auto out = std::make_shared<WrapImageProtoMsg>();
+  //         // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
+  //         out->proto.set_width(352);
+  //         out->proto.set_height(352);
+  //         // out->proto.set_channel(msg->proto.channel());
+  //         out->proto.set_send_mode(0);
+  //         out->proto.set_format(2);
+  //         out->SetData(std::make_shared<hobot::message::DataRef>(buffer.data(), buffer.size()));
 
-    rd::Point2f rd_point2f;
-    rd_point2f.set_x(1);
-    rd_point2f.set_y(1);
+  //         DFHLOG_W("percept_debug size: {}, ts = {}.", buffer.size(), GetTimeStamp());
+  //         auto pub_image_port = proc->GetOutputPort("percept_debug");
+  //         pub_image_port->Send(out);
+  //         // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
+  //         //  uint64_t send_end = GetTimeStamp();
+  //         //  //std::cout << "send time:" << send_end - send_start << "ms" << std::endl;
+  //       }
+  //     }
+  //   }
 
-    rd::ApproxBoxPoints rd_approx_box_points;
-    rd_approx_box_points.mutable_point()->CopyFrom(rd_point2f);
-    rd_approx_box_points.set_borderdist(123);
-    rd_approx_box_points.set_pointscore(123);
-    rd_approx_box_points.set_linelen(123);
-    rd_approx_box_points.set_linescore(123);
-    rd_approx_box_points.set_hasborderpoint(true);
+  //   int save_pred_img(QuadParkingSlots parking_slots, std::vector<uchar> &buffer, cv::Mat rgb_mat)
+  //   {
 
-    rd::QuadParkingSlot rd_quad_parking_slot;
-    rd_quad_parking_slot.mutable_tl()->CopyFrom(rd_point2f);
-    rd_quad_parking_slot.mutable_tr()->CopyFrom(rd_point2f);
-    rd_quad_parking_slot.mutable_bl()->CopyFrom(rd_point2f);
-    rd_quad_parking_slot.mutable_br()->CopyFrom(rd_point2f);
-    rd_quad_parking_slot.set_confidence(123);
-    rd_quad_parking_slot.set_label(123);
-    rd_quad_parking_slot.set_filtered(true);
-    rd_quad_parking_slot.set_slottype(123);
-    rd_quad_parking_slot.set_stl(123);
-    rd_quad_parking_slot.set_str(123);
-    rd_quad_parking_slot.set_sbl(123);
-    rd_quad_parking_slot.set_sbr(123);
-    rd_quad_parking_slot.mutable_dirin()->CopyFrom(rd_point2f);
-    rd_quad_parking_slot.mutable_dirwidth()->CopyFrom(rd_point2f);
-    rd_quad_parking_slot.mutable_dirlength()->CopyFrom(rd_point2f);
-    rd_quad_parking_slot.mutable_center()->CopyFrom(rd_point2f);
-    rd_quad_parking_slot.set_oppmodify(true);
-    rd_quad_parking_slot.set_iscomplete(true);
-    rd_quad_parking_slot.set_isvisited(true);
-    rd_quad_parking_slot.set_width(123);
-    rd_quad_parking_slot.set_length(123);
+  //     cv::Mat bgr_mat;
+  //     cv::cvtColor(rgb_mat, bgr_mat, cv::COLOR_YUV2BGR_NV12);
+  //     int height = bgr_mat.rows;
+  //     int width = bgr_mat.cols;
+  //     int size = bgr_mat.cols * bgr_mat.rows;
 
-    auto quad_parking_slots_msg = std::make_shared<QuadParkingSlotsMsg>();
-    quad_parking_slots_msg->proto.mutable_header()->CopyFrom(rd_header);
-    quad_parking_slots_msg->proto.set_frametimestampns(99);
-    quad_parking_slots_msg->proto.set_sensorid(0);
-    quad_parking_slots_msg->proto.add_quadparkingslotlist()->CopyFrom(
-        rd_quad_parking_slot);
+  //     cv::Mat final_mat = bgr_mat.clone();
 
-    // pub msg
-    auto pub_quad_parking_slots_s32g =
-        proc->GetOutputPort("pub_quad_parking_slots_s32g");
-    if (!pub_quad_parking_slots_s32g) {
-      DFHLOG_E("failed to get output port of {}", "pub_psd_image");
-      return;
-    }
-    pub_quad_parking_slots_s32g->Send(quad_parking_slots_msg);
-    DFHLOG_W("pub_quad_parking_slots_s32g , Success!!! ");
+  //     for (int i = 0; i < parking_slots.quadParkingSlotList.size(); i++)
+  //     {
+  //       auto output_result = parking_slots.quadParkingSlotList[i];
+  //       if (true)
+  //       {
+  //         cv::circle(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
+  //         cv::circle(final_mat, cv::Point(output_result.tr.x, output_result.tr.y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
+  //         cv::line(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), cv::Point(output_result.bl.x, output_result.bl.y), cv::Scalar(0, 255, 0), 1);
+  //         cv::line(final_mat, cv::Point(output_result.tr.x, output_result.tr.y), cv::Point(output_result.br.x, output_result.br.y), cv::Scalar(0, 255, 0), 1);
+  //         cv::line(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), cv::Point(output_result.tr.x, output_result.tr.y), cv::Scalar(0, 0, 255), 1);
+  //       }
+  //     }
+  //     cv::imencode(".jpg", final_mat, buffer);
+  //     //  cv::imwrite(target_image_file, final_mat);
+  //     return 0;
+
   }
-}
-
 DATAFLOW_REGISTER_MODULE(PerceptionRdMoudle)
 
 }  // namespace parking

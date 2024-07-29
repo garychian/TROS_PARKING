@@ -35,6 +35,50 @@
 #include "fanya_protocol/s32g.pb.h"
 #include "fanya_protocol/sen.pb.h"
 #include "fanya_protocol/od.pb.h"
+
+class WrapImageProtoMsg : public hobot::message::ProtoMsg<ImageProto::Image> {
+public:
+  WrapImageProtoMsg() {}
+  virtual ~WrapImageProtoMsg() {
+    if (data_) {
+      delete[] image_data_;
+      data_ = nullptr;
+    }
+    image_size_ = 0;
+  }
+
+  void SetData(hobot::message::spDataRef data) final {
+    if (data_) {
+      delete[] image_data_;
+      data_ = nullptr;
+    }
+    image_data_ = new uint8_t[data->GetDataSize()];
+    image_size_ = data->GetDataSize();
+    memcpy(image_data_, data->GetData(), data->GetDataSize());
+    data->SetData(image_data_);
+    ProtoMsg<ImageProto::Image>::SetData(data);
+  }
+
+  uint8_t *image_data_{nullptr};
+  int image_size_{0};
+};
+
+using spWrapImageProtoMsg = std::shared_ptr<WrapImageProtoMsg>;
+using WrapImageProtoSerializer =
+    hobot::message::ProtobufSerializer<ImageProto::Image>;
+
+using ImageProtoSerializer =
+    hobot::message::ProtobufSerializer<ImageProto::Image>;
+
+
+using ImageProtoMsg = hobot::message::ProtoMsg<ImageProto::Image>;
+using spImageProtoMsg = std::shared_ptr<ImageProtoMsg>;
+
+using CameraProtoMsg = hobot::message::ProtoMsg<camera_frame::CameraFrame>;
+using spCameraProtoMsg = std::shared_ptr<CameraProtoMsg>;
+
+using spCameraFrameArrayProtoMsg = std::shared_ptr<CameraFrameArrayProtoMsg>;
+
 namespace fanya {
 
 namespace parking {

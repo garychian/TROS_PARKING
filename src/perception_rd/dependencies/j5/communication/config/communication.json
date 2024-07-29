@@ -1,0 +1,155 @@
+{
+  "discovery_option": {
+    "discovery_enable": 1,
+    "cross_different_subnets": 0,
+    "default_eth": "",
+    "port_range": "10100-10200",
+    "multicast_domain": "",
+    "underlying_protocol_options": [
+      {
+        "protocol": "zmq_ipc",
+        "link_options": {
+          "ZMQ_SNDHWM": 10,
+          "ZMQ_RCVHWM": 10,
+          "ZMQ_HEARTBEAT_IVL": 1000,
+          "ZMQ_HEARTBEAT_TIMEOUT": 2000
+        }
+      },
+      {
+        "protocol": "zmq_tcp",
+        "link_options": {
+          "ZMQ_SNDHWM": 10,
+          "ZMQ_RCVHWM": 10,
+          "ZMQ_HEARTBEAT_IVL": 1000,
+          "ZMQ_HEARTBEAT_TIMEOUT": 2000
+        }
+      }
+    ]
+  },
+  "shm_option" : {
+    "shm_size":"100M",
+    "block_size":"1M",
+    "hbmem_hold_timout_ms" : 10
+  },
+  "dds_option" : {
+    "dds_qos_profiles_file": "./hb_dds_qos_profiles.xml",
+    "ros2_compatible": false
+  },
+  "msg_extend_info_keylist" : [],
+  "protocol_to_subidl_map": [
+    {
+      "protocol_type" : 2,
+      "sub_idl_type" : "protobuf"
+    }
+  ],
+  "supported_protocols": [
+    {
+      "enable" : 1,
+      "protocol_type" : 2,
+      "protocol_name" : "zmq_tcp",
+      "is_in_hybrid" : 1,
+      "plugin_file": "libplugin-zmq"
+    },
+    {
+      "enable" : 1,
+      "protocol_type" : 3,
+      "protocol_name" : "zmq_epgm",
+      "is_in_hybrid" : 0,
+      "plugin_file": "libplugin-zmq"
+    },
+    {
+      "enable" : 1,
+      "protocol_type" : 4,
+      "protocol_name" : "zmq_ipc",
+      "is_in_hybrid" : 0,
+      "plugin_file": "libplugin-zmq"
+    }
+  ],
+  "tool_switch" : 0,
+  "log_level" : "info",
+"participants": [
+    {
+      "id": 1,
+      "protocol": "zmq_ipc",
+      "link_info": "relative_file_path1",
+      "link_type": "",
+      "link_options": {
+        "ZMQ_SNDHWM": 10,
+        "ZMQ_RCVHWM": 10,
+        "ZMQ_HEARTBEAT_IVL": 1000,
+        "ZMQ_HEARTBEAT_TIMEOUT": 2000,
+        "ZMQ_RECONNECT_IVL": 100
+      }
+    },
+    {
+      "id": 2,
+      "protocol": "zmq_tcp",
+      "link_info": "127.0.0.1:6788",
+      "link_type": ""
+    },
+    {
+      "id": 5,
+      "protocol": "zmq_ipc",
+      "link_info": "relative_file_path2",
+      "link_type": "",
+      "link_options": {
+        "ZMQ_SNDHWM": 10,
+        "ZMQ_RCVHWM": 10
+      }
+    },
+    {
+      "id": 6,
+      "protocol": "zmq_tcp",
+      "link_info": "127.0.0.1:6784",
+      "link_type": ""
+    },
+    {
+      "id": 7,
+      "protocol": "zmq_epgm",
+      "link_info": "enp7s0:12651",
+      "link_type": ""
+    },
+    {
+      "id": 8,
+      "protocol": "pcie",
+      "link_info": "dma:4:0:0",
+      "link_type": "",
+      "link_options": {
+        "recv_buffer_size": 60
+      }
+    },
+    {
+      "id": 9,
+      "protocol": "pcie",
+      "link_info": "dma:0:0:0",
+      "link_type": "",
+      "link_options": {
+        "recv_buffer_size": 60
+      }
+    },
+    {
+      "id": 10,
+      "protocol": "pcie",
+      "link_info": "ep2ep:0:0:3",
+      "link_type": "bind",
+      "link_options": {
+        "local_bar_id": 4,
+        "remote_bar_pci_paddr": "0x60f00000",
+        "use_bar_size": 131072,
+        "polling_interval_time": 1
+      }
+    },
+    {
+      "id": 11,
+      "protocol": "pcie",
+      "link_info": "ep2ep:0:0:3",
+      "link_type": "connect",
+      "link_options": {
+        "local_bar_id": 4,
+        "remote_bar_pci_paddr": "0x60900000",
+        "use_bar_size": 131072,
+        "polling_interval_time": 1
+      }
+    }
+  ]
+}

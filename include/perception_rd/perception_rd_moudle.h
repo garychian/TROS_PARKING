@@ -18,8 +18,30 @@
 #include "dataflow/module/module_option.h"
 #include "dataflow/module/proc.h"
 
+#include "rscl/perception_rd.h"
+#include "ad_rscl/ad_rscl.h"
+#include "ad_msg_idl/fy_test/image.capnp.h"
+#include "ad_msg_idl/std_msgs/raw_data.capnp.h"
+#include "ad_msg_idl/ad_perception/quad_parking_slots.capnp.h"
+#include "ad_msg_idl/fy_test/status_dec_fusion.capnp.h"
+#include "ad_msg_idl/ad_perception/base.capnp.h"
+
+#include "communication/common/types.h"
+#include "message/proto/proto_serializer.hpp"
+#include "common/proto_msg_all.h"
+#include "common/timestamp.h"
+#include "common/apa_define.h"
+
+using hobot::communication::ProtobufSerializer;
+using hobot::communication::ProtoMsg;
+using ImageSerial = ProtobufSerializer<rd::Image>;
+using ImageMsg = ProtoMsg<rd::Image>;
+using QuadpldSerial = ProtobufSerializer<rd::QuadParkingSlots>;
+using QuadpldMsg = ProtoMsg<rd::QuadParkingSlots>;
+
 namespace fanya {
 namespace parking {
+
 class PerceptionRdMoudle:
   public hobot::dataflow::Module{
  public:
@@ -39,6 +61,18 @@ class PerceptionRdMoudle:
     const hobot::dataflow::MessageLists &msgs);
  protected:
   int32_t Init() override;
+ private:
+  std::shared_ptr<senseAD::avp_perception::PerceptionRdComponent> perceptioncomp_;
+
+  std::shared_ptr<hobot::communication::Publisher<QuadpldSerial>> publisher_;
+  std::shared_ptr<hobot::communication::Subscriber<QuadpldSerial>> subscriber_;
+
+  std::shared_ptr<hobot::communication::Publisher<ImageSerial>> image_publisher_;
+  std::shared_ptr<hobot::communication::Subscriber<ImageSerial>> image_subscriber_;
+
+ public:
+  cv::Mat NV12ResizedMat;
+  cv::Mat resizedMat;
 };
 
 }  // namespace parking
