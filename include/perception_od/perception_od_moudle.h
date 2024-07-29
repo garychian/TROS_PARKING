@@ -39,6 +39,12 @@ using RawObstacleMsg = ProtoMsg<od::Obstacles>;
 namespace fanya {
 namespace parking {
 
+struct Header{
+  uint32_t seq;
+  uint64_t timestamp;
+  std::string frame_id;
+};
+
 struct Point2f
 {
   float32_t x;
@@ -54,6 +60,11 @@ struct ObstacleRaw
 
   std::vector<Point2f> landmark4;
   std::vector<float32_t> landmark4Scores;
+};
+
+struct Obstacles{
+  Header header;
+  std::vector<ObstacleRaw> obstaclesraw;
 };
 
 

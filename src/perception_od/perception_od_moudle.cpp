@@ -89,31 +89,43 @@ struct Args
     bool is_dynamic = false;
 };
 
-std::vector<ObstacleRaw> obstaclesraw;
+// std::vector<ObstacleRaw> obstaclesraw;
+Obstacles obstacles;
+static int64_t seq_ = 0;
 
 static void SimpleObstacleSubCallback(const std::shared_ptr<RawObstacleMsg> &raw_obstacle_msg)
 {
   std::cout << "[OD]j5 callback arriverd!" << std::endl;
   std::cout << "[OD]rawobjects_size:" << raw_obstacle_msg->proto.rawobjects_size()<<std::endl;
+  obstacles.header.timestamp = raw_obstacle_msg->proto.header().timestampns().nanosec();
+  obstacles.header.frame_id = "1";
+  obstacles.header.seq = seq_;
+  seq_++;
+  std::cout<<"[OD] header.timestamp: "<<obstacles.header.timestamp<<std::endl;
+  std::cout<<"[OD] header.seq: "<<obstacles.header.seq<<std::endl;
+  std::cout<<"[OD] header.frame_id: "<<obstacles.header.frame_id<<std::endl;
+
   if (raw_obstacle_msg->proto.rawobjects_size() != 0){
-      obstaclesraw.resize(raw_obstacle_msg->proto.rawobjects_size());
+      obstacles.obstaclesraw.resize(raw_obstacle_msg->proto.rawobjects_size());
       for(int icnt = 0; icnt < raw_obstacle_msg->proto.rawobjects_size(); icnt++){
-          obstaclesraw[icnt].label = raw_obstacle_msg->proto.rawobjects(icnt).label();
-          obstaclesraw[icnt].typeConfidence = raw_obstacle_msg->proto.rawobjects(icnt).typeconfidence();
-          obstaclesraw[icnt].existenceConfidence = raw_obstacle_msg->proto.rawobjects(icnt).existenceconfidence();
-          std::cout<<"[OD] label: "<<obstaclesraw[icnt].label<<" typeConfidence: "<<obstaclesraw[icnt].typeConfidence<<" existenceConfidence: "<<obstaclesraw[icnt].existenceConfidence<<std::endl;
+          obstacles.obstaclesraw[icnt].label = raw_obstacle_msg->proto.rawobjects(icnt).label();
+          obstacles.obstaclesraw[icnt].typeConfidence = raw_obstacle_msg->proto.rawobjects(icnt).typeconfidence();
+          obstacles.obstaclesraw[icnt].existenceConfidence = raw_obstacle_msg->proto.rawobjects(icnt).existenceconfidence();
+          
+          
+          std::cout<<"[OD] label: "<<obstacles.obstaclesraw[icnt].label<<" typeConfidence: "<<obstacles.obstaclesraw[icnt].typeConfidence<<" existenceConfidence: "<<obstacles.obstaclesraw[icnt].existenceConfidence<<std::endl;
           if (raw_obstacle_msg->proto.rawobjects(icnt).landmark4_size() != 0){
-              obstaclesraw[icnt].landmark4.resize(raw_obstacle_msg->proto.rawobjects(icnt).landmark4_size());
-              obstaclesraw[icnt].landmark4Scores.resize(raw_obstacle_msg->proto.rawobjects(icnt).landmark4scores_size());
+              obstacles.obstaclesraw[icnt].landmark4.resize(raw_obstacle_msg->proto.rawobjects(icnt).landmark4_size());
+              obstacles.obstaclesraw[icnt].landmark4Scores.resize(raw_obstacle_msg->proto.rawobjects(icnt).landmark4scores_size());
               std::cout<<"[OD] landmark4_size: "<<raw_obstacle_msg->proto.rawobjects(icnt).landmark4_size()<<" landmark4scores_size: "<<raw_obstacle_msg->proto.rawobjects(icnt).landmark4scores_size()<<std::endl;
               for (int jcnt = 0; jcnt < raw_obstacle_msg->proto.rawobjects(icnt).landmark4_size(); jcnt++) {
-                  obstaclesraw[icnt].landmark4[jcnt].x = raw_obstacle_msg->proto.rawobjects(icnt).landmark4(jcnt).x();
-                  obstaclesraw[icnt].landmark4[jcnt].y = raw_obstacle_msg->proto.rawobjects(icnt).landmark4(jcnt).y();
-                  std::cout<<"[OD] landmark4["<<icnt<<"]["<<jcnt<<"] x: "<<obstaclesraw[icnt].landmark4[jcnt].x<<" y: "<<obstaclesraw[icnt].landmark4[jcnt].y<<std::endl;    
+                  obstacles.obstaclesraw[icnt].landmark4[jcnt].x = raw_obstacle_msg->proto.rawobjects(icnt).landmark4(jcnt).x();
+                  obstacles.obstaclesraw[icnt].landmark4[jcnt].y = raw_obstacle_msg->proto.rawobjects(icnt).landmark4(jcnt).y();
+                  std::cout<<"[OD] landmark4["<<icnt<<"]["<<jcnt<<"] x: "<<obstacles.obstaclesraw[icnt].landmark4[jcnt].x<<" y: "<<obstacles.obstaclesraw[icnt].landmark4[jcnt].y<<std::endl;    
               }
               for (int jcnt = 0; jcnt < raw_obstacle_msg->proto.rawobjects(icnt).landmark4scores_size(); jcnt++){
-                  obstaclesraw[icnt].landmark4Scores[jcnt] = raw_obstacle_msg->proto.rawobjects(icnt).landmark4scores(jcnt);
-                  std::cout<<"[OD] landmark4Scores["<<icnt<<"]["<<jcnt<<"] : "<<obstaclesraw[icnt].landmark4Scores[jcnt]<<std::endl;
+                  obstacles.obstaclesraw[icnt].landmark4Scores[jcnt] = raw_obstacle_msg->proto.rawobjects(icnt).landmark4scores(jcnt);
+                  std::cout<<"[OD] landmark4Scores["<<icnt<<"]["<<jcnt<<"] : "<<obstacles.obstaclesraw[icnt].landmark4Scores[jcnt]<<std::endl;
         }
    
       }
@@ -600,24 +612,24 @@ void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
     od_header.set_frameid("99");
     od_header.mutable_timestampns()->CopyFrom(od_time);
 
-    if (obstaclesraw.size()!=0){
-      for (int icnt = 0; icnt < obstaclesraw.size(); icnt++){
+    if (obstacles.obstaclesraw.size()!=0){
+      for (int icnt = 0; icnt < obstacles.obstaclesraw.size(); icnt++){
         od::ObstacleRaw od_obstacleRaw;
         // od_obstacleRaw.set_camera("camera_name_test");
-        od_obstacleRaw.set_label(obstaclesraw[icnt].label);
-        od_obstacleRaw.set_typeconfidence(obstaclesraw[icnt].typeConfidence);
-        od_obstacleRaw.set_existenceconfidence(obstaclesraw[icnt].existenceConfidence);
+        od_obstacleRaw.set_label(obstacles.obstaclesraw[icnt].label);
+        od_obstacleRaw.set_typeconfidence(obstacles.obstaclesraw[icnt].typeConfidence);
+        od_obstacleRaw.set_existenceconfidence(obstacles.obstaclesraw[icnt].existenceConfidence);
 
-        for (int jcnt = 0; jcnt < obstaclesraw[icnt].landmark4.size(); jcnt++){
+        for (int jcnt = 0; jcnt < obstacles.obstaclesraw[icnt].landmark4.size(); jcnt++){
           od::Point2f od_point2f;
-          od_point2f.set_x(obstaclesraw[icnt].landmark4[jcnt].x);
-          od_point2f.set_y(obstaclesraw[icnt].landmark4[jcnt].y);
-          std::cout<<"[OD] Before pub to S32g landmark4 x: " << obstaclesraw[icnt].landmark4[jcnt].x << ", y: " << obstaclesraw[icnt].landmark4[jcnt].y <<std::endl;
+          od_point2f.set_x(obstacles.obstaclesraw[icnt].landmark4[jcnt].x);
+          od_point2f.set_y(obstacles.obstaclesraw[icnt].landmark4[jcnt].y);
+          std::cout<<"[OD] Before pub to S32g landmark4 x: " << obstacles.obstaclesraw[icnt].landmark4[jcnt].x << ", y: " << obstacles.obstaclesraw[icnt].landmark4[jcnt].y <<std::endl;
           od_obstacleRaw.add_landmark4()->CopyFrom(od_point2f);
         }
 
-        for (int jcnt = 0; jcnt < obstaclesraw[icnt].landmark4Scores.size(); jcnt++){
-          od_obstacleRaw.add_landmark4scores(obstaclesraw[icnt].landmark4Scores[jcnt]);
+        for (int jcnt = 0; jcnt < obstacles.obstaclesraw[icnt].landmark4Scores.size(); jcnt++){
+          od_obstacleRaw.add_landmark4scores(obstacles.obstaclesraw[icnt].landmark4Scores[jcnt]);
         }
         // create msg
         auto obstacles_msg = std::make_shared<ObstaclesMsg>();
