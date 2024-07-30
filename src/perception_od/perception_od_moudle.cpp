@@ -466,53 +466,75 @@ void PerceptionOdMoudle::MsgCenterProc(
         std::dynamic_pointer_cast<CameraFrameArrayProtoMsg>(msg_list->front());
 
 
-    spImageProtoMsg ipm_msg = std::make_shared<ImageProtoMsg>();
-    // fill ipm msg
-    FillArrayMsgToIpmBuffer(ipm_msg, camera_group_msg);
+    // spImageProtoMsg ipm_msg = std::make_shared<ImageProtoMsg>();
+    // // fill ipm msg
+    // FillArrayMsgToIpmBuffer(ipm_msg, camera_group_msg);
 
-    address_info_t addr_info;
-    if (!GetImageProtoAddrInfo(ipm_msg, addr_info))
-    {
-       DFHLOG_E("Get image proto addr info failed.");
-       return;
-    }
-    int32_t width = addr_info.width;
-    int32_t height = addr_info.height;
+    // address_info_t addr_info;
+    // if (!GetImageProtoAddrInfo(ipm_msg, addr_info))
+    // {
+    //    DFHLOG_E("Get image proto addr info failed.");
+    //    return;
+    // }
+    // int32_t width = addr_info.width;
+    // int32_t height = addr_info.height;
 
-    cv::Mat image_nv12(height * 1.5, width, CV_8UC1);
-    cv::Mat rgb_mat(height, width, CV_8UC3);
-    int32_t size;
-    size = width * height;
+    // cv::Mat image_nv12(height * 1.5, width, CV_8UC1);
+    // cv::Mat rgb_mat(height, width, CV_8UC3);
+    // int32_t size;
+    // size = width * height;
 
-    int32_t new_width = 640;
-    int32_t new_height = 384;
+    // int32_t new_width = 640;
+    // int32_t new_height = 384;
 
-    auto y_addr = image_nv12.data;
-    auto u_addr = y_addr + size;
-    auto v_addr = u_addr + size / 4;
-    auto srcBuf = addr_info.addr[0];
-    auto srcBuf1 = addr_info.addr[1];
-    std::memcpy(y_addr, srcBuf, size);
-    for (int i = 0; i < size / 4; ++i)
-    {
-      *u_addr++ = *srcBuf1++;
-      *v_addr++ = *srcBuf1++;
-    }
+    // auto y_addr = image_nv12.data;
+    // auto u_addr = y_addr + size;
+    // auto v_addr = u_addr + size / 4;
+    // auto srcBuf = addr_info.addr[0];
+    // auto srcBuf1 = addr_info.addr[1];
+    // std::memcpy(y_addr, srcBuf, size);
+    // for (int i = 0; i < size / 4; ++i)
+    // {
+    //   *u_addr++ = *srcBuf1++;
+    //   *v_addr++ = *srcBuf1++;
+    // }
 
-    cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
-    cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
-    cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
-    uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
+    // cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
+    // cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
+    // cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
+    // uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
 
     auto len = camera_group_msg->proto.camera_frame_size();
     std::cout<<"[OD] camera_frame_size: " << len <<std::endl;
     for (auto i = 0; i < len; i++) {
       auto cam_id_str = camera_group_msg->proto.camera_frame(i).cam_id();
       auto camera_proto_msg = camera_arry_msg_convert(camera_group_msg, cam_id_str);
+      
       if (camera_proto_msg != nullptr) {
         camera_msg_convert(camera_proto_msg);
         // std::cout << "[OD]camera_proto_msg->proto.DebugString():" << camera_proto_msg->proto.DebugString().c_str() << std::endl;
-       
+        if (camera_proto_msg->proto.pym_img_info().down_scale_num() >= 1 &&
+            camera_proto_msg->proto.pym_img_info().down_scale_size() >= 1) {
+          
+        const camera_frame::YuvAddrInfo &yuv_proto = camera_proto_msg->proto.pym_img_info().down_scale(0);
+        auto pym_buf = reinterpret_cast<char *>(yuv_proto.y_vaddr());
+        auto width = yuv_proto.width();
+        auto height = yuv_proto.height();
+        cv::Mat image_nv12(height * 1.5, width, CV_8UC1);
+        cv::Mat rgb_mat(height, width, CV_8UC3);
+        int32_t size;
+        size = width * height*1.5;
+        int32_t new_width = 640;
+        int32_t new_height = 384;
+
+        auto yuv_addr = image_nv12.data;
+        std::memcpy(yuv_addr, pym_buf, size);
+
+        cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
+        cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
+        cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
+        uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
+
         auto image = std::make_shared<ImageMsg>();
         rd::Time image_time;
         image_time.set_nanosec(gen_image_ts);
@@ -521,7 +543,7 @@ void PerceptionOdMoudle::MsgCenterProc(
         image->proto.mutable_header()->CopyFrom(od_header);
 
         if (cam_id_str == "camera_0"){
-
+          NV12ResizedMat_front = NV12ResizedMat.clone();
           image->proto.set_height(new_height);
           image->proto.set_width(new_width);
           image->proto.set_phyaddr(addr_value);
@@ -531,12 +553,12 @@ void PerceptionOdMoudle::MsgCenterProc(
           std::cout << "[OD] timestamp " << gen_image_ts <<std::endl;
           std::cout << "[OD] HEIGHT " << new_height <<std::endl;
           std::cout << "[OD] WIDTH " << new_width <<std::endl;
-          std::cout << "[OD] PADDR " <<  addr_info.paddr[0] <<std::endl;
-          std::cout << "[OD] VADDR " << addr_value <<std::endl;
+          std::cout << "[OD] PADDR " <<  yuv_proto.y_paddr() <<std::endl;
+          // std::cout << "[OD] VADDR " << addr_value <<std::endl;
           std::cout << "[OD] STEP " << camera_proto_msg->proto.pym_img_info().down_scale(0).step() <<std::endl;
           front_camera_publisher_->Pub(image);
         }else if (cam_id_str == "camera_1"){
-
+          NV12ResizedMat_rear = NV12ResizedMat.clone();
           image->proto.set_height(new_height);
           image->proto.set_width(new_width);
           image->proto.set_phyaddr(addr_value);
@@ -546,13 +568,13 @@ void PerceptionOdMoudle::MsgCenterProc(
           std::cout << "[OD] timestamp " << gen_image_ts <<std::endl;
           std::cout << "[OD] HEIGHT " << new_height <<std::endl;
           std::cout << "[OD] WIDTH " << new_width <<std::endl;
-          std::cout << "[OD] PADDR " <<  addr_info.paddr[0] <<std::endl;
-          std::cout << "[OD] VADDR " << addr_value <<std::endl;
+          std::cout << "[OD] PADDR " <<  yuv_proto.y_paddr() <<std::endl;
+          // std::cout << "[OD] VADDR " << addr_value <<std::endl;
           std::cout << "[OD] STEP " << camera_proto_msg->proto.pym_img_info().down_scale(0).step() <<std::endl;
 
           rear_camera_publisher_->Pub(image);
         }else if (cam_id_str == "camera_2"){
-
+          NV12ResizedMat_left = NV12ResizedMat.clone();
           image->proto.set_height(new_height);
           image->proto.set_width(new_width);
           image->proto.set_phyaddr(addr_value);
@@ -562,13 +584,13 @@ void PerceptionOdMoudle::MsgCenterProc(
           std::cout << "[OD] timestamp " << gen_image_ts <<std::endl;
           std::cout << "[OD] HEIGHT " << new_height <<std::endl;
           std::cout << "[OD] WIDTH " << new_width <<std::endl;
-          std::cout << "[OD] PADDR " <<  addr_info.paddr[0] <<std::endl;
-          std::cout << "[OD] VADDR " << addr_value <<std::endl;
+          std::cout << "[OD] PADDR " <<  yuv_proto.y_paddr() <<std::endl;
+          // std::cout << "[OD] VADDR " << addr_value <<std::endl;
           std::cout << "[OD] STEP " << camera_proto_msg->proto.pym_img_info().down_scale(0).step() <<std::endl;
 
           left_camera_publisher_->Pub(image);
         }else if (cam_id_str == "camera_3"){
-
+          NV12ResizedMat_right = NV12ResizedMat.clone();
           image->proto.set_height(new_height);
           image->proto.set_width(new_width);
           image->proto.set_phyaddr(addr_value);
@@ -578,13 +600,13 @@ void PerceptionOdMoudle::MsgCenterProc(
           std::cout << "[OD] timestamp " << gen_image_ts <<std::endl;
           std::cout << "[OD] HEIGHT " << new_height <<std::endl;
           std::cout << "[OD] WIDTH " << new_width <<std::endl;
-          std::cout << "[OD] PADDR " <<  addr_info.paddr[0] <<std::endl;
-          std::cout << "[OD] VADDR " << addr_value <<std::endl;
+          std::cout << "[OD] PADDR " <<  yuv_proto.y_paddr() <<std::endl;
+          // std::cout << "[OD] VADDR " << addr_value <<std::endl;
           std::cout << "[OD] STEP " << camera_proto_msg->proto.pym_img_info().down_scale(0).step() <<std::endl;
 
           right_camera_publisher_->Pub(image);
         }
-
+    }
         // if (camera_proto_msg->proto.pym_img_info().down_scale_num() >= 1 &&
         //     camera_proto_msg->proto.pym_img_info().down_scale_size() >= 1) {
         //     auto frame_id = camera_proto_msg->proto.pym_img_info().frame_seq();

@@ -108,6 +108,10 @@ class PerceptionOdMoudle:
  public:
   cv::Mat resizedMat;
   cv::Mat NV12ResizedMat;
+  cv::Mat NV12ResizedMat_front;
+  cv::Mat NV12ResizedMat_rear;
+  cv::Mat NV12ResizedMat_left;
+  cv::Mat NV12ResizedMat_right;
 };
 
 }  // namespace parking
