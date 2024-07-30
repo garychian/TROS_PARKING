@@ -111,8 +111,13 @@ static void SimpleObstacleSubCallback(const std::shared_ptr<RawObstacleMsg> &raw
           obstacles.obstaclesraw[icnt].label = raw_obstacle_msg->proto.rawobjects(icnt).label();
           obstacles.obstaclesraw[icnt].typeConfidence = raw_obstacle_msg->proto.rawobjects(icnt).typeconfidence();
           obstacles.obstaclesraw[icnt].existenceConfidence = raw_obstacle_msg->proto.rawobjects(icnt).existenceconfidence();
-          
-          
+          obstacles.obstaclesraw[icnt].box.topLeftX = raw_obstacle_msg->proto.rawobjects(icnt).box2d().topleftx();
+          obstacles.obstaclesraw[icnt].box.topLeftY = raw_obstacle_msg->proto.rawobjects(icnt).box2d().toplefty();
+          obstacles.obstaclesraw[icnt].box.bottomRightX = raw_obstacle_msg->proto.rawobjects(icnt).box2d().bottomrightx();
+          obstacles.obstaclesraw[icnt].box.bottomRightY = raw_obstacle_msg->proto.rawobjects(icnt).box2d().bottomrighty();
+          obstacles.obstaclesraw[icnt].box.confidence = raw_obstacle_msg->proto.rawobjects(icnt).box2d().confidence();
+          std::cout<<"[OD] topLeftX: "<<obstacles.obstaclesraw[icnt].box.topLeftX<<" topLeftY: "<<obstacles.obstaclesraw[icnt].box.topLeftY<<" bottomRightX: "<<obstacles.obstaclesraw[icnt].box.bottomRightX<<" bottomRightX: "<<obstacles.obstaclesraw[icnt].box.bottomRightY<<std::endl;
+          std::cout<<"[OD] confidence: "<<obstacles.obstaclesraw[icnt].box.confidence<<std::endl;
           std::cout<<"[OD] label: "<<obstacles.obstaclesraw[icnt].label<<" typeConfidence: "<<obstacles.obstaclesraw[icnt].typeConfidence<<" existenceConfidence: "<<obstacles.obstaclesraw[icnt].existenceConfidence<<std::endl;
           if (raw_obstacle_msg->proto.rawobjects(icnt).landmark4_size() != 0){
               obstacles.obstaclesraw[icnt].landmark4.resize(raw_obstacle_msg->proto.rawobjects(icnt).landmark4_size());

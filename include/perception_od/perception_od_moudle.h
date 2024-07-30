@@ -51,13 +51,21 @@ struct Point2f
   float32_t y;
 };
 
+struct Box2D  
+{
+  float32_t topLeftX;
+  float32_t topLeftY;
+  float32_t bottomRightX;
+  float32_t bottomRightY;
+  float32_t confidence;
+};
 struct ObstacleRaw
 {
   std::string camera;
   int32_t label;
   float32_t typeConfidence;
   float32_t existenceConfidence;
-
+  Box2D box;
   std::vector<Point2f> landmark4;
   std::vector<float32_t> landmark4Scores;
 };
