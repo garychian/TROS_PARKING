@@ -172,6 +172,7 @@ void PerceptionRdMoudle::InitPortsAndProcs() {
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_psd_image", rd::Image);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_psd_image_s32g", rd::Image);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_ps_info_s32g", rd::SApaPSInfo);
+  DF_MODULE_INIT_IDL_OUTPUT_PORT("percept_debug",ImageProto::Image);
 
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_quad_parking_slots_s32g",
                                  rd::QuadParkingSlots);
@@ -184,7 +185,7 @@ void PerceptionRdMoudle::InitPortsAndProcs() {
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
       "TimerProc", PerceptionRdMoudle, TimerProc,
       hobot::dataflow::ProcType::DF_MSG_TIMER_PROC, DF_VECTOR(),
-      DF_VECTOR("pub_apa_ps_rect", "pub_apa_ps_info", "pub_apa_pointI",
+      DF_VECTOR("percept_debug","pub_apa_ps_rect", "pub_apa_ps_info", "pub_apa_pointI",
                 "pub_psd_image", "pub_psd_image_s32g","pub_apa_ps_info_s32g",
                 "pub_quad_parking_slots_s32g"));
 }
@@ -229,12 +230,9 @@ int32_t PerceptionRdMoudle::Init() {
       int argc = 1;
       const char *test[] = {"j5_test_node", nullptr};
       char **argv = const_cast<char **>(test);
-      // std::string process_name = "j5 test node";
       rt->Init(argc, argv);
       DFHLOG_I("Init Component");
-      // #if TEST_1
 
-      // e_ = std::make_shared<PubComponent>("j5");
       perceptioncomp_ = std::make_shared<senseAD::avp_perception::PerceptionRdComponent>();
 
       CommAttr comm_attr;
@@ -273,7 +271,6 @@ int32_t PerceptionRdMoudle::Init() {
                                                                   std::cout<< "[PSD]In Reg Pipe"<<std::endl;
                                                                   this->publisher_->Pub(msg); });
 
-      // std::shared_ptr<apaSlotListInfo> fanya::parking::ParkingslotDetectMoudle::saved_parking_slots_info_ptr = nullptr;
       CommAttr sub_comm_attr;
       sub_comm_attr.qos_.qos_profile_.reliability_qos_policy.kind =
           ReliabilityQosPolicyKind::RELIABILITY_BEST_EFFORT;
@@ -282,8 +279,6 @@ int32_t PerceptionRdMoudle::Init() {
       sub_comm_attr.qos_.qos_profile_.history_qos_policy.depth = 5;
       subscriber_ = Subscriber<QuadpldSerial>::New(
           sub_comm_attr, topic, 0, SimpleSlotSubCallback, PROTOCOL_SHM);
-
-      // std::cout<<"[PSDTEST] TEST ullframeid:"<<subscriber_->Take().get()->proto.ullframeid();
 
       DFHLOG_I("SUB REGISTER!");
       /************************SUB FROM PERCEPTION***************************/
@@ -589,60 +584,60 @@ void PerceptionRdMoudle::TimerProc(
       }
 
       // SEND TO HVIZ
-  //     std::vector<uchar> buffer;
+      std::vector<uchar> buffer;
      
-  //     if (!NV12ResizedMat.empty())
-  //     {
-  //       save_pred_img(saved_parking_slots_info, buffer, NV12ResizedMat);
-  //       {
+      if (!NV12ResizedMat.empty())
+      {
+        save_pred_img(saved_parking_slots_info, buffer, NV12ResizedMat);
+        {
 
-  //         // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
-  //         uint64_t send_start = GetTimeStamp();
-  //         auto out = std::make_shared<WrapImageProtoMsg>();
-  //         // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
-  //         out->proto.set_width(352);
-  //         out->proto.set_height(352);
-  //         // out->proto.set_channel(msg->proto.channel());
-  //         out->proto.set_send_mode(0);
-  //         out->proto.set_format(2);
-  //         out->SetData(std::make_shared<hobot::message::DataRef>(buffer.data(), buffer.size()));
+          // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
+          uint64_t send_start = GetTimeStamp();
+          auto out = std::make_shared<WrapImageProtoMsg>();
+          // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
+          out->proto.set_width(352);
+          out->proto.set_height(352);
+          // out->proto.set_channel(msg->proto.channel());
+          out->proto.set_send_mode(0);
+          out->proto.set_format(2);
+          out->SetData(std::make_shared<hobot::message::DataRef>(buffer.data(), buffer.size()));
 
-  //         DFHLOG_W("percept_debug size: {}, ts = {}.", buffer.size(), GetTimeStamp());
-  //         auto pub_image_port = proc->GetOutputPort("percept_debug");
-  //         pub_image_port->Send(out);
-  //         // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
-  //         //  uint64_t send_end = GetTimeStamp();
-  //         //  //std::cout << "send time:" << send_end - send_start << "ms" << std::endl;
-  //       }
-  //     }
-  //   }
+          DFHLOG_W("percept_debug size: {}, ts = {}.", buffer.size(), GetTimeStamp());
+          auto pub_image_port = proc->GetOutputPort("percept_debug");
+          pub_image_port->Send(out);
+          // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
+          //  uint64_t send_end = GetTimeStamp();
+          //  //std::cout << "send time:" << send_end - send_start << "ms" << std::endl;
+        }
+      }
+    }
 
-  //   int save_pred_img(QuadParkingSlots parking_slots, std::vector<uchar> &buffer, cv::Mat rgb_mat)
-  //   {
+    int save_pred_img(QuadParkingSlots parking_slots, std::vector<uchar> &buffer, cv::Mat rgb_mat)
+    {
 
-  //     cv::Mat bgr_mat;
-  //     cv::cvtColor(rgb_mat, bgr_mat, cv::COLOR_YUV2BGR_NV12);
-  //     int height = bgr_mat.rows;
-  //     int width = bgr_mat.cols;
-  //     int size = bgr_mat.cols * bgr_mat.rows;
+      cv::Mat bgr_mat;
+      cv::cvtColor(rgb_mat, bgr_mat, cv::COLOR_YUV2BGR_NV12);
+      int height = bgr_mat.rows;
+      int width = bgr_mat.cols;
+      int size = bgr_mat.cols * bgr_mat.rows;
 
-  //     cv::Mat final_mat = bgr_mat.clone();
+      cv::Mat final_mat = bgr_mat.clone();
 
-  //     for (int i = 0; i < parking_slots.quadParkingSlotList.size(); i++)
-  //     {
-  //       auto output_result = parking_slots.quadParkingSlotList[i];
-  //       if (true)
-  //       {
-  //         cv::circle(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
-  //         cv::circle(final_mat, cv::Point(output_result.tr.x, output_result.tr.y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
-  //         cv::line(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), cv::Point(output_result.bl.x, output_result.bl.y), cv::Scalar(0, 255, 0), 1);
-  //         cv::line(final_mat, cv::Point(output_result.tr.x, output_result.tr.y), cv::Point(output_result.br.x, output_result.br.y), cv::Scalar(0, 255, 0), 1);
-  //         cv::line(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), cv::Point(output_result.tr.x, output_result.tr.y), cv::Scalar(0, 0, 255), 1);
-  //       }
-  //     }
-  //     cv::imencode(".jpg", final_mat, buffer);
-  //     //  cv::imwrite(target_image_file, final_mat);
-  //     return 0;
+      for (int i = 0; i < parking_slots.quadParkingSlotList.size(); i++)
+      {
+        auto output_result = parking_slots.quadParkingSlotList[i];
+        if (true)
+        {
+          cv::circle(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
+          cv::circle(final_mat, cv::Point(output_result.tr.x, output_result.tr.y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
+          cv::line(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), cv::Point(output_result.tr.x, output_result.tr.y), cv::Scalar(0, 255, 0), 1);
+          cv::line(final_mat, cv::Point(output_result.tr.x, output_result.tr.y), cv::Point(output_result.br.x, output_result.br.y), cv::Scalar(0, 255, 0), 1);
+          cv::line(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), cv::Point(output_result.bl.x, output_result.bl.y), cv::Scalar(0, 0, 255), 1);
+        }
+      }
+      cv::imencode(".jpg", final_mat, buffer);
+      //  cv::imwrite(target_image_file, final_mat);
+      return 0;
 
   }
 DATAFLOW_REGISTER_MODULE(PerceptionRdMoudle)

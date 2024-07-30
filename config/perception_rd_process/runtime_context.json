@@ -115,6 +115,36 @@
               ]
             }
           }
+        },
+        {
+          "port_id": "percept_debug",
+          "topic": "percept_debug",
+		   "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "port_id": "percept_debug2",
+          "topic": "percept_debug2",
+		   "communication": {
+            "domain_id": 0,
+            "comm_protocol": "zmq_tcp",
+            "comm_attr": {
+              "participants": [
+                {
+                  "id": 0
+                }
+              ]
+            }
+          }
         }
       ],
       "procs": [

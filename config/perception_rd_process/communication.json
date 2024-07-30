@@ -52,5 +52,15 @@
     "protocol": "zmq_tcp",
     "link_info": "10.97.109.148:25587",
     "link_type": "connect"
+  },
+  {
+    "id": 0,
+    "protocol": "zmq_tcp",
+    "link_info": "0.0.0.0:5575",
+    "link_type": "",
+    "link_options": {
+      "ZMQ_SNDHWM": 15,
+      "ZMQ_RCVHWM": 15
+    }
   }]
 }
