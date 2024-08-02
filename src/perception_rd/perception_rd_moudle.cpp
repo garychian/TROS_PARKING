@@ -516,7 +516,7 @@ void PerceptionRdMoudle::TimerProc(
         
         rd::Header rd_header;
         rd_header.set_seq(saved_parking_slots_info.header.seq);
-        rd_header.set_frameid(saved_parking_slots_info.header.frameId);
+        // rd_header.set_frameid(saved_parking_slots_info.header.frameId);
         apa_ps_info->proto.mutable_header()->CopyFrom(rd_header);
 
         apa_ps_info->proto.set_frametimestampns(saved_parking_slots_info.frameTimeStampNs);
@@ -570,7 +570,7 @@ void PerceptionRdMoudle::TimerProc(
           }
         }
 
-        auto pub_apa_ps_rect_port_s32g = proc->GetOutputPort("pub_apa_ps_info_s32g");
+        auto pub_apa_ps_rect_port_s32g = proc->GetOutputPort("pub_quad_parking_slots_s32g");
         if (!pub_apa_ps_rect_port_s32g)
         {
           DFHLOG_E("pub_apa_ps_rect_port_s32g failed to get output port of {}", "pub_apa_ps_rect");
@@ -579,7 +579,7 @@ void PerceptionRdMoudle::TimerProc(
 
         // pub_apa_ps_info_port->Send(apa_ps_info);
         pub_apa_ps_rect_port_s32g->Send(apa_ps_info);
-        DFHLOG_W("pub pub_apa_ps_info_port info, ullframeid = {}",
+        DFHLOG_W("pub pub_quad_parking_slots_s32g info, ullframeid = {}",
                  apa_ps_info->proto.header().frameid());
       }
 
@@ -639,7 +639,7 @@ void PerceptionRdMoudle::TimerProc(
       //  cv::imwrite(target_image_file, final_mat);
       return 0;
 
-  }
+    }
 DATAFLOW_REGISTER_MODULE(PerceptionRdMoudle)
 
 }  // namespace parking
