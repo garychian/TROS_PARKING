@@ -47,7 +47,8 @@ namespace fanya
 {
   namespace parking
   {
-
+    int save_pred_img_OD(Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front,cv::Mat rgb_mat_left,cv::Mat rgb_mat_rear,cv::Mat rgb_mat_right);
+    int save_pred_img_OD_test(Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat);
     using hobot::communication::COMM_CODE_OK;
     using hobot::communication::CommAttr;
     using hobot::communication::CompositeOption;
@@ -89,7 +90,37 @@ struct Args
     bool is_dynamic = false;
 };
 
-// std::vector<ObstacleRaw> obstaclesraw;
+FSLine fs;
+static int64_t fs_seq_ = 0;
+static void SimpleFSLineSubCallback(const std::shared_ptr<FSLineMsg> &fsline_msg)
+{
+  std::cout << "[FSLine]j5 callback arriverd!" << std::endl;
+  std::cout << "[FSLine]fsline size: " << fsline_msg->proto.fsline_size() << std::endl;
+  if (fsline_msg->proto.fsline_size() != 0){
+    fs.fsline.resize(fsline_msg->proto.fsline_size());
+    for(int icnt = 0; icnt < fsline_msg->proto.fsline_size(); icnt++){
+      fs.fsline[icnt].header.timestamp = fsline_msg->proto.mutable_fsline(icnt)->header().timestampns().nanosec();
+      fs.fsline[icnt].header.frame_id = "1";
+      fs.fsline[icnt].header.seq = fs_seq_;
+      fs_seq_++;
+      std::cout<<"[FSLine] header.timestamp: "<<fs.fsline[icnt].header.timestamp<<std::endl;
+      std::cout<<"[FSLine] header.seq: "<<fs.fsline[icnt].header.seq<<std::endl;
+      std::cout<<"[FSLine] header.frame_id: "<<fs.fsline[icnt].header.frame_id<<std::endl;
+      if (fsline_msg->proto.fsline(icnt).fslinepoints_size() != 0){
+        fs.fsline[icnt].fsLinepoints.resize(fsline_msg->proto.fsline(icnt).fslinepoints_size());
+        std::cout<<"[FSLine] fsline["<<icnt<<"] fslinepoints_size: "<<fsline_msg->proto.fsline(icnt).fslinepoints_size()<<std::endl;
+        for(int jcnt = 0; jcnt < fsline_msg->proto.fsline(icnt).fslinepoints_size(); jcnt++){
+          fs.fsline[icnt].fsLinepoints[jcnt].coordinate.x = fsline_msg->proto.fsline(icnt).fslinepoints(jcnt).coordinate().x();
+          fs.fsline[icnt].fsLinepoints[jcnt].coordinate.y = fsline_msg->proto.fsline(icnt).fslinepoints(jcnt).coordinate().y();
+          fs.fsline[icnt].fsLinepoints[jcnt].pointLabel = static_cast<SpaceLabel>(fsline_msg->proto.fsline(icnt).fslinepoints(jcnt).pointlabel());
+          std::cout<<"[FSLine] fsline["<<icnt<<"] x: "<<fs.fsline[icnt].fsLinepoints[jcnt].coordinate.x<<" y: "<<fs.fsline[icnt].fsLinepoints[jcnt].coordinate.y<<std::endl;
+        }
+      } 
+    }
+  }
+  std::cout << "[FSLine]j5 callback sucess!" << std::endl;
+}
+
 Obstacles obstacles;
 static int64_t seq_ = 0;
 
@@ -108,6 +139,8 @@ static void SimpleObstacleSubCallback(const std::shared_ptr<RawObstacleMsg> &raw
   if (raw_obstacle_msg->proto.rawobjects_size() != 0){
       obstacles.obstaclesraw.resize(raw_obstacle_msg->proto.rawobjects_size());
       for(int icnt = 0; icnt < raw_obstacle_msg->proto.rawobjects_size(); icnt++){
+          obstacles.obstaclesraw[icnt].camera = raw_obstacle_msg->proto.rawobjects(icnt).camera();
+          std::cout<<"[OD] camera_id: "<<obstacles.obstaclesraw[icnt].camera<<std::endl;
           obstacles.obstaclesraw[icnt].label = raw_obstacle_msg->proto.rawobjects(icnt).label();
           obstacles.obstaclesraw[icnt].typeConfidence = raw_obstacle_msg->proto.rawobjects(icnt).typeconfidence();
           obstacles.obstaclesraw[icnt].existenceConfidence = raw_obstacle_msg->proto.rawobjects(icnt).existenceconfidence();
@@ -180,6 +213,7 @@ void PerceptionOdMoudle::InitPortsAndProcs() {
                                 camera_frame::CameraFrameArray);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_obstacles", od::Obstacles);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_fsline_msg", od::FSLine);
+  DF_MODULE_INIT_IDL_OUTPUT_PORT("percept_debug",ImageProto::Image);
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
       "MsgCenterProc", PerceptionOdMoudle, MsgCenterProc,
       hobot::dataflow::ProcType::DF_MSG_COND_PROC,
@@ -187,7 +221,7 @@ void PerceptionOdMoudle::InitPortsAndProcs() {
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
       "TimerProc", PerceptionOdMoudle, TimerProc,
       hobot::dataflow::ProcType::DF_MSG_TIMER_PROC, DF_VECTOR(),
-      DF_VECTOR("pub_obstacles", "pub_fsline_msg"));
+      DF_VECTOR("pub_obstacles", "pub_fsline_msg","percept_debug"));
 }
 
 EventType g_pub_event = EventType(2);
@@ -241,11 +275,13 @@ int32_t PerceptionOdMoudle::Init() {
       comm_attr.qos_.qos_profile_.history_qos_policy.kind =
           HistoryQoSPolicyKind::HISTORY_KEEP_LAST;
       comm_attr.qos_.qos_profile_.history_qos_policy.depth = 5;
-      std::string topic = "/perception/camera/fisheye_objects";
+      std::string obstacle_topic = "/perception/camera/fisheye_objects";
+      std::string fsline_topic = "/perception/camera/fsline_points";
       ErrorCode error_code;
 
+      // OBSTACLE
       publisher_ = Publisher<RawObstacleSerial>::New(comm_attr,
-                                                 topic,
+                                                 obstacle_topic,
                                                  0,
                                                  PROTOCOL_SHM,
                                                  &error_code,
@@ -262,16 +298,15 @@ int32_t PerceptionOdMoudle::Init() {
         return 1;
       }
 
-      senseAD::ad_msg_bridge::GetGlobalCommunicationPipe()->RegPipe(topic, [this](const void *ptr, const size_t)
+      senseAD::ad_msg_bridge::GetGlobalCommunicationPipe()->RegPipe(obstacle_topic, [this](const void *ptr, const size_t)
                                                                     {
-                                                                  std::cout<< "[OD]In Reg Pipe aaaaaaaa"<<std::endl;
+                                                                  std::cout<< "[OD]In Reg Obstacle Pipe"<<std::endl;
                                                                   auto out_ptr = reinterpret_cast<const RawObstacleMsg *>(ptr);
                                                                   auto msg = std::make_shared<RawObstacleMsg>();
                                                                   *msg = *out_ptr;
-                                                                  std::cout<< "[OD]In Reg Pipe"<<std::endl;
+                                                                  std::cout<< "[OD]In Reg Obstacle Pipe"<<std::endl;
                                                                   this->publisher_->Pub(msg); });
 
-      // std::shared_ptr<apaSlotListInfo> fanya::parking::ParkingslotDetectMoudle::saved_parking_slots_info_ptr = nullptr;
       CommAttr sub_comm_attr;
       sub_comm_attr.qos_.qos_profile_.reliability_qos_policy.kind =
           ReliabilityQosPolicyKind::RELIABILITY_BEST_EFFORT;
@@ -279,7 +314,32 @@ int32_t PerceptionOdMoudle::Init() {
           HistoryQoSPolicyKind::HISTORY_KEEP_LAST;
       sub_comm_attr.qos_.qos_profile_.history_qos_policy.depth = 5;
       subscriber_ = Subscriber<RawObstacleSerial>::New(
-          sub_comm_attr, topic, 0, SimpleObstacleSubCallback, PROTOCOL_SHM);
+          sub_comm_attr, obstacle_topic, 0, SimpleObstacleSubCallback, PROTOCOL_SHM);
+
+      fsline_publisher_ = Publisher<FSLineSerial>::New(comm_attr,
+                                                      fsline_topic,
+                                                      0,
+                                                      PROTOCOL_SHM,
+                                                      &error_code,
+                                                      pub_connlisteners);
+      if (!fsline_publisher_)
+      {
+        std::cout << " create fsline_publisher failed";
+        return -1;
+      }
+
+      senseAD::ad_msg_bridge::GetGlobalCommunicationPipe()->RegPipe(fsline_topic, [this](const void *ptr, const size_t)
+                                                                  {
+                                                                  std::cout<< "[OD]In Reg FSLINE Pipe "<<std::endl;
+                                                                  auto out_ptr = reinterpret_cast<const FSLineMsg *>(ptr);
+                                                                  auto msg = std::make_shared<FSLineMsg>();
+                                                                  *msg = *out_ptr;
+                                                                  std::cout<< "[OD]In Reg FSLINE Pipe"<<std::endl;
+                                                                  this->fsline_publisher_->Pub(msg); });
+
+  
+      fsline_subscriber_ = Subscriber<FSLineSerial>::New(
+          sub_comm_attr, fsline_topic, 0, SimpleFSLineSubCallback, PROTOCOL_SHM);
 
       DFHLOG_I("SUB REGISTER!");
       /************************SUB FROM PERCEPTION***************************/
@@ -685,42 +745,140 @@ void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
   }
 
   // pub FSLineMsg
+  // {
+  //   //fill proto
+  //   for (int icnt = 0; icnt < fs.fsline.size(); icnt++){
+  //     od::Time od_time;
+  //     od_time.set_nanosec(fs.fsline[icnt].header.timestamp);
+  //     od::Header od_header;
+  //     od_header.set_seq(fs.fsline[icnt].header.seq);
+  //     od_header.set_frameid(fs.fsline[icnt].header.frame_id);
+  //     od_header.mutable_timestampns()->CopyFrom(od_time);
+  //     for (int jcnt = 0; jcnt < fs.fsline[icnt].fsLinepoints.size(); jcnt++){
+  //       od::Point2f fs_point2f;
+  //       fs_point2f.set_x(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.x);
+  //       fs_point2f.set_y(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.y);
+
+  //       od::FSLinePoint fsline_point;
+  //       fsline_point.mutable_coordinate()->CopyFrom(fs_point2f);
+  //       fsline_point.set_pointlabel(od::SpaceLabel::vehicle);
+
+  //       od::FSLinesimple od_fsline_simple;
+  //       od_fsline_simple.mutable_header()->CopyFrom(od_header);
+  //       od_fsline_simple.set_frametimestampns(123);
+  //       od_fsline_simple.add_fslinepoints()->CopyFrom(fsline_point);
+
+  //       auto fsline_msg = std::make_shared<FSLineMsg>();
+  //       fsline_msg->proto.add_fsline()->CopyFrom(od_fsline_simple);
+  //       fsline_msg->SetGenTimestamp(gen_ts);
+  //       auto pub_fsline_msg_port_s32g = proc->GetOutputPort("pub_fsline_msg");
+  //       if (!pub_fsline_msg_port_s32g) {
+  //         DFHLOG_E("failed to get output port of {}", "pub_fsline_msg");
+  //         return;
+  //       }
+  //       pub_fsline_msg_port_s32g->Send(fsline_msg);
+  //       DFHLOG_W("Pub od_fsline_msg,Success!!! ");
+  //       }
+      
+  //     }
+  // }
+// }
+
+std::vector<uchar> buffer;
+if(!NV12ResizedMat_front.empty()&&!NV12ResizedMat_left.empty()&&!NV12ResizedMat_right.empty()&&!NV12ResizedMat_rear.empty())
+{
+  save_pred_img_OD(obstacles,buffer,NV12ResizedMat_front,NV12ResizedMat_left,NV12ResizedMat_rear,NV12ResizedMat_right);
   {
-    // fill proto
-    // od::Point2f od_point2f;
-    // od_point2f.set_x(1);
-    // od_point2f.set_y(1);
+      uint64_t send_start = GetTimeStamp();
+      auto out = std::make_shared<WrapImageProtoMsg>();
+      // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
+      out->proto.set_width(1280);
+      out->proto.set_height(768);
+      // out->proto.set_channel(msg->proto.channel());
+      out->proto.set_send_mode(0);
+      out->proto.set_format(2);
+      out->SetData(std::make_shared<hobot::message::DataRef>(buffer.data(), buffer.size()));
 
-    // od::Time od_time;
-    // od_time.set_nanosec(123);
+      DFHLOG_W("percept_debug size: {}, ts = {}.", buffer.size(), GetTimeStamp());
+      auto pub_image_port = proc->GetOutputPort("percept_debug");
+      pub_image_port->Send(out);
 
-    // od::FSLinePoint od_fsline_point;
-    // od_fsline_point.mutable_coordinate()->CopyFrom(od_point2f);
-    // od_fsline_point.set_pointlabel(od::SpaceLabel::vehicle);
-
-    // od::Header od_header;
-    // od_header.set_seq(1);
-    // od_header.set_frameid("99");
-    // od_header.mutable_timestampns()->CopyFrom(od_time);
-
-    // od::FSLinesimple od_fsline_simple;
-    // od_fsline_simple.mutable_header()->CopyFrom(od_header);
-    // od_fsline_simple.set_frametimestampns(123);
-    // od_fsline_simple.add_fslinepoints()->CopyFrom(od_fsline_point);
-
-    // auto fsline_msg = std::make_shared<FSLineMsg>();
-    // fsline_msg->proto.add_fsline()->CopyFrom(od_fsline_simple);
-    // fsline_msg->SetGenTimestamp(gen_ts);
-    // auto pub_fsline_msg_port_s32g = proc->GetOutputPort("pub_fsline_msg");
-    // if (!pub_fsline_msg_port_s32g) {
-    //   DFHLOG_E("failed to get output port of {}", "pub_fsline_msg");
-    //   return;
-    // }
-    // pub_fsline_msg_port_s32g->Send(fsline_msg);
-    // DFHLOG_W("Pub od_fsline_msg,Success!!! ");
+    }
   }
 }
 
+int save_pred_img_OD(Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front,cv::Mat rgb_mat_left,cv::Mat rgb_mat_rear,cv::Mat rgb_mat_right)
+{
+      std::cout<<"hello in save_pred_img_OD"<<std::endl;
+      cv::Mat bgr_mat_front,
+              bgr_mat_left,
+              bgr_mat_rear,
+              bgr_mat_right;
+      cv::cvtColor(rgb_mat_front,bgr_mat_front,cv::COLOR_YUV2BGR_NV12);
+      cv::cvtColor(rgb_mat_left,bgr_mat_left,cv::COLOR_YUV2BGR_NV12);
+      cv::cvtColor(rgb_mat_rear,bgr_mat_rear,cv::COLOR_YUV2BGR_NV12);
+      cv::cvtColor(rgb_mat_right,bgr_mat_right,cv::COLOR_YUV2BGR_NV12);
+      int height = bgr_mat_left.rows;
+      int width = bgr_mat_left.cols;
+      int size = bgr_mat_left.cols * bgr_mat_left.rows;
+      cv::Mat predfront_mat = bgr_mat_front.clone(),
+              predleft_mat  = bgr_mat_left.clone(),
+              predrear_mat  = bgr_mat_rear.clone(),
+              predright_mat = bgr_mat_right.clone();
+      if (obstaclesOD.obstaclesraw.size()!=0){
+        for(int i = 0 ;i< obstaclesOD.obstaclesraw.size();i++)
+        {
+          auto output_result = obstaclesOD.obstaclesraw[i];
+          if (true)
+          {
+            if (output_result.camera == "right_camera_fov195")
+            {
+              cv::circle(predright_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
+              cv::circle(predright_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
+              cv::line(predright_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predright_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predright_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predright_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+            }
+            else if(output_result.camera == "left_camera_fov195")
+            {
+              cv::circle(predleft_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY) ,4, cv::Scalar(0, 0, 255), -1, 8, 0);
+              cv::circle(predleft_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
+              cv::line(predleft_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predleft_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predleft_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predleft_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+            }
+            else if(output_result.camera == "rear_camera_fov195")
+            {
+              cv::circle(predrear_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
+              cv::circle(predrear_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY) ,4, cv::Scalar(0, 0, 255), -1, 8, 0);
+              cv::line(predrear_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predrear_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predrear_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predrear_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+            }
+            else if(output_result.camera == "front_camera_fov195")
+            {
+              cv::circle(predfront_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY) ,4, cv::Scalar(0, 0, 255), -1, 8, 0);
+              cv::circle(predfront_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY) ,4, cv::Scalar(0, 0, 255), -1, 8, 0);
+              cv::line(predfront_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predfront_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predfront_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+              cv::line(predfront_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+            }
+          }
+          
+        }  
+      }
+      cv::Mat combined,top_row,bottom_row;
+      cv::hconcat(predfront_mat,predrear_mat,top_row);
+      cv::hconcat(predleft_mat,predright_mat,bottom_row);
+      cv::vconcat(top_row,bottom_row,combined);
+      cv::imencode(".jpg",combined,buffer);
+      return 0;
+      
+}
     DATAFLOW_REGISTER_MODULE(PerceptionOdMoudle)
 
 } // namespace parking

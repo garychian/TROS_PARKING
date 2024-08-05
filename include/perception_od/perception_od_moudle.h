@@ -36,6 +36,9 @@ using ImageMsg = ProtoMsg<rd::Image>;
 using RawObstacleSerial = ProtobufSerializer<od::Obstacles>;
 using RawObstacleMsg = ProtoMsg<od::Obstacles>;
 
+using FSLineSerial = ProtobufSerializer<od::FSLine>;
+using FSLineMsg = ProtoMsg<od::FSLine>;
+
 namespace fanya {
 namespace parking {
 
@@ -75,6 +78,29 @@ struct Obstacles{
   std::vector<ObstacleRaw> obstaclesraw;
 };
 
+typedef enum{
+  vehicle = 0,
+  pedestrian = 1,
+  RoadEdge = 2,
+  Wall = 3,
+  TrafficCone = 4,
+  Other = 5,
+}SpaceLabel;
+
+struct FSLinePoint{
+  Point2f coordinate;
+  SpaceLabel pointLabel;
+};
+
+struct FSLinesimple{
+  Header header;
+  uint64_t frameTimestampNs;
+  std::vector<FSLinePoint> fsLinepoints;
+};
+
+struct FSLine{
+  std::vector<FSLinesimple> fsline;
+};
 
 class PerceptionOdMoudle:
   public hobot::dataflow::Module{
@@ -113,6 +139,9 @@ class PerceptionOdMoudle:
   std::shared_ptr<hobot::communication::Publisher<ImageSerial>> right_camera_publisher_;
   std::shared_ptr<hobot::communication::Subscriber<ImageSerial>> right_camera_subscriber_;
  
+  std::shared_ptr<hobot::communication::Publisher<FSLineSerial>> fsline_publisher_;
+  std::shared_ptr<hobot::communication::Subscriber<FSLineSerial>> fsline_subscriber_;
+
  public:
   cv::Mat resizedMat;
   cv::Mat NV12ResizedMat;
