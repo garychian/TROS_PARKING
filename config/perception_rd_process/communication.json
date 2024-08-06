@@ -40,17 +40,17 @@
   {
     "id": 2,
     "protocol": "zmq_tcp",
-    "link_info": "10.97.109.148:25584",
+    "link_info": "192.168.2.10:25584",
     "link_type": "connect"
   },{
     "id": 3,
     "protocol": "zmq_tcp",
-    "link_info": "10.97.109.148:25585",
+    "link_info": "192.168.2.10:25585",
     "link_type": "connect"
   },{
     "id": 4,
     "protocol": "zmq_tcp",
-    "link_info": "10.97.109.148:25587",
+    "link_info": "192.168.2.10:25587",
     "link_type": "connect"
   },
   {
