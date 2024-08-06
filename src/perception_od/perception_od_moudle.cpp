@@ -209,15 +209,15 @@ void PerceptionOdMoudle::InitPortsAndProcs() {
   DF_MODULE_INIT_IDL_INPUT_PORT("sub_apa_status", aph::apa_status);
   DF_MODULE_INIT_IDL_INPUT_PORT("sub_camera_frame_array",
                                 camera_frame::CameraFrameArray);
-  DF_MODULE_INIT_IDL_INPUT_PORT("apa_image_in",
-                                camera_frame::CameraFrameArray);
+  // DF_MODULE_INIT_IDL_INPUT_PORT("apa_image_in",
+  //                               camera_frame::CameraFrameArray);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_obstacles", od::Obstacles);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_fsline_msg", od::FSLine);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("percept_debug",ImageProto::Image);
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
       "MsgCenterProc", PerceptionOdMoudle, MsgCenterProc,
       hobot::dataflow::ProcType::DF_MSG_COND_PROC,
-      DF_VECTOR("sub_apa_status", "sub_camera_frame_array","apa_image_in"), DF_VECTOR());
+      DF_VECTOR("sub_apa_status", "sub_camera_frame_array"), DF_VECTOR());
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
       "TimerProc", PerceptionOdMoudle, TimerProc,
       hobot::dataflow::ProcType::DF_MSG_TIMER_PROC, DF_VECTOR(),
@@ -529,46 +529,6 @@ void PerceptionOdMoudle::MsgCenterProc(
   if (!msg_list->empty()){
     std::shared_ptr<CameraFrameArrayProtoMsg> camera_group_msg =
         std::dynamic_pointer_cast<CameraFrameArrayProtoMsg>(msg_list->front());
-
-
-    // spImageProtoMsg ipm_msg = std::make_shared<ImageProtoMsg>();
-    // // fill ipm msg
-    // FillArrayMsgToIpmBuffer(ipm_msg, camera_group_msg);
-
-    // address_info_t addr_info;
-    // if (!GetImageProtoAddrInfo(ipm_msg, addr_info))
-    // {
-    //    DFHLOG_E("Get image proto addr info failed.");
-    //    return;
-    // }
-    // int32_t width = addr_info.width;
-    // int32_t height = addr_info.height;
-
-    // cv::Mat image_nv12(height * 1.5, width, CV_8UC1);
-    // cv::Mat rgb_mat(height, width, CV_8UC3);
-    // int32_t size;
-    // size = width * height;
-
-    // int32_t new_width = 640;
-    // int32_t new_height = 384;
-
-    // auto y_addr = image_nv12.data;
-    // auto u_addr = y_addr + size;
-    // auto v_addr = u_addr + size / 4;
-    // auto srcBuf = addr_info.addr[0];
-    // auto srcBuf1 = addr_info.addr[1];
-    // std::memcpy(y_addr, srcBuf, size);
-    // for (int i = 0; i < size / 4; ++i)
-    // {
-    //   *u_addr++ = *srcBuf1++;
-    //   *v_addr++ = *srcBuf1++;
-    // }
-
-    // cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
-    // cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
-    // cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
-    // uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
-
     auto len = camera_group_msg->proto.camera_frame_size();
     std::cout<<"[OD] camera_frame_size: " << len <<std::endl;
     for (auto i = 0; i < len; i++) {
