@@ -540,7 +540,7 @@ void PerceptionOdMoudle::MsgCenterProc(
         // std::cout << "[OD]camera_proto_msg->proto.DebugString():" << camera_proto_msg->proto.DebugString().c_str() << std::endl;
         if (camera_proto_msg->proto.pym_img_info().down_scale_num() >= 1 &&
             camera_proto_msg->proto.pym_img_info().down_scale_size() >= 1) {
-          
+        auto frame_id = camera_proto_msg->proto.pym_img_info().frame_seq();  
         const camera_frame::YuvAddrInfo &yuv_proto = camera_proto_msg->proto.pym_img_info().down_scale(0);
         auto pym_buf = reinterpret_cast<char *>(yuv_proto.y_vaddr());
         auto width = yuv_proto.width();
@@ -648,15 +648,14 @@ void PerceptionOdMoudle::MsgCenterProc(
 
 void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
                                    const hobot::dataflow::MessageLists &msgs) {
-  auto gen_ts = GetTimeStamp();
   // pub ObstaclesMsg
   {
     // fill proto
     od::Time od_time;
-    od_time.set_nanosec(123);
+    od_time.set_nanosec(obstacles.header.timestamp);
     od::Header od_header;
-    od_header.set_seq(1);
-    od_header.set_frameid("99");
+    od_header.set_seq(obstacles.header.seq);
+    od_header.set_frameid(obstacles.header.frame_id);
     od_header.mutable_timestampns()->CopyFrom(od_time);
 
     if (obstacles.obstaclesraw.size()!=0){
@@ -666,6 +665,14 @@ void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
         od_obstacleRaw.set_label(obstacles.obstaclesraw[icnt].label);
         od_obstacleRaw.set_typeconfidence(obstacles.obstaclesraw[icnt].typeConfidence);
         od_obstacleRaw.set_existenceconfidence(obstacles.obstaclesraw[icnt].existenceConfidence);
+
+        od::Bbox2D box;
+        box.set_topleftx(obstacles.obstaclesraw[icnt].box.topLeftX);
+        box.set_toplefty(obstacles.obstaclesraw[icnt].box.topLeftY);
+        box.set_bottomrightx(obstacles.obstaclesraw[icnt].box.bottomRightX);
+        box.set_bottomrighty(obstacles.obstaclesraw[icnt].box.bottomRightY);
+        box.set_confidence(obstacles.obstaclesraw[icnt].box.confidence);
+        od_obstacleRaw.mutable_bbox()->CopyFrom(box);
 
         for (int jcnt = 0; jcnt < obstacles.obstaclesraw[icnt].landmark4.size(); jcnt++){
           od::Point2f od_point2f;
@@ -681,10 +688,7 @@ void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
         // create msg
         auto obstacles_msg = std::make_shared<ObstaclesMsg>();
         obstacles_msg->proto.mutable_header()->CopyFrom(od_header);
-   
         obstacles_msg->proto.add_rawobjects()->CopyFrom(od_obstacleRaw);
-
-        obstacles_msg->SetGenTimestamp(gen_ts);
 
         auto pub_obstacles_s32g = proc->GetOutputPort("pub_obstacles");
         if (!pub_obstacles_s32g) {
@@ -705,44 +709,43 @@ void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
   }
 
   // pub FSLineMsg
-  // {
-  //   //fill proto
-  //   for (int icnt = 0; icnt < fs.fsline.size(); icnt++){
-  //     od::Time od_time;
-  //     od_time.set_nanosec(fs.fsline[icnt].header.timestamp);
-  //     od::Header od_header;
-  //     od_header.set_seq(fs.fsline[icnt].header.seq);
-  //     od_header.set_frameid(fs.fsline[icnt].header.frame_id);
-  //     od_header.mutable_timestampns()->CopyFrom(od_time);
-  //     for (int jcnt = 0; jcnt < fs.fsline[icnt].fsLinepoints.size(); jcnt++){
-  //       od::Point2f fs_point2f;
-  //       fs_point2f.set_x(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.x);
-  //       fs_point2f.set_y(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.y);
+  {
+    //fill proto
+    for (int icnt = 0; icnt < fs.fsline.size(); icnt++){
+      od::Time od_time;
+      od_time.set_nanosec(fs.fsline[icnt].header.timestamp);
+      od::Header od_header;
+      od_header.set_seq(fs.fsline[icnt].header.seq);
+      od_header.set_frameid(fs.fsline[icnt].header.frame_id);
+      od_header.mutable_timestampns()->CopyFrom(od_time);
+      for (int jcnt = 0; jcnt < fs.fsline[icnt].fsLinepoints.size(); jcnt++){
+        od::Point2f fs_point2f;
+        fs_point2f.set_x(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.x);
+        fs_point2f.set_y(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.y);
 
-  //       od::FSLinePoint fsline_point;
-  //       fsline_point.mutable_coordinate()->CopyFrom(fs_point2f);
-  //       fsline_point.set_pointlabel(od::SpaceLabel::vehicle);
+        od::FSLinePoint fsline_point;
+        fsline_point.mutable_coordinate()->CopyFrom(fs_point2f);
+        fsline_point.set_pointlabel(od::SpaceLabel::vehicle);
 
-  //       od::FSLinesimple od_fsline_simple;
-  //       od_fsline_simple.mutable_header()->CopyFrom(od_header);
-  //       od_fsline_simple.set_frametimestampns(123);
-  //       od_fsline_simple.add_fslinepoints()->CopyFrom(fsline_point);
+        od::FSLinesimple od_fsline_simple;
+        od_fsline_simple.mutable_header()->CopyFrom(od_header);
+        od_fsline_simple.set_frametimestampns(123);
+        od_fsline_simple.add_fslinepoints()->CopyFrom(fsline_point);
 
-  //       auto fsline_msg = std::make_shared<FSLineMsg>();
-  //       fsline_msg->proto.add_fsline()->CopyFrom(od_fsline_simple);
-  //       fsline_msg->SetGenTimestamp(gen_ts);
-  //       auto pub_fsline_msg_port_s32g = proc->GetOutputPort("pub_fsline_msg");
-  //       if (!pub_fsline_msg_port_s32g) {
-  //         DFHLOG_E("failed to get output port of {}", "pub_fsline_msg");
-  //         return;
-  //       }
-  //       pub_fsline_msg_port_s32g->Send(fsline_msg);
-  //       DFHLOG_W("Pub od_fsline_msg,Success!!! ");
-  //       }
+        auto fsline_msg = std::make_shared<FSLineMsg>();
+        fsline_msg->proto.add_fsline()->CopyFrom(od_fsline_simple);
+        fsline_msg->SetGenTimestamp(gen_ts);
+        auto pub_fsline_msg_port_s32g = proc->GetOutputPort("pub_fsline_msg");
+        if (!pub_fsline_msg_port_s32g) {
+          DFHLOG_E("failed to get output port of {}", "pub_fsline_msg");
+          return;
+        }
+        pub_fsline_msg_port_s32g->Send(fsline_msg);
+        DFHLOG_W("Pub od_fsline_msg,Success!!! ");
+        }
       
-  //     }
-  // }
-// }
+      }
+  }
 
 std::vector<uchar> buffer;
 if(!NV12ResizedMat_front.empty()&&!NV12ResizedMat_left.empty()&&!NV12ResizedMat_right.empty()&&!NV12ResizedMat_rear.empty())
@@ -837,7 +840,7 @@ int save_pred_img_OD(Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat 
       cv::vconcat(top_row,bottom_row,combined);
       cv::imencode(".jpg",combined,buffer);
       return 0;
-      
+  
 }
     DATAFLOW_REGISTER_MODULE(PerceptionOdMoudle)
 

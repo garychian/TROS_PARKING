@@ -151,21 +151,30 @@ namespace parking {
 static ImageMsg seg_image;
 static void SimpleSegimageSubCallback(const std::shared_ptr<ImageMsg> &segimg_msg){
     std::cout << "[PSD]j5 segimage callback arriverd!" << std::endl;
-    // seg_image.proto. = segimg_msg->proto.header().timestampns().nanosec();
+    rd::Time timestamp;
+    timestamp.set_nanosec(segimg_msg->proto.header().timestampns().nanosec());
+    rd::Header header;
+    header.mutable_timestampns()->CopyFrom(timestamp);
+    seg_image.proto.mutable_header()->CopyFrom(header);
 
     seg_image.proto.set_height(segimg_msg->proto.height());
     seg_image.proto.set_width(segimg_msg->proto.width());
     seg_image.proto.set_encoding(segimg_msg->proto.encoding());
     seg_image.proto.set_phyaddr(segimg_msg->proto.phyaddr());
     seg_image.proto.set_viraddr(segimg_msg->proto.viraddr());
+    std::cout << "[PSD] seg_image height:" << seg_image.proto.height() << std::endl;
+    std::cout << "[PSD] seg_image width:" << seg_image.proto.width() << std::endl;
+    std::cout << "[PSD] seg_image encoding:" << seg_image.proto.encoding() << std::endl;
+    std::cout << "[PSD] seg_image phyaddr:" << seg_image.proto.phyaddr() << std::endl;
+    std::cout << "[PSD] seg_image viraddr:" << seg_image.proto.viraddr() << std::endl;
     auto data_ptr = segimg_msg->proto.data();
     unsigned char* target_buffer = new unsigned char[segimg_msg->proto.data().size()];
     memcpy(target_buffer, &data_ptr[0], segimg_msg->proto.data().size());
     seg_image.proto.set_data(target_buffer, segimg_msg->proto.data().size());
     delete[] target_buffer;
-    std::cout << "[PSD] data size:" << segimg_msg->proto.data().size() << std::endl;
-    std::cout << "[PSD] data phyaddr:" << (void*)&segimg_msg->proto.data()[0] << std::endl;
-    std::cout << "[PSD]j5 segimage callback sucess!" << std::endl;
+    std::cout << "[PSD] data size:" << seg_image.proto.data().size() << std::endl;
+    std::cout << "[PSD] data phyaddr:" << (void*)&seg_image.proto.data()[0] << std::endl;
+    std::cout << "[PSD] j5 segimage callback sucess!" << std::endl;
 }
 
 
