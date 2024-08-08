@@ -70,6 +70,9 @@ class PerceptionRdMoudle:
   std::shared_ptr<hobot::communication::Publisher<ImageSerial>> image_publisher_;
   std::shared_ptr<hobot::communication::Subscriber<ImageSerial>> image_subscriber_;
 
+  std::shared_ptr<hobot::communication::Publisher<ImageSerial>> Segimage_publisher_;
+  std::shared_ptr<hobot::communication::Subscriber<ImageSerial>> Segimage_subscriber_;
+
  public:
   cv::Mat NV12ResizedMat;
   cv::Mat resizedMat;

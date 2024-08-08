@@ -100,9 +100,9 @@ namespace parking {
       seq++;
       // saved_parking_slots_info.frameTimeStampNs = quadpld_msg->proto.header().timestampns().nanosec();
       saved_parking_slots_info.frameTimeStampNs = quadpld_msg->proto.frametimestampns();
-      std::cout << "[PSD]GLOBAL_Slot FrameId:" << saved_parking_slots_info.header.frameId << std::endl;
-      std::cout << "[PSD]GLOBAL_Slot seq:" << saved_parking_slots_info.header.seq << std::endl;
-      std::cout << "[PSD]GLOBAL_Slot frameTimeStampNs:" << saved_parking_slots_info.frameTimeStampNs << std::endl;
+      std::cout << "[PSD]GLOBAL_Slot FrameId:" << saved_parking_slots_info.header.frameId <<std::endl;
+      // std::cout << "[PSD]GLOBAL_Slot seq:" << saved_parking_slots_info.header.seq << std::endl;
+      std::cout << "[PSD]GLOBAL_Slot frameTimeStampNs:" << saved_parking_slots_info.frameTimeStampNs << ", seq:" << saved_parking_slots_info.header.seq <<std::endl;
 
   
       if (quadpld_msg->proto.quadparkingslotlist_size() != 0)
@@ -147,7 +147,27 @@ namespace parking {
       
       }
     }
-    
+
+static ImageMsg seg_image;
+static void SimpleSegimageSubCallback(const std::shared_ptr<ImageMsg> &segimg_msg){
+    std::cout << "[PSD]j5 segimage callback arriverd!" << std::endl;
+    // seg_image.proto. = segimg_msg->proto.header().timestampns().nanosec();
+
+    seg_image.proto.set_height(segimg_msg->proto.height());
+    seg_image.proto.set_width(segimg_msg->proto.width());
+    seg_image.proto.set_encoding(segimg_msg->proto.encoding());
+    seg_image.proto.set_phyaddr(segimg_msg->proto.phyaddr());
+    seg_image.proto.set_viraddr(segimg_msg->proto.viraddr());
+    auto data_ptr = segimg_msg->proto.data();
+    unsigned char* target_buffer = new unsigned char[segimg_msg->proto.data().size()];
+    memcpy(target_buffer, &data_ptr[0], segimg_msg->proto.data().size());
+    seg_image.proto.set_data(target_buffer, segimg_msg->proto.data().size());
+    delete[] target_buffer;
+    std::cout << "[PSD] data size:" << segimg_msg->proto.data().size() << std::endl;
+    std::cout << "[PSD] data phyaddr:" << (void*)&segimg_msg->proto.data()[0] << std::endl;
+    std::cout << "[PSD]j5 segimage callback sucess!" << std::endl;
+}
+
 
 static void SimpleImageSubCallback(const std::shared_ptr<ImageMsg> &image_msg)
 {
@@ -242,6 +262,7 @@ int32_t PerceptionRdMoudle::Init() {
           HistoryQoSPolicyKind::HISTORY_KEEP_LAST;
       comm_attr.qos_.qos_profile_.history_qos_policy.depth = 5;
       std::string topic = "/parking/perception/camera/parking_bboxes";
+      std::string seg_topic = "perception_camera_ipm_segmentation";
       ErrorCode error_code;
 
       publisher_ = Publisher<QuadpldSerial>::New(comm_attr,
@@ -279,6 +300,30 @@ int32_t PerceptionRdMoudle::Init() {
       sub_comm_attr.qos_.qos_profile_.history_qos_policy.depth = 5;
       subscriber_ = Subscriber<QuadpldSerial>::New(
           sub_comm_attr, topic, 0, SimpleSlotSubCallback, PROTOCOL_SHM);
+
+      // SEG image
+      Segimage_publisher_ = Publisher<ImageSerial>::New(comm_attr,
+                                                 seg_topic,
+                                                 0,
+                                                 PROTOCOL_SHM,
+                                                 &error_code,
+                                                 pub_connlisteners);
+      if (!Segimage_publisher_)
+      {
+        std::cout << " create publisher failed";
+        return -1;
+      }
+      senseAD::ad_msg_bridge::GetGlobalCommunicationPipe()->RegPipe(seg_topic, [this](const void *ptr, const size_t)
+                                                                    {
+                                                                  std::cout<< "[PSD]In Seg Reg Pipe aaaaaaaa"<<std::endl;
+                                                                  auto out_ptr = reinterpret_cast<const ImageMsg *>(ptr);
+                                                                  auto msg = std::make_shared<ImageMsg>();
+                                                                  *msg = *out_ptr;
+                                                                  std::cout<< "[PSD]In Seg Reg Pipe"<<std::endl;
+                                                                  this->Segimage_publisher_->Pub(msg); });
+      Segimage_subscriber_ = Subscriber<ImageSerial>::New(
+          sub_comm_attr, seg_topic, 0, SimpleSegimageSubCallback, PROTOCOL_SHM);
+
 
       DFHLOG_I("SUB REGISTER!");
       /************************SUB FROM PERCEPTION***************************/
@@ -432,7 +477,7 @@ void PerceptionRdMoudle::MsgCenterProc(
       spImageProtoMsg ipm_msg = std::make_shared<ImageProtoMsg>();
       // fill ipm msg
       FillArrayMsgToIpmBuffer(ipm_msg, camera_array_msg);
-
+      
       // std::shared_ptr<DNNTensor> input_tensor = std::make_shared<DNNTensor>();
       address_info_t addr_info;
       if (!GetImageProtoAddrInfo(ipm_msg, addr_info))
@@ -502,13 +547,8 @@ void PerceptionRdMoudle::MsgCenterProc(
       /**************************PUB******************************/
     }
   }
-}
 
-void PerceptionRdMoudle::TimerProc(
-    hobot::dataflow::spMsgResourceProc proc,
-    const hobot::dataflow::MessageLists &msgs) {
-  
- { // PUB FROM J5 TO S32G
+  { // PUB FROM J5 TO S32G
         // do something with output port pub_apa_ps_info
         // fill proto vector<int> fusion_out_rect_id;
         // static int slot_id = 0;
@@ -521,7 +561,8 @@ void PerceptionRdMoudle::TimerProc(
 
         apa_ps_info->proto.set_frametimestampns(saved_parking_slots_info.frameTimeStampNs);
         apa_ps_info->proto.set_sensorid(saved_parking_slots_info.sensorId);
-
+        DFHLOG_W("pub_quad_parking_slots_s32g info, timestamp = {},seq = {}",saved_parking_slots_info.frameTimeStampNs, saved_parking_slots_info.header.seq);
+        // DFHLOG_W("pub_quad_parking_slots_s32g info, seq = {}",saved_parking_slots_info.header.seq);
         std::cout << "*********fusion_out size**********" << saved_parking_slots_info.quadParkingSlotList.size() << std::endl;
         // 一级子结构体 repeated为 数组形式
         if (saved_parking_slots_info.quadParkingSlotList.size() != 0)
@@ -581,7 +622,13 @@ void PerceptionRdMoudle::TimerProc(
         pub_apa_ps_rect_port_s32g->Send(apa_ps_info);
         DFHLOG_W("pub pub_quad_parking_slots_s32g info, ullframeid = {}",
                  apa_ps_info->proto.header().frameid());
-      }
+    }
+
+}
+
+void PerceptionRdMoudle::TimerProc(
+    hobot::dataflow::spMsgResourceProc proc,
+    const hobot::dataflow::MessageLists &msgs) {
 
       // SEND TO HVIZ
       std::vector<uchar> buffer;
