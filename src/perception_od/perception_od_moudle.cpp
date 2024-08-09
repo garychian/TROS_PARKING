@@ -49,6 +49,7 @@ namespace fanya
   {
     int save_pred_img_OD(Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front,cv::Mat rgb_mat_left,cv::Mat rgb_mat_rear,cv::Mat rgb_mat_right);
     int save_pred_img_OD_test(Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat);
+    int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front,cv::Mat rgb_mat_left,cv::Mat rgb_mat_rear,cv::Mat rgb_mat_right);
     using hobot::communication::COMM_CODE_OK;
     using hobot::communication::CommAttr;
     using hobot::communication::CompositeOption;
@@ -545,19 +546,20 @@ void PerceptionOdMoudle::MsgCenterProc(
         auto pym_buf = reinterpret_cast<char *>(yuv_proto.y_vaddr());
         auto width = yuv_proto.width();
         auto height = yuv_proto.height();
-        cv::Mat image_nv12(height * 1.5, width, CV_8UC1);
-        cv::Mat rgb_mat(height, width, CV_8UC3);
-        int32_t size;
-        size = width * height*1.5;
+        cv::Mat image_nv12(height * 1.5, width, CV_8UC1, pym_buf, yuv_proto.step());
+        cv::Mat rgb_mat;
+
         int32_t new_width = 640;
         int32_t new_height = 384;
 
-        auto yuv_addr = image_nv12.data;
-        std::memcpy(yuv_addr, pym_buf, size);
-
         cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
+        static int cnt = 0;
+        cv::imwrite("./test_image_" + std::to_string(cnt)+"_"+std::to_string(i) + ".jpg", rgb_mat);
+        cv::imwrite("./test_nv12_image_" + std::to_string(cnt)+"_"+std::to_string(i) + ".jpg", image_nv12);
         cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
         cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
+        cv::imwrite("./resized_image_" + std::to_string(cnt)+"_"+std::to_string(i) + ".jpg", resizedMat);
+        cv::imwrite("./NV12Resized_image_" + std::to_string(cnt)+"_"+std::to_string(i) + ".jpg", NV12ResizedMat);
         uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
 
         auto image = std::make_shared<ImageMsg>();
@@ -568,7 +570,7 @@ void PerceptionOdMoudle::MsgCenterProc(
         image->proto.mutable_header()->CopyFrom(od_header);
 
         if (cam_id_str == "camera_0"){
-          NV12ResizedMat_front = NV12ResizedMat.clone();
+          NV12ResizedMat_front = resizedMat.clone();
           image->proto.set_height(new_height);
           image->proto.set_width(new_width);
           image->proto.set_phyaddr(addr_value);
@@ -583,7 +585,7 @@ void PerceptionOdMoudle::MsgCenterProc(
           std::cout << "[OD] STEP " << camera_proto_msg->proto.pym_img_info().down_scale(0).step() <<std::endl;
           front_camera_publisher_->Pub(image);
         }else if (cam_id_str == "camera_1"){
-          NV12ResizedMat_rear = NV12ResizedMat.clone();
+          NV12ResizedMat_rear = resizedMat.clone();
           image->proto.set_height(new_height);
           image->proto.set_width(new_width);
           image->proto.set_phyaddr(addr_value);
@@ -599,7 +601,7 @@ void PerceptionOdMoudle::MsgCenterProc(
 
           rear_camera_publisher_->Pub(image);
         }else if (cam_id_str == "camera_2"){
-          NV12ResizedMat_left = NV12ResizedMat.clone();
+          NV12ResizedMat_left = resizedMat.clone();
           image->proto.set_height(new_height);
           image->proto.set_width(new_width);
           image->proto.set_phyaddr(addr_value);
@@ -615,7 +617,7 @@ void PerceptionOdMoudle::MsgCenterProc(
 
           left_camera_publisher_->Pub(image);
         }else if (cam_id_str == "camera_3"){
-          NV12ResizedMat_right = NV12ResizedMat.clone();
+          NV12ResizedMat_right = resizedMat.clone();
           image->proto.set_height(new_height);
           image->proto.set_width(new_width);
           image->proto.set_phyaddr(addr_value);
@@ -672,7 +674,7 @@ void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
         box.set_bottomrightx(obstacles.obstaclesraw[icnt].box.bottomRightX);
         box.set_bottomrighty(obstacles.obstaclesraw[icnt].box.bottomRightY);
         box.set_confidence(obstacles.obstaclesraw[icnt].box.confidence);
-        od_obstacleRaw.mutable_bbox()->CopyFrom(box);
+        od_obstacleRaw.mutable_box2d()->CopyFrom(box);
 
         for (int jcnt = 0; jcnt < obstacles.obstaclesraw[icnt].landmark4.size(); jcnt++){
           od::Point2f od_point2f;
@@ -734,7 +736,7 @@ void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
 
         auto fsline_msg = std::make_shared<FSLineMsg>();
         fsline_msg->proto.add_fsline()->CopyFrom(od_fsline_simple);
-        fsline_msg->SetGenTimestamp(gen_ts);
+        // fsline_msg->SetGenTimestamp(gen_ts);
         auto pub_fsline_msg_port_s32g = proc->GetOutputPort("pub_fsline_msg");
         if (!pub_fsline_msg_port_s32g) {
           DFHLOG_E("failed to get output port of {}", "pub_fsline_msg");
@@ -751,6 +753,7 @@ std::vector<uchar> buffer;
 if(!NV12ResizedMat_front.empty()&&!NV12ResizedMat_left.empty()&&!NV12ResizedMat_right.empty()&&!NV12ResizedMat_rear.empty())
 {
   save_pred_img_OD(obstacles,buffer,NV12ResizedMat_front,NV12ResizedMat_left,NV12ResizedMat_rear,NV12ResizedMat_right);
+  // save_pred_img_FSLine(fs,buffer,NV12ResizedMat_front,NV12ResizedMat_left,NV12ResizedMat_rear,NV12ResizedMat_right);
   {
       uint64_t send_start = GetTimeStamp();
       auto out = std::make_shared<WrapImageProtoMsg>();
@@ -773,21 +776,11 @@ if(!NV12ResizedMat_front.empty()&&!NV12ResizedMat_left.empty()&&!NV12ResizedMat_
 int save_pred_img_OD(Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front,cv::Mat rgb_mat_left,cv::Mat rgb_mat_rear,cv::Mat rgb_mat_right)
 {
       std::cout<<"hello in save_pred_img_OD"<<std::endl;
-      cv::Mat bgr_mat_front,
-              bgr_mat_left,
-              bgr_mat_rear,
-              bgr_mat_right;
-      cv::cvtColor(rgb_mat_front,bgr_mat_front,cv::COLOR_YUV2BGR_NV12);
-      cv::cvtColor(rgb_mat_left,bgr_mat_left,cv::COLOR_YUV2BGR_NV12);
-      cv::cvtColor(rgb_mat_rear,bgr_mat_rear,cv::COLOR_YUV2BGR_NV12);
-      cv::cvtColor(rgb_mat_right,bgr_mat_right,cv::COLOR_YUV2BGR_NV12);
-      int height = bgr_mat_left.rows;
-      int width = bgr_mat_left.cols;
-      int size = bgr_mat_left.cols * bgr_mat_left.rows;
-      cv::Mat predfront_mat = bgr_mat_front.clone(),
-              predleft_mat  = bgr_mat_left.clone(),
-              predrear_mat  = bgr_mat_rear.clone(),
-              predright_mat = bgr_mat_right.clone();
+      static int cnt = 0;
+      cv::Mat predfront_mat = rgb_mat_front.clone(),
+              predleft_mat  = rgb_mat_left.clone(),
+              predrear_mat  = rgb_mat_rear.clone(),
+              predright_mat = rgb_mat_right.clone();
       if (obstaclesOD.obstaclesraw.size()!=0){
         for(int i = 0 ;i< obstaclesOD.obstaclesraw.size();i++)
         {
@@ -838,9 +831,81 @@ int save_pred_img_OD(Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat 
       cv::hconcat(predfront_mat,predrear_mat,top_row);
       cv::hconcat(predleft_mat,predright_mat,bottom_row);
       cv::vconcat(top_row,bottom_row,combined);
+      
+      cv::imwrite("./combined_image_" + std::to_string(cnt) +".jpg",combined);
       cv::imencode(".jpg",combined,buffer);
       return 0;
   
+}
+
+int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front,cv::Mat rgb_mat_left,cv::Mat rgb_mat_rear,cv::Mat rgb_mat_right)
+{
+      std::cout<<"hello in save_pred_img_FSLine"<<std::endl;
+      
+       cv::Mat predfront_mat = rgb_mat_front.clone(),
+              predleft_mat  = rgb_mat_left.clone(),
+              predrear_mat  = rgb_mat_rear.clone(),
+              predright_mat = rgb_mat_right.clone();
+      if (fs.fsline.size()!=0){
+        for(int i = 0 ;i< fs.fsline.size();i++)
+        {
+          auto output_result = fs.fsline[i];
+          std::vector<std::vector<cv::Point>> pls_fsline;
+          if (true)
+          {
+            if (i == 0)
+            {
+              std::vector<cv::Point> fsline;
+              for (int j = 0; j < output_result.fsLinepoints.size(); j++) {
+                fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
+              }
+              pls_fsline.push_back(fsline);
+              cv::polylines(predfront_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+              
+            }
+            else if(i == 1)
+            {
+              std::vector<cv::Point> fsline;
+              for (int j = 0; j < output_result.fsLinepoints.size(); j++) {
+                fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
+              }
+              pls_fsline.push_back(fsline);
+              cv::polylines(predrear_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+              
+            }
+            else if(i == 3)
+            {
+              std::vector<cv::Point> fsline;
+              for (int j = 0; j < output_result.fsLinepoints.size(); j++) {
+                fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
+              }
+              pls_fsline.push_back(fsline);
+              cv::polylines(predleft_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+              
+            }
+            else if(i == 2)
+            {
+              std::vector<cv::Point> fsline;
+              for (int j = 0; j < output_result.fsLinepoints.size(); j++) {
+                fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
+              }
+              pls_fsline.push_back(fsline);
+              cv::polylines(predright_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+              
+            }
+          }
+          
+        }  
+      }
+      cv::Mat combined,top_row,bottom_row;
+      cv::hconcat(predfront_mat,predrear_mat,top_row);
+      cv::hconcat(predleft_mat,predright_mat,bottom_row);
+      cv::vconcat(top_row,bottom_row,combined);
+      static int cnt = 0;
+      cv::imwrite("./test_image_" + std::to_string(cnt) + ".jpg", combined);
+      cnt++;
+      cv::imencode(".jpg",combined,buffer);
+      return 0;
 }
     DATAFLOW_REGISTER_MODULE(PerceptionOdMoudle)
 
