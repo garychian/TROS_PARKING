@@ -210,13 +210,12 @@ void PerceptionRdMoudle::InitPortsAndProcs() {
       hobot::dataflow::ProcType::DF_MSG_COND_PROC,
       DF_VECTOR("sub_apa_status", "sub_pad_point", "sub_pad_vehicle_pose",
                 "sub_camera_frame_array"),
-      DF_VECTOR());
+      DF_VECTOR("pub_quad_parking_slots_s32g"));
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
       "TimerProc", PerceptionRdMoudle, TimerProc,
       hobot::dataflow::ProcType::DF_MSG_TIMER_PROC, DF_VECTOR(),
       DF_VECTOR("percept_debug","pub_apa_ps_rect", "pub_apa_ps_info", "pub_apa_pointI",
-                "pub_psd_image", "pub_psd_image_s32g","pub_apa_ps_info_s32g",
-                "pub_quad_parking_slots_s32g"));
+                "pub_psd_image", "pub_psd_image_s32g","pub_apa_ps_info_s32g"));
 }
 
 EventType g_pub_event = EventType(2);
@@ -463,11 +462,11 @@ void PerceptionRdMoudle::MsgCenterProc(
 
   auto &sub_camera_frame_array_msgs =
       msgs[proc->GetResultIndex("sub_camera_frame_array")];
-  auto gen_image_ts = GetTimeStamp(); 
   for (auto &msg : *(sub_camera_frame_array_msgs.get())) {
     if (nullptr == msg) {
       continue;
     }
+    auto gen_image_ts = msg->GetGenTimestamp(); 
     DFHLOG_I("sub_camera_frame_array msg timestamp: {}",
              msg->GetGenTimestamp());
     // process msg of sub_camera_frame_array
@@ -554,10 +553,8 @@ void PerceptionRdMoudle::MsgCenterProc(
         std::cout << "[PSD]pub Image successful! " << std::endl;
       }
       /**************************PUB******************************/
-    }
-  }
 
-  { // PUB FROM J5 TO S32G
+      { // PUB FROM J5 TO S32G
         // do something with output port pub_apa_ps_info
         // fill proto vector<int> fusion_out_rect_id;
         // static int slot_id = 0;
@@ -627,11 +624,53 @@ void PerceptionRdMoudle::MsgCenterProc(
           return;
         }
 
-        // pub_apa_ps_info_port->Send(apa_ps_info);
         pub_apa_ps_rect_port_s32g->Send(apa_ps_info);
         DFHLOG_W("pub pub_quad_parking_slots_s32g info, ullframeid = {}",
                  apa_ps_info->proto.header().frameid());
+      }
     }
+  }
+
+  
+
+    // {// Pub SegImage to S32G
+    //   auto seg_info = std::make_shared<ImageMsg>();
+
+    //   rd::Time timestamp;
+    //   timestamp.set_nanosec(seg_image.proto.header().timestampns().nanosec());
+    //   rd::Header seg_header;
+    //   seg_header.mutable_timestampns()->CopyFrom(timestamp);
+    //   seg_image.proto.mutable_header()->CopyFrom(seg_header);
+
+    //   seg_info->proto.set_height(seg_image.proto.height());
+    //   seg_info->proto.set_width(seg_image.proto.width());
+    //   seg_info->proto.set_encoding(seg_image.proto.encoding());
+    //   seg_info->proto.set_phyaddr(seg_image.proto.phyaddr());
+    //   seg_info->proto.set_viraddr(seg_image.proto.viraddr());
+    //   std::cout << "[SEG TO S32G] seg_info height:" << seg_info->proto.height() << std::endl;
+    //   std::cout << "[SEG TO S32G]] seg_info width:" << seg_info->proto.width() << std::endl;
+    //   std::cout << "[SEG TO S32G]] seg_info encoding:" << seg_info->proto.encoding() << std::endl;
+    //   std::cout << "[SEG TO S32G]] seg_info phyaddr:" << seg_info->proto.phyaddr() << std::endl;
+    //   std::cout << "[SEG TO S32G]] seg_info viraddr:" << seg_info->proto.viraddr() << std::endl;
+    //   auto data_ptr = seg_image.proto.data();
+    //   unsigned char* target_buffer = new unsigned char[seg_image.proto.data().size()];
+    //   memcpy(target_buffer, &data_ptr[0], seg_image.proto.data().size());
+    //   seg_info->proto.set_data(target_buffer, seg_image.proto.data().size());
+    //   delete[] target_buffer;
+    //   std::cout << "[SEG TO S32G]] data size:" << seg_info->proto.data().size() << std::endl;
+    //   std::cout << "[SEG TO S32G]] data phyaddr:" << (void*)&seg_info->proto.data()[0] << std::endl;
+
+    //    auto pub_seg_port_s32g = proc->GetOutputPort("pub_psd_image_s32g");
+    //     if (!pub_seg_port_s32g)
+    //     {
+    //       DFHLOG_E("pub_seg_port_s32g failed to get output port of {}", "pub_apa_ps_rect");
+    //       return;
+    //     }
+
+    //     pub_seg_port_s32g->Send(seg_info);
+    //     DFHLOG_W("pub_seg_port_s32g info, timestamp = {}", seg_info->proto.header().timestampns().nanosec());
+
+    // }
 
 }
 
