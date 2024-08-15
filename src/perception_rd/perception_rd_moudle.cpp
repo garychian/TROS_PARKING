@@ -195,13 +195,13 @@ void PerceptionRdMoudle::InitPortsAndProcs() {
   DF_MODULE_INIT_IDL_INPUT_PORT("sub_pad_vehicle_pose", loc::padVehiclePose);
   DF_MODULE_INIT_IDL_INPUT_PORT("sub_camera_frame_array",
                                 camera_frame::CameraFrameArray);
-  DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_ps_info", rd::SApaPSInfo);
-  DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_ps_rect", rd::SApaPSRect);
-  DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_pointI", rd::SApaPoint_I);
+  // DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_ps_info", rd::SApaPSInfo);
+  // DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_ps_rect", rd::SApaPSRect);
+  // DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_pointI", rd::SApaPoint_I);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_psd_image", rd::Image);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_psd_image_s32g", rd::Image);
-  DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_ps_info_s32g", rd::SApaPSInfo);
-  DF_MODULE_INIT_IDL_OUTPUT_PORT("percept_debug",ImageProto::Image);
+  // DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_ps_info_s32g", rd::SApaPSInfo);
+  DF_MODULE_INIT_IDL_OUTPUT_PORT("percept_debug_rd",ImageProto::Image);
 
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_quad_parking_slots_s32g",
                                  rd::QuadParkingSlots);
@@ -214,8 +214,7 @@ void PerceptionRdMoudle::InitPortsAndProcs() {
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
       "TimerProc", PerceptionRdMoudle, TimerProc,
       hobot::dataflow::ProcType::DF_MSG_TIMER_PROC, DF_VECTOR(),
-      DF_VECTOR("percept_debug","pub_apa_ps_rect", "pub_apa_ps_info", "pub_apa_pointI",
-                "pub_psd_image", "pub_psd_image_s32g","pub_apa_ps_info_s32g"));
+      DF_VECTOR("percept_debug_rd","pub_psd_image", "pub_psd_image_s32g"));
 }
 
 EventType g_pub_event = EventType(2);
@@ -256,7 +255,7 @@ int32_t PerceptionRdMoudle::Init() {
       auto rt = senseAD::rscl::GetCurRuntime();
       DFHLOG_I("Init Runtime");
       int argc = 1;
-      const char *test[] = {"j5_test_node", nullptr};
+      const char *test[] = {"RD_node", nullptr};
       char **argv = const_cast<char **>(test);
       rt->Init(argc, argv);
       DFHLOG_I("Init Component");
@@ -386,9 +385,9 @@ int32_t PerceptionRdMoudle::Init() {
 int32_t PerceptionRdMoudle::Start() {
   senseAD::rscl::component::ComponentConfig cfg;
   cfg.config_file_path = "./bridge.yaml";
+  cfg.timer_conf.set_name("RD");
   cfg.timer_conf.set_interval_ms(1000);
   perceptioncomp_->Initialize(cfg);
-      
   return hobot::dataflow::Module::Start();
 }
 
@@ -406,6 +405,55 @@ void PerceptionRdMoudle::Reset() { hobot::dataflow::Module::Reset(); }
 int32_t PerceptionRdMoudle::DeInit() {
   return hobot::dataflow::Module::DeInit();
 }
+
+static int __nv12CropSplit448( uint8_t* pu8DestY, uint8_t* pu8DestU, uint8_t* pu8DestV, const uint8_t* pu8Src448)
+{
+	if((!pu8DestY) || (!pu8DestU)|| (!pu8DestV)|| (!pu8Src448))
+		return -1;
+	for (int i = 112; i < 336; i++)
+	{
+		const uint8_t* pu8Src = pu8Src448+i*448+112;
+		memcpy(pu8DestY,pu8Src,224);
+		pu8DestY += 224;
+	}
+	for (int i = 448+56; i < 448+168; i++)
+	{
+		const uint8_t* pu8Src = pu8Src448+i*448+112;
+		for (int j = 0; j < 112; j++)
+		{
+			*pu8DestU++ = *pu8Src++;
+			*pu8DestV++ = *pu8Src++;
+		}
+	}
+	return 0;
+}
+
+static int __nv12Merge352( uint8_t* pu8Dest352, const uint8_t* pu8SrdY, const uint8_t* pu8SrcU, const uint8_t* pu8SrcV )
+ {
+	if((!pu8SrdY) || (!pu8SrcU)|| (!pu8SrcV)|| (!pu8Dest352))
+		return -1;
+	memcpy(pu8Dest352, pu8SrdY, 352*352);
+	pu8Dest352 += 352*352;
+	for (size_t i = 0; i < 176*176; i++)
+	{
+		*pu8Dest352++ = *pu8SrcU++;
+		*pu8Dest352++ = *pu8SrcV++;
+	}
+	return 0;
+ } 
+
+int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
+ {
+    cv::Mat image_y(224, 224, CV_8UC1);
+    cv::Mat image_u(112, 112, CV_8UC1);
+    cv::Mat image_v(112, 112, CV_8UC1);
+	__nv12CropSplit448((uint8_t*)image_y.data, (uint8_t*)image_u.data, (uint8_t*)image_v.data, pu8Src);
+	cv::resize(image_y, image_y, cv::Size(352, 352), cv::INTER_LINEAR);
+	cv::resize(image_u, image_u, cv::Size(176, 176), cv::INTER_LINEAR);
+	cv::resize(image_v, image_v, cv::Size(176, 176), cv::INTER_LINEAR);
+	__nv12Merge352(pu8Dest, (uint8_t*)image_y.data, (uint8_t*)image_u.data, (uint8_t*)image_v.data);
+    return 0;
+ }
 
 void PerceptionRdMoudle::MsgCenterProc(
     hobot::dataflow::spMsgResourceProc proc,
@@ -466,13 +514,14 @@ void PerceptionRdMoudle::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    auto gen_image_ts = msg->GetGenTimestamp(); 
-    DFHLOG_I("sub_camera_frame_array msg timestamp: {}",
-             msg->GetGenTimestamp());
+    
+    // DFHLOG_I("sub_camera_frame_array msg timestamp: {}",
+    //          msg->GetGenTimestamp());
     // process msg of sub_camera_frame_array
     std::shared_ptr<CameraFrameArrayProtoMsg> camera_array_msg = 
             std::dynamic_pointer_cast<CameraFrameArrayProtoMsg>(msg);
-
+    auto gen_image_ts = camera_array_msg->proto.gdc_vio_ts(); 
+    DFHLOG_I("[PSD]sub_camera_frame_array msg timestamp: {}", gen_image_ts);
     if (!camera_array_msg || camera_array_msg->proto.gdc_frame_size() == 0)
     {
       DFHLOG_E("Empty ipm frame, return.");
@@ -496,14 +545,20 @@ void PerceptionRdMoudle::MsgCenterProc(
       int32_t width = addr_info.width;
       int32_t height = addr_info.height;
       int32_t mem_size = width * height;
-
-      cv::Mat image_nv12(height * 1.5, width, CV_8UC1);
-      cv::Mat rgb_mat(height, width, CV_8UC3);
-      int32_t size;
-      size = width * height;
-
+      cv::Mat image_nv12(height*1.5, width, CV_8UC1, addr_info.addr[0]);
+      
       int32_t new_width = 352;
       int32_t new_height = 352;
+      
+      uint8_t pu8Dest[ static_cast<int32_t>(new_height * new_width * 1.5) ]={0};
+      nv12CropResize(pu8Dest, (uint8_t*)(addr_info.addr[0]));
+      FILE *nv12 = fopen("nv12.bin","wb");
+      fwrite(pu8Dest, new_height * new_width * 1.5, 1, nv12);
+      fclose(nv12);
+      
+      cv::Mat rgb_mat;
+      int32_t size;
+      size = width * height;
 
       auto y_addr = image_nv12.data;
       auto u_addr = y_addr + size;
@@ -516,12 +571,20 @@ void PerceptionRdMoudle::MsgCenterProc(
         *u_addr++ = *srcBuf1++;
         *v_addr++ = *srcBuf1++;
       }
-
-      cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
-      cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
-      cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
-
-      uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
+      static int cnt = 0;
+      
+      cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGRA_I420);
+      cv::imwrite("./rgb_mat_image_" + std::to_string(cnt)+"_" + ".jpg", rgb_mat);
+      cv::imwrite("./image_nv12_image_" + std::to_string(cnt)+"_" + ".jpg", image_nv12);
+      cv::resize(rgb_mat, resizedMat, cv::Size(704, 704));
+      cv::Rect roi(176,176,352,352);
+      cropedMat = resizedMat(roi);
+      cv::imwrite("./rgb_mat_resized_image_" + std::to_string(cnt)+"_"+ ".jpg", resizedMat);
+      cv::imwrite("./cropedMat_resized_image_" + std::to_string(cnt)+"_"+ ".jpg", cropedMat);
+      cv::cvtColor(cropedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
+      cv::imwrite("./NV12ResizedMat_image_" + std::to_string(cnt)+"_"+ ".jpg", NV12ResizedMat);
+      // uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
+      uint64_t addr_value = reinterpret_cast<uint64_t>(pu8Dest);
       /**************************PUB******************************/
       auto image = std::make_shared<ImageMsg>();
       
@@ -698,7 +761,7 @@ void PerceptionRdMoudle::TimerProc(
           out->SetData(std::make_shared<hobot::message::DataRef>(buffer.data(), buffer.size()));
 
           DFHLOG_W("percept_debug size: {}, ts = {}.", buffer.size(), GetTimeStamp());
-          auto pub_image_port = proc->GetOutputPort("percept_debug");
+          auto pub_image_port = proc->GetOutputPort("percept_debug_rd");
           pub_image_port->Send(out);
           // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
           //  uint64_t send_end = GetTimeStamp();
@@ -731,6 +794,8 @@ void PerceptionRdMoudle::TimerProc(
         }
       }
       cv::imencode(".jpg", final_mat, buffer);
+      static int cnt = 0;
+      cv::imwrite("./final_image_" + std::to_string(cnt)+"_" + ".jpg", final_mat);
       //  cv::imwrite(target_image_file, final_mat);
       return 0;
 

@@ -76,6 +76,7 @@ class PerceptionRdMoudle:
  public:
   cv::Mat NV12ResizedMat;
   cv::Mat resizedMat;
+  cv::Mat cropedMat;
 };
 
 }  // namespace parking
