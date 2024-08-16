@@ -226,11 +226,11 @@ namespace fanya
       DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
           "MsgCenterProc", PerceptionOdMoudle, MsgCenterProc,
           hobot::dataflow::ProcType::DF_MSG_COND_PROC,
-          DF_VECTOR("sub_apa_status", "sub_camera_frame_array"), DF_VECTOR());
+          DF_VECTOR("sub_apa_status", "sub_camera_frame_array"), DF_VECTOR("pub_obstacles","pub_fsline_msg"));
       DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
           "TimerProc", PerceptionOdMoudle, TimerProc,
           hobot::dataflow::ProcType::DF_MSG_TIMER_PROC, DF_VECTOR(),
-          DF_VECTOR("pub_obstacles", "pub_fsline_msg", "percept_debug"));
+          DF_VECTOR( "percept_debug"));
     }
 
     EventType g_pub_event = EventType(2);
@@ -651,12 +651,8 @@ namespace fanya
           }
         }
       }
-    }
 
-    void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
-                                       const hobot::dataflow::MessageLists &msgs)
-    {
-      // pub ObstaclesMsg
+              // pub ObstaclesMsg
               {
                 // fill proto
                 od::Time od_time;
@@ -665,7 +661,11 @@ namespace fanya
                 od_header.set_seq(obstacles.header.seq);
                 od_header.set_frameid(obstacles.header.frame_id);
                 od_header.mutable_timestampns()->CopyFrom(od_time);
-
+                DFHLOG_W("pub_obstacles_s32g info, obstacles header, timestamp = {}, seq = {}",
+                             obstacles.header.timestamp,obstacles.header.seq);
+                // create msg
+                auto obstacles_msg = std::make_shared<ObstaclesMsg>();
+                obstacles_msg->proto.mutable_header()->CopyFrom(od_header);
                 if (obstacles.obstaclesraw.size() != 0)
                 {
                   for (int icnt = 0; icnt < obstacles.obstaclesraw.size(); icnt++)
@@ -697,25 +697,20 @@ namespace fanya
                     {
                       od_obstacleRaw.add_landmark4scores(obstacles.obstaclesraw[icnt].landmark4Scores[jcnt]);
                     }
-                    // create msg
-                    auto obstacles_msg = std::make_shared<ObstaclesMsg>();
-                    obstacles_msg->proto.mutable_header()->CopyFrom(od_header);
+                    
                     obstacles_msg->proto.add_rawobjects()->CopyFrom(od_obstacleRaw);
 
-                    auto pub_obstacles_s32g = proc->GetOutputPort("pub_obstacles");
-                    if (!pub_obstacles_s32g)
-                    {
-                      DFHLOG_E("pub_obstacles_s32g failed to get output port of {}",
-                               "pub_obstacles");
-                      return;
-                    }
-
-                    // send to s32g
-                    pub_obstacles_s32g->Send(obstacles_msg);
-                    auto obstacles_proto = obstacles_msg->proto;
-                    DFHLOG_W("pub_obstacles_s32g info, obstacles header, timestamp = {}, seq = {}",
-                             obstacles.header.timestamp,obstacles.header.seq);
+                   
                   }
+                  auto pub_obstacles_s32g = proc->GetOutputPort("pub_obstacles");
+                  if (!pub_obstacles_s32g)
+                  {
+                    DFHLOG_E("pub_obstacles_s32g failed to get output port of {}",
+                               "pub_obstacles");
+                    return;
+                  }
+                  // send to s32g
+                  pub_obstacles_s32g->Send(obstacles_msg);
                 }
               }
 
@@ -730,6 +725,10 @@ namespace fanya
                   od_header.set_seq(fs.fsline[icnt].header.seq);
                   od_header.set_frameid(fs.fsline[icnt].header.frame_id);
                   od_header.mutable_timestampns()->CopyFrom(od_time);
+                  DFHLOG_W("Pub od_fsline_msg,obstacles header, timestamp = {}, seq = {}",
+                             fs.fsline[icnt].header.timestamp,fs.fsline[icnt].header.seq);
+
+                  auto fsline_msg = std::make_shared<FSLineMsg>();
                   for (int jcnt = 0; jcnt < fs.fsline[icnt].fsLinepoints.size(); jcnt++)
                   {
                     od::Point2f fs_point2f;
@@ -745,21 +744,28 @@ namespace fanya
                     od_fsline_simple.set_frametimestampns(123);
                     od_fsline_simple.add_fslinepoints()->CopyFrom(fsline_point);
 
-                    auto fsline_msg = std::make_shared<FSLineMsg>();
+                  
                     fsline_msg->proto.add_fsline()->CopyFrom(od_fsline_simple);
-                    // fsline_msg->SetGenTimestamp(gen_ts);
-                    auto pub_fsline_msg_port_s32g = proc->GetOutputPort("pub_fsline_msg");
-                    if (!pub_fsline_msg_port_s32g)
-                    {
-                      DFHLOG_E("failed to get output port of {}", "pub_fsline_msg");
-                      return;
-                    }
-                    pub_fsline_msg_port_s32g->Send(fsline_msg);
-                    DFHLOG_W("Pub od_fsline_msg,obstacles header, timestamp = {}, seq = {}",
-                             fs.fsline[icnt].header.timestamp,fs.fsline[icnt].header.seq);
                   }
+                  // fsline_msg->SetGenTimestamp(gen_ts);
+                  auto pub_fsline_msg_port_s32g = proc->GetOutputPort("pub_fsline_msg");
+                  if (!pub_fsline_msg_port_s32g)
+                  {
+                    DFHLOG_E("failed to get output port of {}", "pub_fsline_msg");
+                    return;
+                  }
+                  pub_fsline_msg_port_s32g->Send(fsline_msg);
                 }
               }
+      
+    }
+
+    void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
+                                       const hobot::dataflow::MessageLists &msgs)
+    {
+     
+
+             
 
       std::vector<uchar> buffer;
       if (!NV12ResizedMat_front.empty() && !NV12ResizedMat_left.empty() && !NV12ResizedMat_right.empty() && !NV12ResizedMat_rear.empty())
