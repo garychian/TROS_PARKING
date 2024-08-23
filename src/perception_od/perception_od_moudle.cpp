@@ -47,8 +47,7 @@ namespace fanya
 {
   namespace parking
   {
-    int save_pred_img_OD(Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right);
-    int save_pred_img_OD_test(Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat);
+    int save_pred_img_OD(FSLine fs,Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right);
     int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right);
     using hobot::communication::COMM_CODE_OK;
     using hobot::communication::CommAttr;
@@ -222,7 +221,7 @@ namespace fanya
       //                               camera_frame::CameraFrameArray);
       DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_obstacles", od::Obstacles);
       DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_fsline_msg", od::FSLine);
-      DF_MODULE_INIT_IDL_OUTPUT_PORT("percept_debug", ImageProto::Image);
+      DF_MODULE_INIT_IDL_OUTPUT_PORT("percept_debug_od", ImageProto::Image);
       DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
           "MsgCenterProc", PerceptionOdMoudle, MsgCenterProc,
           hobot::dataflow::ProcType::DF_MSG_COND_PROC,
@@ -230,7 +229,7 @@ namespace fanya
       DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
           "TimerProc", PerceptionOdMoudle, TimerProc,
           hobot::dataflow::ProcType::DF_MSG_TIMER_PROC, DF_VECTOR(),
-          DF_VECTOR( "percept_debug"));
+          DF_VECTOR( "percept_debug_od"));
     }
 
     EventType g_pub_event = EventType(2);
@@ -561,12 +560,13 @@ namespace fanya
 
               cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
               static int cnt = 0;
-              cv::imwrite("./test_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", rgb_mat);
-              cv::imwrite("./test_nv12_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", image_nv12);
+              // cv::imwrite("./test_bgr_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", rgb_mat);
+              // cnt++;
+              // cv::imwrite("./test_nv12_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", image_nv12);
               cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
               cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
-              cv::imwrite("./resized_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", resizedMat);
-              cv::imwrite("./NV12Resized_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", NV12ResizedMat);
+              // cv::imwrite("./resized_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", resizedMat);
+              // cv::imwrite("./NV12Resized_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", NV12ResizedMat);
               uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
 
               auto image = std::make_shared<ImageMsg>();
@@ -683,6 +683,7 @@ namespace fanya
                     box.set_bottomrighty(obstacles.obstaclesraw[icnt].box.bottomRightY);
                     box.set_confidence(obstacles.obstaclesraw[icnt].box.confidence);
                     od_obstacleRaw.mutable_box2d()->CopyFrom(box);
+                    std::cout<<"[OD] Before pub to S32g box2d tx: "<<obstacles.obstaclesraw[icnt].box.topLeftX<<", ty: "<<obstacles.obstaclesraw[icnt].box.topLeftY<<", br: "<<obstacles.obstaclesraw[icnt].box.bottomRightX<<", by: "<<obstacles.obstaclesraw[icnt].box.bottomRightY<<std::endl;
 
                     for (int jcnt = 0; jcnt < obstacles.obstaclesraw[icnt].landmark4.size(); jcnt++)
                     {
@@ -763,14 +764,10 @@ namespace fanya
     void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
                                        const hobot::dataflow::MessageLists &msgs)
     {
-     
-
-             
-
       std::vector<uchar> buffer;
       if (!NV12ResizedMat_front.empty() && !NV12ResizedMat_left.empty() && !NV12ResizedMat_right.empty() && !NV12ResizedMat_rear.empty())
       {
-        save_pred_img_OD(obstacles, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
+        save_pred_img_OD(fs, obstacles, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
         // save_pred_img_FSLine(fs,buffer,NV12ResizedMat_front,NV12ResizedMat_left,NV12ResizedMat_rear,NV12ResizedMat_right);
         {
           uint64_t send_start = GetTimeStamp();
@@ -783,14 +780,14 @@ namespace fanya
           out->proto.set_format(2);
           out->SetData(std::make_shared<hobot::message::DataRef>(buffer.data(), buffer.size()));
 
-          DFHLOG_W("percept_debug size: {}, ts = {}.", buffer.size(), GetTimeStamp());
-          auto pub_image_port = proc->GetOutputPort("percept_debug");
+          DFHLOG_W("percept_debug_od size: {}, ts = {}.", buffer.size(), GetTimeStamp());
+          auto pub_image_port = proc->GetOutputPort("percept_debug_od");
           pub_image_port->Send(out);
         }
       }
     }
 
-    int save_pred_img_OD(Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
+    int save_pred_img_OD(FSLine fs,Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
     {
       std::cout << "hello in save_pred_img_OD" << std::endl;
       static int cnt = 0;
@@ -844,12 +841,65 @@ namespace fanya
           }
         }
       }
+      if (fs.fsline.size()!=0){
+        for(int i = 0 ;i< fs.fsline.size();i++)
+        {
+          auto output_result_FS = fs.fsline[i];
+          std::vector<std::vector<cv::Point>> pls_fsline;
+          if (true)
+          {
+            if (i == 0)
+            {
+              std::vector<cv::Point> fsline;
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++) {
+                fsline.push_back(cv::Point(output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y));
+              }
+              pls_fsline.push_back(fsline);
+              cv::polylines(predfront_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+              
+            }
+            else if(i == 1)
+            {
+              std::vector<cv::Point> fsline;
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++) {
+                fsline.push_back(cv::Point(output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y));
+              }
+              pls_fsline.push_back(fsline);
+              cv::polylines(predrear_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+              
+            }
+            else if(i == 3)
+            {
+              std::vector<cv::Point> fsline;
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++) {
+                fsline.push_back(cv::Point(output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y));
+              }
+              pls_fsline.push_back(fsline);
+              cv::polylines(predleft_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+              
+            }
+            else if(i == 2)
+            {
+              std::vector<cv::Point> fsline;
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++) {
+                fsline.push_back(cv::Point(output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y));
+              }
+              pls_fsline.push_back(fsline);
+              cv::polylines(predright_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+              
+            }
+          }
+          
+        }  
+      }
+
       cv::Mat combined, top_row, bottom_row;
       cv::hconcat(predfront_mat, predrear_mat, top_row);
       cv::hconcat(predleft_mat, predright_mat, bottom_row);
       cv::vconcat(top_row, bottom_row, combined);
 
-      cv::imwrite("./combined_image_" + std::to_string(cnt) + ".jpg", combined);
+      // cv::imwrite("./combined_image_" + std::to_string(cnt) + ".jpg", combined);
+      // cnt++;
       cv::imencode(".jpg", combined, buffer);
       return 0;
     }
@@ -917,9 +967,9 @@ namespace fanya
       cv::hconcat(predfront_mat, predrear_mat, top_row);
       cv::hconcat(predleft_mat, predright_mat, bottom_row);
       cv::vconcat(top_row, bottom_row, combined);
-      static int cnt = 0;
-      cv::imwrite("./test_image_" + std::to_string(cnt) + ".jpg", combined);
-      cnt++;
+      // static int cnt = 0;
+      // cv::imwrite("./test_image_" + std::to_string(cnt) + ".jpg", combined);
+      // cnt++;
       cv::imencode(".jpg", combined, buffer);
       return 0;
     }

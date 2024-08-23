@@ -377,7 +377,27 @@ int32_t PerceptionRdMoudle::Init() {
         std::cout << "[PSD]hb_mem_module_open failed" << std::endl;
         return 1;
       }
-
+      
+      // 假设我们有一个简单的映射
+      // 在实际使用中，你需要根据你的需求填充这个字典
+      colorMap[cv::Vec3b(0,0,0)] = cv::Vec3b(0, 0, 0);       // 黑色
+      colorMap[cv::Vec3b(1,1,0)] = cv::Vec3b(255, 0, 0);     // 红色
+      colorMap[cv::Vec3b(1,2,0)] = cv::Vec3b(0, 255, 0);     // 绿色
+      colorMap[cv::Vec3b(2,1,0)] = cv::Vec3b(0, 0, 255);     // 蓝色
+      colorMap[cv::Vec3b(3,1,0)] = cv::Vec3b(72, 61, 139);     // 蓝色
+      colorMap[cv::Vec3b(4,1,0)] = cv::Vec3b(147, 112, 219);     // 蓝色
+      colorMap[cv::Vec3b(5,1,0)] = cv::Vec3b(148, 0, 211);     // 蓝色
+      colorMap[cv::Vec3b(6,1,0)] = cv::Vec3b(238, 130, 238);     // 蓝色
+      colorMap[cv::Vec3b(7,1,0)] = cv::Vec3b(216, 191, 216);     // 蓝色
+      colorMap[cv::Vec3b(9,1,0)] = cv::Vec3b(255, 192, 203);     // 蓝色
+      colorMap[cv::Vec3b(8,1,0)] = cv::Vec3b(72, 209, 204);     // 蓝色
+      colorMap[cv::Vec3b(8,2,0)] = cv::Vec3b(30, 144, 255);     // 蓝色
+      colorMap[cv::Vec3b(8,3,0)] = cv::Vec3b(60, 179, 113);     // 蓝色 
+      colorMap[cv::Vec3b(8,4,0)] = cv::Vec3b(127, 255, 0);     // 蓝色
+      colorMap[cv::Vec3b(8,5,0)] = cv::Vec3b(128, 128, 0);     // 蓝色
+      colorMap[cv::Vec3b(8,6,0)] = cv::Vec3b(255, 165, 0);     // 蓝色
+      colorMap[cv::Vec3b(8,7,0)] = cv::Vec3b(255, 69, 0);     // 蓝色
+      colorMap[cv::Vec3b(8,8,0)] = cv::Vec3b(188, 143, 143);     // 蓝色
       /************************PUB FROM J5***************************/
   return 0; 
 }
@@ -444,9 +464,9 @@ static int __nv12Merge352( uint8_t* pu8Dest352, const uint8_t* pu8SrdY, const ui
 
 int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
  {
-    cv::Mat image_y(224, 224, CV_8UC1);
-    cv::Mat image_u(112, 112, CV_8UC1);
-    cv::Mat image_v(112, 112, CV_8UC1);
+    cv::Mat image_y(298, 298, CV_8UC1);
+    cv::Mat image_u(149, 149, CV_8UC1);
+    cv::Mat image_v(149, 149, CV_8UC1);
 	__nv12CropSplit448((uint8_t*)image_y.data, (uint8_t*)image_u.data, (uint8_t*)image_v.data, pu8Src);
 	cv::resize(image_y, image_y, cv::Size(352, 352), cv::INTER_LINEAR);
 	cv::resize(image_u, image_u, cv::Size(176, 176), cv::INTER_LINEAR);
@@ -552,37 +572,37 @@ void PerceptionRdMoudle::MsgCenterProc(
       
       uint8_t pu8Dest[ static_cast<int32_t>(new_height * new_width * 1.5) ]={0};
       nv12CropResize(pu8Dest, (uint8_t*)(addr_info.addr[0]));
-      FILE *nv12 = fopen("nv12.bin","wb");
-      fwrite(pu8Dest, new_height * new_width * 1.5, 1, nv12);
-      fclose(nv12);
+      // FILE *nv12 = fopen("nv12.bin","wb");
+      // fwrite(pu8Dest, new_height * new_width * 1.5, 1, nv12);
+      // fclose(nv12);
       
-      cv::Mat rgb_mat;
-      int32_t size;
-      size = width * height;
+      // cv::Mat rgb_mat;
+      // int32_t size;
+      // size = width * height;
 
-      auto y_addr = image_nv12.data;
-      auto u_addr = y_addr + size;
-      auto v_addr = u_addr + size / 4;
-      auto srcBuf = addr_info.addr[0];
-      auto srcBuf1 = addr_info.addr[1];
-      std::memcpy(y_addr, srcBuf, size);
-      for (int i = 0; i < size / 4; ++i)
-      {
-        *u_addr++ = *srcBuf1++;
-        *v_addr++ = *srcBuf1++;
-      }
-      static int cnt = 0;
+      // auto y_addr = image_nv12.data;
+      // auto u_addr = y_addr + size;
+      // auto v_addr = u_addr + size / 4;
+      // auto srcBuf = addr_info.addr[0];
+      // auto srcBuf1 = addr_info.addr[1];
+      // std::memcpy(y_addr, srcBuf, size);
+      // for (int i = 0; i < size / 4; ++i)
+      // {
+      //   *u_addr++ = *srcBuf1++;
+      //   *v_addr++ = *srcBuf1++;
+      // }
+      // static int cnt = 0;
       
-      cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGRA_I420);
-      cv::imwrite("./rgb_mat_image_" + std::to_string(cnt)+"_" + ".jpg", rgb_mat);
-      cv::imwrite("./image_nv12_image_" + std::to_string(cnt)+"_" + ".jpg", image_nv12);
-      cv::resize(rgb_mat, resizedMat, cv::Size(704, 704));
-      cv::Rect roi(176,176,352,352);
-      cropedMat = resizedMat(roi);
-      cv::imwrite("./rgb_mat_resized_image_" + std::to_string(cnt)+"_"+ ".jpg", resizedMat);
-      cv::imwrite("./cropedMat_resized_image_" + std::to_string(cnt)+"_"+ ".jpg", cropedMat);
-      cv::cvtColor(cropedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
-      cv::imwrite("./NV12ResizedMat_image_" + std::to_string(cnt)+"_"+ ".jpg", NV12ResizedMat);
+      // cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGRA_I420);
+      // cv::imwrite("./rgb_mat_image_" + std::to_string(cnt)+"_" + ".jpg", rgb_mat);
+      // cv::imwrite("./image_nv12_image_" + std::to_string(cnt)+"_" + ".jpg", image_nv12);
+      // cv::resize(rgb_mat, resizedMat, cv::Size(704, 704));
+      // cv::Rect roi(176,176,352,352);
+      // cropedMat = resizedMat(roi);
+      // cv::imwrite("./rgb_mat_resized_image_" + std::to_string(cnt)+"_"+ ".jpg", resizedMat);
+      // cv::imwrite("./cropedMat_resized_image_" + std::to_string(cnt)+"_"+ ".jpg", cropedMat);
+      // cv::cvtColor(cropedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
+      // cv::imwrite("./NV12ResizedMat_image_" + std::to_string(cnt)+"_"+ ".jpg", NV12ResizedMat);
       // uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
       uint64_t addr_value = reinterpret_cast<uint64_t>(pu8Dest);
       /**************************PUB******************************/
@@ -760,8 +780,44 @@ void PerceptionRdMoudle::TimerProc(
           out->proto.set_format(2);
           out->SetData(std::make_shared<hobot::message::DataRef>(buffer.data(), buffer.size()));
 
-          DFHLOG_W("percept_debug size: {}, ts = {}.", buffer.size(), GetTimeStamp());
+          // DFHLOG_W("percept_debug size: {}, ts = {}.", buffer.size(), GetTimeStamp());
           auto pub_image_port = proc->GetOutputPort("percept_debug_rd");
+          pub_image_port->Send(out);
+          // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
+          //  uint64_t send_end = GetTimeStamp();
+          //  //std::cout << "send time:" << send_end - send_start << "ms" << std::endl;
+        }
+      }
+       if ( seg_image.proto.has_data())
+      {
+        std::vector<uchar> segbuffer;
+        cv::Mat seg_mat(seg_image.proto.height(), seg_image.proto.width(), CV_8UC3,  (void *)&seg_image.proto.data()[0]);
+        // static int count = 0;
+        // cv::imwrite("./seg_image_C3" + std::to_string(count) + ".jpg", seg_mat.clone());
+        // count++;
+        for(int i = 0; i < seg_mat.rows; i++){
+          for(int j = 0; j < seg_mat.cols; j++){
+            if(colorMap.find(seg_mat.at<cv::Vec3b>(i,j))!= colorMap.end()){
+              seg_mat.at<cv::Vec3b>(i,j) = colorMap[seg_mat.at<cv::Vec3b>(i,j)];
+            }
+          }
+        }
+        cv::imencode(".jpg", seg_mat, segbuffer);
+        {
+
+          // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
+          uint64_t send_start = GetTimeStamp();
+          auto out = std::make_shared<WrapImageProtoMsg>();
+          // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
+          out->proto.set_width(600);
+          out->proto.set_height(600);
+          // out->proto.set_channel(msg->proto.channel());
+          out->proto.set_send_mode(0);
+          out->proto.set_format(2);
+          out->SetData(std::make_shared<hobot::message::DataRef>(segbuffer.data(), segbuffer.size()));
+
+          // DFHLOG_W("[perception_rd][TimerProc] pub to hviz, percept_debug_roadmark size: {}, ts = {}.", segbuffer.size(), GetTimeStamp());
+          auto pub_image_port = proc->GetOutputPort("percept_debug_roadmark");
           pub_image_port->Send(out);
           // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
           //  uint64_t send_end = GetTimeStamp();
@@ -770,11 +826,11 @@ void PerceptionRdMoudle::TimerProc(
       }
     }
 
-    int save_pred_img(QuadParkingSlots parking_slots, std::vector<uchar> &buffer, cv::Mat rgb_mat)
+    int save_pred_img(QuadParkingSlots parking_slots, std::vector<uchar> &buffer, cv::Mat bgr_mat)
     {
 
-      cv::Mat bgr_mat;
-      cv::cvtColor(rgb_mat, bgr_mat, cv::COLOR_YUV2BGR_NV12);
+      // cv::Mat bgr_mat;
+      // cv::cvtColor(rgb_mat, bgr_mat, cv::COLOR_YUV2BGR_NV12);
       int height = bgr_mat.rows;
       int width = bgr_mat.cols;
       int size = bgr_mat.cols * bgr_mat.rows;
@@ -788,14 +844,17 @@ void PerceptionRdMoudle::TimerProc(
         {
           cv::circle(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
           cv::circle(final_mat, cv::Point(output_result.tr.x, output_result.tr.y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
+          cv::circle(final_mat, cv::Point(output_result.bl.x, output_result.bl.y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
+          cv::circle(final_mat, cv::Point(output_result.br.x, output_result.br.y), 4, cv::Scalar(0, 0, 255), -1, 8, 0);
           cv::line(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), cv::Point(output_result.tr.x, output_result.tr.y), cv::Scalar(0, 255, 0), 1);
           cv::line(final_mat, cv::Point(output_result.tr.x, output_result.tr.y), cv::Point(output_result.br.x, output_result.br.y), cv::Scalar(0, 255, 0), 1);
           cv::line(final_mat, cv::Point(output_result.tl.x, output_result.tl.y), cv::Point(output_result.bl.x, output_result.bl.y), cv::Scalar(0, 0, 255), 1);
+          cv::line(final_mat, cv::Point(output_result.bl.x, output_result.bl.y), cv::Point(output_result.br.x, output_result.br.y), cv::Scalar(0, 255, 0), 1);
         }
       }
       cv::imencode(".jpg", final_mat, buffer);
       static int cnt = 0;
-      cv::imwrite("./final_image_" + std::to_string(cnt)+"_" + ".jpg", final_mat);
+      // cv::imwrite("./final_image_" + std::to_string(cnt)+"_" + ".jpg", final_mat);
       //  cv::imwrite(target_image_file, final_mat);
       return 0;
 

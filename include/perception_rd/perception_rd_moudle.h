@@ -77,6 +77,12 @@ class PerceptionRdMoudle:
   cv::Mat NV12ResizedMat;
   cv::Mat resizedMat;
   cv::Mat cropedMat;
+  struct Vec3Comparator {
+    bool operator()(const cv::Vec<unsigned char, 3>& lhs, const cv::Vec<unsigned char, 3>& rhs) const {
+        return std::tie(lhs[0], lhs[1], lhs[2]) < std::tie(rhs[0], rhs[1], rhs[2]);
+    }
+  };
+  std::map<cv::Vec3b, cv::Vec3b,Vec3Comparator> colorMap;
 };
 
 }  // namespace parking

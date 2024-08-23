@@ -4,6 +4,7 @@ set(HOBOT_BOLE_PROTOCOL_LIB hobot-bole-protocol)
 set(FANYA_PROTO_LIB fanya_protocol)
 set(COMMON_LIB dataflow communication time hlog schedulegroup fmt vehicleio)
 
+add_definitions("-Wall -g")
 
 set(TROS_MESSAGE_DIR ${PROJECT_BINARY_DIR}/trosgen)
 file(GLOB_RECURSE PROTO_FILES ${PROJECT_SOURCE_DIR}/proto/*.boleidl)
