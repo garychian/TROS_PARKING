@@ -724,45 +724,88 @@ namespace fanya
               // pub FSLineMsg
               {
                 // fill proto
+                auto fsline_msg = std::make_shared<FSLineMsg>();
+                od::Time od_time;
+                od::Header od_header;
+                od::FSLinesimple od_fsline_simple_front;
+                od::FSLinesimple od_fsline_simple_left;
+                od::FSLinesimple od_fsline_simple_right;
+                od::FSLinesimple od_fsline_simple_rear;
+                DFHLOG_W("Pub od_fsline_msg size = {}", fs.fsline.size());
                 for (int icnt = 0; icnt < fs.fsline.size(); icnt++)
                 {
-                  od::Time od_time;
                   od_time.set_nanosec(fs.fsline[icnt].header.timestamp);
-                  od::Header od_header;
                   od_header.set_seq(fs.fsline[icnt].header.seq);
                   od_header.set_frameid(fs.fsline[icnt].header.frame_id);
                   od_header.mutable_timestampns()->CopyFrom(od_time);
                   DFHLOG_W("Pub od_fsline_msg,obstacles header, timestamp = {}, seq = {}",
                              fs.fsline[icnt].header.timestamp,fs.fsline[icnt].header.seq);
+                  if (icnt == 0){
+                    for (int jcnt = 0; jcnt < fs.fsline[icnt].fsLinepoints.size(); jcnt++)
+                    {
+                      od::Point2f fs_point2f;
+                      fs_point2f.set_x(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.x);
+                      fs_point2f.set_y(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.y);
 
-                  auto fsline_msg = std::make_shared<FSLineMsg>();
-                  for (int jcnt = 0; jcnt < fs.fsline[icnt].fsLinepoints.size(); jcnt++)
-                  {
-                    od::Point2f fs_point2f;
-                    fs_point2f.set_x(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.x);
-                    fs_point2f.set_y(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.y);
+                      od::FSLinePoint fsline_point;
+                      fsline_point.mutable_coordinate()->CopyFrom(fs_point2f);
+                      fsline_point.set_pointlabel(od::SpaceLabel::vehicle);
+                      od_fsline_simple_front.add_fslinepoints()->CopyFrom(fsline_point);
+                    }
+                    od_fsline_simple_front.mutable_header()->CopyFrom(od_header);
+                    fsline_msg->proto.add_fsline()->CopyFrom(od_fsline_simple_front);
+                  }else if(icnt == 1){
+                    for (int jcnt = 0; jcnt < fs.fsline[icnt].fsLinepoints.size(); jcnt++)
+                    {
+                      od::Point2f fs_point2f;
+                      fs_point2f.set_x(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.x);
+                      fs_point2f.set_y(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.y);
 
-                    od::FSLinePoint fsline_point;
-                    fsline_point.mutable_coordinate()->CopyFrom(fs_point2f);
-                    fsline_point.set_pointlabel(od::SpaceLabel::vehicle);
+                      od::FSLinePoint fsline_point;
+                      fsline_point.mutable_coordinate()->CopyFrom(fs_point2f);
+                      fsline_point.set_pointlabel(od::SpaceLabel::vehicle);
+                      od_fsline_simple_left.add_fslinepoints()->CopyFrom(fsline_point);
+                    }
+                    od_fsline_simple_left.mutable_header()->CopyFrom(od_header);
+                    fsline_msg->proto.add_fsline()->CopyFrom(od_fsline_simple_left);
+                  }else if (icnt == 2){
+                    for (int jcnt = 0; jcnt < fs.fsline[icnt].fsLinepoints.size(); jcnt++)
+                    {
+                      od::Point2f fs_point2f;
+                      fs_point2f.set_x(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.x);
+                      fs_point2f.set_y(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.y);
 
-                    od::FSLinesimple od_fsline_simple;
-                    od_fsline_simple.mutable_header()->CopyFrom(od_header);
-                    od_fsline_simple.set_frametimestampns(123);
-                    od_fsline_simple.add_fslinepoints()->CopyFrom(fsline_point);
+                      od::FSLinePoint fsline_point;
+                      fsline_point.mutable_coordinate()->CopyFrom(fs_point2f);
+                      fsline_point.set_pointlabel(od::SpaceLabel::vehicle);
+                      od_fsline_simple_right.add_fslinepoints()->CopyFrom(fsline_point);
+                    }
+                    od_fsline_simple_right.mutable_header()->CopyFrom(od_header);
+                    fsline_msg->proto.add_fsline()->CopyFrom(od_fsline_simple_right);
+                  }else if (icnt == 3){
+                    for (int jcnt = 0; jcnt < fs.fsline[icnt].fsLinepoints.size(); jcnt++)
+                    {
+                      od::Point2f fs_point2f;
+                      fs_point2f.set_x(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.x);
+                      fs_point2f.set_y(fs.fsline[icnt].fsLinepoints[jcnt].coordinate.y);
 
-                  
-                    fsline_msg->proto.add_fsline()->CopyFrom(od_fsline_simple);
+                      od::FSLinePoint fsline_point;
+                      fsline_point.mutable_coordinate()->CopyFrom(fs_point2f);
+                      fsline_point.set_pointlabel(od::SpaceLabel::vehicle);
+                      od_fsline_simple_rear.add_fslinepoints()->CopyFrom(fsline_point);
+                    }
+                    od_fsline_simple_rear.mutable_header()->CopyFrom(od_header);
+                    fsline_msg->proto.add_fsline()->CopyFrom(od_fsline_simple_rear);
                   }
-                  // fsline_msg->SetGenTimestamp(gen_ts);
-                  auto pub_fsline_msg_port_s32g = proc->GetOutputPort("pub_fsline_msg");
-                  if (!pub_fsline_msg_port_s32g)
-                  {
-                    DFHLOG_E("failed to get output port of {}", "pub_fsline_msg");
-                    return;
-                  }
-                  pub_fsline_msg_port_s32g->Send(fsline_msg);
                 }
+                DFHLOG_W("after set fsline msg size ={}",fsline_msg->proto.fsline_size());
+                auto pub_fsline_msg_port_s32g = proc->GetOutputPort("pub_fsline_msg");
+                if (!pub_fsline_msg_port_s32g)
+                {
+                  DFHLOG_E("failed to get output port of {}", "pub_fsline_msg");
+                  return;
+                }
+                pub_fsline_msg_port_s32g->Send(fsline_msg);
               }
       
     }
