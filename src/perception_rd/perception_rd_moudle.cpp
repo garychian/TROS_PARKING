@@ -201,7 +201,8 @@ void PerceptionRdMoudle::InitPortsAndProcs() {
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_psd_image", rd::Image);
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_psd_image_s32g", rd::Image);
   // DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_apa_ps_info_s32g", rd::SApaPSInfo);
-  DF_MODULE_INIT_IDL_OUTPUT_PORT("percept_debug_rd",ImageProto::Image);
+  DF_MODULE_INIT_IDL_OUTPUT_PORT("percept_debug_slot", ImageProto::Image);
+  DF_MODULE_INIT_IDL_OUTPUT_PORT("percept_debug_roadmark", ImageProto::Image);
 
   DF_MODULE_INIT_IDL_OUTPUT_PORT("pub_quad_parking_slots_s32g",
                                  rd::QuadParkingSlots);
@@ -214,7 +215,7 @@ void PerceptionRdMoudle::InitPortsAndProcs() {
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
       "TimerProc", PerceptionRdMoudle, TimerProc,
       hobot::dataflow::ProcType::DF_MSG_TIMER_PROC, DF_VECTOR(),
-      DF_VECTOR("percept_debug_rd","pub_psd_image", "pub_psd_image_s32g"));
+      DF_VECTOR("percept_debug_slot", "percept_debug_roadmark", "pub_psd_image", "pub_psd_image_s32g"));
 }
 
 EventType g_pub_event = EventType(2);
@@ -430,16 +431,17 @@ static int __nv12CropSplit448( uint8_t* pu8DestY, uint8_t* pu8DestU, uint8_t* pu
 {
 	if((!pu8DestY) || (!pu8DestU)|| (!pu8DestV)|| (!pu8Src448))
 		return -1;
-	for (int i = 112; i < 336; i++)
+	for (int i = 75; i < 75+298; i++)
 	{
-		const uint8_t* pu8Src = pu8Src448+i*448+112;
-		memcpy(pu8DestY,pu8Src,224);
-		pu8DestY += 224;
+		const uint8_t* pu8Src = pu8Src448+i*448+75;
+		memcpy(pu8DestY,pu8Src,298);
+		pu8DestY += 298;
 	}
-	for (int i = 448+56; i < 448+168; i++)
+	pu8Src448 += 448*448;
+	for (int i = 37; i < 37+149; i++)
 	{
-		const uint8_t* pu8Src = pu8Src448+i*448+112;
-		for (int j = 0; j < 112; j++)
+		const uint8_t* pu8Src = pu8Src448+i*448+74;
+		for (int j = 0; j < 149; j++)
 		{
 			*pu8DestU++ = *pu8Src++;
 			*pu8DestV++ = *pu8Src++;
@@ -454,11 +456,24 @@ static int __nv12Merge352( uint8_t* pu8Dest352, const uint8_t* pu8SrdY, const ui
 		return -1;
 	memcpy(pu8Dest352, pu8SrdY, 352*352);
 	pu8Dest352 += 352*352;
-	for (size_t i = 0; i < 176*176; i++)
+    #ifdef __ARM_NEON
+	for (int i = 0; i < 176*176; i+=16)
+	{
+		uint8x16x2_t vu8_16_2_Dest;
+		vu8_16_2_Dest.val[0]=vld1q_u8(pu8SrcU);
+		vu8_16_2_Dest.val[1]=vld1q_u8(pu8SrcV);
+		vst2q_u8(pu8Dest352, vu8_16_2_Dest);
+		pu8Dest352+=32;
+		pu8SrcU+=16;
+		pu8SrcV+=16;
+	}
+    #else
+	for (int i = 0; i < 176*176; i++)
 	{
 		*pu8Dest352++ = *pu8SrcU++;
 		*pu8Dest352++ = *pu8SrcV++;
 	}
+    #endif
 	return 0;
  } 
 
@@ -575,7 +590,6 @@ void PerceptionRdMoudle::MsgCenterProc(
       // FILE *nv12 = fopen("nv12.bin","wb");
       // fwrite(pu8Dest, new_height * new_width * 1.5, 1, nv12);
       // fclose(nv12);
-      
       // cv::Mat rgb_mat;
       // int32_t size;
       // size = width * height;
@@ -762,10 +776,11 @@ void PerceptionRdMoudle::TimerProc(
     const hobot::dataflow::MessageLists &msgs) {
 
       // SEND TO HVIZ
-      std::vector<uchar> buffer;
+     
      
       if (!NV12ResizedMat.empty())
       {
+        std::vector<uchar> buffer;
         save_pred_img(saved_parking_slots_info, buffer, NV12ResizedMat);
         {
 
@@ -781,7 +796,7 @@ void PerceptionRdMoudle::TimerProc(
           out->SetData(std::make_shared<hobot::message::DataRef>(buffer.data(), buffer.size()));
 
           // DFHLOG_W("percept_debug size: {}, ts = {}.", buffer.size(), GetTimeStamp());
-          auto pub_image_port = proc->GetOutputPort("percept_debug_rd");
+          auto pub_image_port = proc->GetOutputPort("percept_debug_slot");
           pub_image_port->Send(out);
           // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
           //  uint64_t send_end = GetTimeStamp();
