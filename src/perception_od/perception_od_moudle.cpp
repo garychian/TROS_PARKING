@@ -487,7 +487,8 @@ namespace fanya
 
     int32_t PerceptionOdMoudle::Stop()
     {
-      perception_OD_comp_->Shutdown();
+      // perception_OD_comp_->Shutdown();
+      perception_OD_comp_->OnShutdown();
       printf("Finish Shutdown\n");
       hobot::communication::DeInit();
       hb_mem_module_close();
@@ -675,6 +676,8 @@ namespace fanya
                     od_obstacleRaw.set_label(obstacles.obstaclesraw[icnt].label);
                     od_obstacleRaw.set_typeconfidence(obstacles.obstaclesraw[icnt].typeConfidence);
                     od_obstacleRaw.set_existenceconfidence(obstacles.obstaclesraw[icnt].existenceConfidence);
+                    od_obstacleRaw.set_camera(obstacles.obstaclesraw[icnt].camera);
+                    DFHLOG_W("[OD] Before pub to S32g camera = {} " , obstacles.obstaclesraw[icnt].camera);
 
                     od::Bbox2D box;
                     box.set_topleftx(obstacles.obstaclesraw[icnt].box.topLeftX);
@@ -683,14 +686,17 @@ namespace fanya
                     box.set_bottomrighty(obstacles.obstaclesraw[icnt].box.bottomRightY);
                     box.set_confidence(obstacles.obstaclesraw[icnt].box.confidence);
                     od_obstacleRaw.mutable_box2d()->CopyFrom(box);
-                    std::cout<<"[OD] Before pub to S32g box2d tx: "<<obstacles.obstaclesraw[icnt].box.topLeftX<<", ty: "<<obstacles.obstaclesraw[icnt].box.topLeftY<<", br: "<<obstacles.obstaclesraw[icnt].box.bottomRightX<<", by: "<<obstacles.obstaclesraw[icnt].box.bottomRightY<<std::endl;
+                    DFHLOG_W("[OD] Before pub to S32g box2d tx = {}, ty = {},  br = {}, by = {}", 
+                    obstacles.obstaclesraw[icnt].box.topLeftX, obstacles.obstaclesraw[icnt].box.topLeftY, 
+                    obstacles.obstaclesraw[icnt].box.bottomRightX, obstacles.obstaclesraw[icnt].box.bottomRightY);
 
                     for (int jcnt = 0; jcnt < obstacles.obstaclesraw[icnt].landmark4.size(); jcnt++)
                     {
                       od::Point2f od_point2f;
                       od_point2f.set_x(obstacles.obstaclesraw[icnt].landmark4[jcnt].x);
                       od_point2f.set_y(obstacles.obstaclesraw[icnt].landmark4[jcnt].y);
-                      std::cout << "[OD] Before pub to S32g landmark4 x: " << obstacles.obstaclesraw[icnt].landmark4[jcnt].x << ", y: " << obstacles.obstaclesraw[icnt].landmark4[jcnt].y << std::endl;
+                      DFHLOG_W( "[OD] Before pub to S32g landmark4 x= {}, y = {} ", 
+                           obstacles.obstaclesraw[icnt].landmark4[jcnt].x, obstacles.obstaclesraw[icnt].landmark4[jcnt].y );
                       od_obstacleRaw.add_landmark4()->CopyFrom(od_point2f);
                     }
 
