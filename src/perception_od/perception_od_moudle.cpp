@@ -175,6 +175,15 @@ namespace fanya
               std::cout << "[OD] landmark4Scores[" << icnt << "][" << jcnt << "] : " << obstacles.obstaclesraw[icnt].landmark4Scores[jcnt] << std::endl;
             }
           }
+          if (raw_obstacle_msg->proto.rawobjects(icnt).box3d_size() != 0)
+          {
+            obstacles.obstaclesraw[icnt].box3d.resize(raw_obstacle_msg->proto.rawobjects(icnt).box3d_size());
+            for(int jcnt = 0; jcnt < raw_obstacle_msg->proto.rawobject(icnt).box3d_size();jcnt++)
+            {
+              obstacles.obstaclesraw[icnt].box3d[jcnt] = raw_obstacle_msg->proto.rawobjects(icnt).box3d(jcnt);
+              std::cout << "[OD] box3d[" << icnt << "][" << jcnt << "] : " << obstacles.obstaclesraw[icnt].box3d[jcnt] << std::endl;
+            }
+          }
         }
       }
       std::cout << "[OD]j5 callback sucess!" << std::endl;

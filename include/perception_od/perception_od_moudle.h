@@ -71,6 +71,7 @@ struct ObstacleRaw
   Box2D box;
   std::vector<Point2f> landmark4;
   std::vector<float32_t> landmark4Scores;
+  std::vector<float32_t> box3d;
 };
 
 struct Obstacles{
