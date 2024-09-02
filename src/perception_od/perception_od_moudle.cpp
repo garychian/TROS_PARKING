@@ -836,6 +836,25 @@ namespace fanya
       }
     }
 
+    inline std::array<uint8_t, 3> get_space_label_color_bgr(SpaceLabel label) {
+    static std::map<SpaceLabel, std::array<uint8_t, 3>> color_map{
+      {SpaceLabel::vehicle, {255, 0, 0}},   // blue
+      {SpaceLabel::pedestrian, {0, 255, 0}},   // green
+      {SpaceLabel::RoadEdge, {0, 0, 255}},   // red   
+      {SpaceLabel::Wall, {0, 255, 255}}, // yellow     
+      {SpaceLabel::TrafficCone, {255, 0, 255}}, // magenta
+      {SpaceLabel::Other, {255, 0, 127}}, // purple
+    };
+      std::array<uint8_t, 3> color;
+      auto iter = color_map.find(label);
+      if (iter != color_map.end()) {
+          color = iter->second;
+      } else {
+          color = {0, 0, 0};
+      }
+      return color;
+    };
+
     int save_pred_img_OD(FSLine fs,Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
     {
       std::cout << "hello in save_pred_img_OD" << std::endl;
@@ -899,42 +918,41 @@ namespace fanya
           {
             if (i == 0)
             {
-              std::vector<cv::Point> fsline;
-              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++) {
-                fsline.push_back(cv::Point(output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y));
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+              {
+                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+                cv::circle(predfront_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
               }
-              pls_fsline.push_back(fsline);
-              cv::polylines(predfront_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
               
             }
             else if(i == 1)
             {
-              std::vector<cv::Point> fsline;
-              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++) {
-                fsline.push_back(cv::Point(output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y));
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+              {
+                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+                cv::circle(predrear_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
               }
-              pls_fsline.push_back(fsline);
-              cv::polylines(predrear_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
-              
             }
             else if(i == 3)
             {
-              std::vector<cv::Point> fsline;
-              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++) {
-                fsline.push_back(cv::Point(output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y));
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+              {
+                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+                cv::circle(predleft_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
               }
-              pls_fsline.push_back(fsline);
-              cv::polylines(predleft_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
               
             }
             else if(i == 2)
             {
-              std::vector<cv::Point> fsline;
-              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++) {
-                fsline.push_back(cv::Point(output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y));
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+              {
+                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+                cv::circle(predright_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
               }
-              pls_fsline.push_back(fsline);
-              cv::polylines(predright_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
               
             }
           }
@@ -947,8 +965,8 @@ namespace fanya
       cv::hconcat(predleft_mat, predright_mat, bottom_row);
       cv::vconcat(top_row, bottom_row, combined);
 
-      // cv::imwrite("./combined_image_" + std::to_string(cnt) + ".jpg", combined);
-      // cnt++;
+      cv::imwrite("./combined_image_" + std::to_string(cnt) + ".jpg", combined);
+      cnt++;
       cv::imencode(".jpg", combined, buffer);
       return 0;
     }
