@@ -502,6 +502,79 @@ namespace fanya
       return hobot::dataflow::Module::DeInit();
     }
 
+// 608*500 to 600*500
+static int __nv12CropSplit600( uint8_t* pu8DestY, uint8_t* pu8DestU, uint8_t* pu8DestV, const uint8_t* pu8Src)
+{
+	if((!pu8DestY) || (!pu8DestU)|| (!pu8DestV)|| (!pu8Src))
+		return -1;
+	for (int i = 0; i < 500; i++)
+	{
+		memcpy(pu8DestY,pu8Src,600);
+		pu8Src += 608;
+		pu8DestY += 600;
+	}
+	for (int i = 0; i < 250; i++)
+	{
+		for (int j = 0; j < 300; j++)
+		{
+			*pu8DestU++ = *pu8Src++;
+			*pu8DestV++ = *pu8Src++;
+		}
+		pu8Src += 8;
+	}
+	return 0;
+}
+
+static int __nv12Merge( uint8_t* pu8Dest, const uint8_t* pu8SrdY, const uint8_t* pu8SrcU, const uint8_t* pu8SrcV, const uint32_t u32Size)
+{
+	if((!pu8SrdY) || (!pu8SrcU)|| (!pu8SrcV)|| (!pu8Dest))
+		return -1;
+	const uint32_t u32UVSize = u32Size/4;
+	memcpy(pu8Dest, pu8SrdY, u32Size);
+	pu8Dest += u32Size;
+    #ifdef __ARM_NEON
+	if(0 == (u32UVSize&15))
+	{
+		for (int i = 0; i < u32UVSize; i+=16)
+		{
+			uint8x16x2_t vu8_16_2_Dest;
+			vu8_16_2_Dest.val[0]=vld1q_u8(pu8SrcU);
+			vu8_16_2_Dest.val[1]=vld1q_u8(pu8SrcV);
+			vst2q_u8(pu8Dest, vu8_16_2_Dest);
+			pu8Dest+=32;
+			pu8SrcU+=16;
+			pu8SrcV+=16;
+		}
+	}else{
+		for (int i = 0; i < u32UVSize; i++)
+		{
+			*pu8Dest++ = *pu8SrcU++;
+			*pu8Dest++ = *pu8SrcV++;
+		}
+	}
+    #else
+	for (int i = 0; i < u32UVSize; i++)
+	{
+		*pu8Dest++ = *pu8SrcU++;
+		*pu8Dest++ = *pu8SrcV++;
+	}
+    #endif
+	return 0;
+}
+
+int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
+ {
+    cv::Mat image_y(500, 600, CV_8UC1);
+    cv::Mat image_u(250, 300, CV_8UC1);
+    cv::Mat image_v(250, 300, CV_8UC1);
+	  __nv12CropSplit600((uint8_t*)image_y.data, (uint8_t*)image_u.data, (uint8_t*)image_v.data, pu8Src);
+	  cv::resize(image_y, image_y, cv::Size(640, 360), cv::INTER_LINEAR);
+	  cv::resize(image_u, image_u, cv::Size(320, 180), cv::INTER_LINEAR);
+	  cv::resize(image_v, image_v, cv::Size(320, 180), cv::INTER_LINEAR);
+	  __nv12Merge(pu8Dest, (uint8_t*)image_y.data, (uint8_t*)image_u.data, (uint8_t*)image_v.data, 640*360);
+    return 0;
+ }
+
     void PerceptionOdMoudle::MsgCenterProc(
         hobot::dataflow::spMsgResourceProc proc,
         const hobot::dataflow::MessageLists &msgs)
@@ -554,21 +627,36 @@ namespace fanya
               auto width = yuv_proto.width();
               auto height = yuv_proto.height();
               cv::Mat image_nv12(height * 1.5, width, CV_8UC1, pym_buf, yuv_proto.step());
-              cv::Mat rgb_mat;
+              // cv::Mat rgb_mat;
 
               int32_t new_width = 640;
-              int32_t new_height = 384;
+              int32_t new_height = 360;
 
-              cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
+              
+              nv12CropResize(pu8Dest, (uint8_t*)pym_buf);
+
+              // cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
               static int cnt = 0;
               // cv::imwrite("./test_bgr_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", rgb_mat);
-              // cnt++;
               // cv::imwrite("./test_nv12_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", image_nv12);
-              cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
-              cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
+              
+              // cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
+              // cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
+              // static int flag = false;
+              // if (flag == false){
+              //   FILE *nv12 = fopen("nv12.bin","wb");
+              //   fwrite(pu8Dest, 640 * 360 * 1.5, 1, nv12);
+              //   fclose(nv12);
+              //   flag = true;
+              // }
+              
               // cv::imwrite("./resized_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", resizedMat);
               // cv::imwrite("./NV12Resized_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", NV12ResizedMat);
-              uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
+              // cnt++;
+
+              // uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
+              uint64_t addr_value = reinterpret_cast<uint64_t>(pu8Dest);
+
 
               auto image = std::make_shared<ImageMsg>();
               rd::Time image_time;
@@ -816,8 +904,13 @@ namespace fanya
       std::vector<uchar> buffer;
       if (!NV12ResizedMat_front.empty() && !NV12ResizedMat_left.empty() && !NV12ResizedMat_right.empty() && !NV12ResizedMat_rear.empty())
       {
+        // cv::Mat padding_mat_front, padding_mat_rear, padding_mat_left, padding_mat_right;
+        // cv::copyMakeBorder(NV12ResizedMat_front, padding_mat_front, 0, 24, 0,0, cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0,0,0));
+        // cv::copyMakeBorder(NV12ResizedMat_rear, padding_mat_rear, 0, 24, 0,0, cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0,0,0));
+        // cv::copyMakeBorder(NV12ResizedMat_left, padding_mat_left, 0, 24, 0,0, cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0,0,0));
+        // cv::copyMakeBorder(NV12ResizedMat_right, padding_mat_right, 0, 24, 0,0, cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0,0,0));
+        
         save_pred_img_OD(fs, obstacles, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
-        // save_pred_img_FSLine(fs,buffer,NV12ResizedMat_front,NV12ResizedMat_left,NV12ResizedMat_rear,NV12ResizedMat_right);
         {
           uint64_t send_start = GetTimeStamp();
           auto out = std::make_shared<WrapImageProtoMsg>();
@@ -965,81 +1058,81 @@ namespace fanya
       cv::hconcat(predleft_mat, predright_mat, bottom_row);
       cv::vconcat(top_row, bottom_row, combined);
 
-      cv::imwrite("./combined_image_" + std::to_string(cnt) + ".jpg", combined);
-      cnt++;
-      cv::imencode(".jpg", combined, buffer);
-      return 0;
-    }
-
-    int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
-    {
-      std::cout << "hello in save_pred_img_FSLine" << std::endl;
-
-      cv::Mat predfront_mat = rgb_mat_front.clone(),
-              predleft_mat = rgb_mat_left.clone(),
-              predrear_mat = rgb_mat_rear.clone(),
-              predright_mat = rgb_mat_right.clone();
-      if (fs.fsline.size() != 0)
-      {
-        for (int i = 0; i < fs.fsline.size(); i++)
-        {
-          auto output_result = fs.fsline[i];
-          std::vector<std::vector<cv::Point>> pls_fsline;
-          if (true)
-          {
-            if (i == 0)
-            {
-              std::vector<cv::Point> fsline;
-              for (int j = 0; j < output_result.fsLinepoints.size(); j++)
-              {
-                fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
-              }
-              pls_fsline.push_back(fsline);
-              cv::polylines(predfront_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
-            }
-            else if (i == 1)
-            {
-              std::vector<cv::Point> fsline;
-              for (int j = 0; j < output_result.fsLinepoints.size(); j++)
-              {
-                fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
-              }
-              pls_fsline.push_back(fsline);
-              cv::polylines(predrear_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
-            }
-            else if (i == 3)
-            {
-              std::vector<cv::Point> fsline;
-              for (int j = 0; j < output_result.fsLinepoints.size(); j++)
-              {
-                fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
-              }
-              pls_fsline.push_back(fsline);
-              cv::polylines(predleft_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
-            }
-            else if (i == 2)
-            {
-              std::vector<cv::Point> fsline;
-              for (int j = 0; j < output_result.fsLinepoints.size(); j++)
-              {
-                fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
-              }
-              pls_fsline.push_back(fsline);
-              cv::polylines(predright_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
-            }
-          }
-        }
-      }
-      cv::Mat combined, top_row, bottom_row;
-      cv::hconcat(predfront_mat, predrear_mat, top_row);
-      cv::hconcat(predleft_mat, predright_mat, bottom_row);
-      cv::vconcat(top_row, bottom_row, combined);
-      // static int cnt = 0;
-      // cv::imwrite("./test_image_" + std::to_string(cnt) + ".jpg", combined);
+      // cv::imwrite("./combined_image_" + std::to_string(cnt) + ".jpg", combined);
       // cnt++;
       cv::imencode(".jpg", combined, buffer);
       return 0;
     }
+
+    // int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
+    // {
+    //   std::cout << "hello in save_pred_img_FSLine" << std::endl;
+
+    //   cv::Mat predfront_mat = rgb_mat_front.clone(),
+    //           predleft_mat = rgb_mat_left.clone(),
+    //           predrear_mat = rgb_mat_rear.clone(),
+    //           predright_mat = rgb_mat_right.clone();
+    //   if (fs.fsline.size() != 0)
+    //   {
+    //     for (int i = 0; i < fs.fsline.size(); i++)
+    //     {
+    //       auto output_result = fs.fsline[i];
+    //       std::vector<std::vector<cv::Point>> pls_fsline;
+    //       if (true)
+    //       {
+    //         if (i == 0)
+    //         {
+    //           std::vector<cv::Point> fsline;
+    //           for (int j = 0; j < output_result.fsLinepoints.size(); j++)
+    //           {
+    //             fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
+    //           }
+    //           pls_fsline.push_back(fsline);
+    //           cv::polylines(predfront_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+    //         }
+    //         else if (i == 1)
+    //         {
+    //           std::vector<cv::Point> fsline;
+    //           for (int j = 0; j < output_result.fsLinepoints.size(); j++)
+    //           {
+    //             fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
+    //           }
+    //           pls_fsline.push_back(fsline);
+    //           cv::polylines(predrear_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+    //         }
+    //         else if (i == 3)
+    //         {
+    //           std::vector<cv::Point> fsline;
+    //           for (int j = 0; j < output_result.fsLinepoints.size(); j++)
+    //           {
+    //             fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
+    //           }
+    //           pls_fsline.push_back(fsline);
+    //           cv::polylines(predleft_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+    //         }
+    //         else if (i == 2)
+    //         {
+    //           std::vector<cv::Point> fsline;
+    //           for (int j = 0; j < output_result.fsLinepoints.size(); j++)
+    //           {
+    //             fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
+    //           }
+    //           pls_fsline.push_back(fsline);
+    //           cv::polylines(predright_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
+    //         }
+    //       }
+    //     }
+    //   }
+    //   cv::Mat combined, top_row, bottom_row;
+    //   cv::hconcat(predfront_mat, predrear_mat, top_row);
+    //   cv::hconcat(predleft_mat, predright_mat, bottom_row);
+    //   cv::vconcat(top_row, bottom_row, combined);
+    //   // static int cnt = 0;
+    //   // cv::imwrite("./test_image_" + std::to_string(cnt) + ".jpg", combined);
+    //   // cnt++;
+    //   cv::imencode(".jpg", combined, buffer);
+    //   return 0;
+    // }
     DATAFLOW_REGISTER_MODULE(PerceptionOdMoudle)
 
   } // namespace parking

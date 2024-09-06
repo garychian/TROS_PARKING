@@ -149,6 +149,7 @@ class PerceptionOdMoudle:
   cv::Mat NV12ResizedMat_rear;
   cv::Mat NV12ResizedMat_left;
   cv::Mat NV12ResizedMat_right;
+  uint8_t pu8Dest[ 640 * 360 * 3/2 ]={0};
 };
 
 }  // namespace parking
