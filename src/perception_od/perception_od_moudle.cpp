@@ -627,20 +627,20 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               auto width = yuv_proto.width();
               auto height = yuv_proto.height();
               cv::Mat image_nv12(height * 1.5, width, CV_8UC1, pym_buf, yuv_proto.step());
-              // cv::Mat rgb_mat;
-
+              cv::Mat rgb_mat;
+              DFHLOG_W("Original width={},height={}", width, height);
               int32_t new_width = 640;
               int32_t new_height = 360;
 
               
               nv12CropResize(pu8Dest, (uint8_t*)pym_buf);
 
-              // cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
+              cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGR_NV12);
               static int cnt = 0;
               // cv::imwrite("./test_bgr_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", rgb_mat);
               // cv::imwrite("./test_nv12_image_" + std::to_string(cnt) + "_" + std::to_string(i) + ".jpg", image_nv12);
               
-              // cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
+              cv::resize(rgb_mat, resizedMat, cv::Size(new_width, new_height));
               // cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
               // static int flag = false;
               // if (flag == false){
@@ -910,7 +910,8 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
         // cv::copyMakeBorder(NV12ResizedMat_left, padding_mat_left, 0, 24, 0,0, cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0,0,0));
         // cv::copyMakeBorder(NV12ResizedMat_right, padding_mat_right, 0, 24, 0,0, cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0,0,0));
         
-        save_pred_img_OD(fs, obstacles, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
+        // save_pred_img_OD(fs, obstacles, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
+        save_pred_img_FSLine(fs, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
         {
           uint64_t send_start = GetTimeStamp();
           auto out = std::make_shared<WrapImageProtoMsg>();
@@ -930,14 +931,14 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
     }
 
     inline std::array<uint8_t, 3> get_space_label_color_bgr(SpaceLabel label) {
-    static std::map<SpaceLabel, std::array<uint8_t, 3>> color_map{
-      {SpaceLabel::vehicle, {255, 0, 0}},   // blue
-      {SpaceLabel::pedestrian, {0, 255, 0}},   // green
-      {SpaceLabel::RoadEdge, {0, 0, 255}},   // red   
-      {SpaceLabel::Wall, {0, 255, 255}}, // yellow     
-      {SpaceLabel::TrafficCone, {255, 0, 255}}, // magenta
-      {SpaceLabel::Other, {255, 0, 127}}, // purple
-    };
+      static std::map<SpaceLabel, std::array<uint8_t, 3>> color_map{
+        {SpaceLabel::vehicle, {255, 0, 0}},   // blue
+        {SpaceLabel::pedestrian, {0, 255, 0}},   // green
+        {SpaceLabel::RoadEdge, {0, 0, 255}},   // red   
+        {SpaceLabel::Wall, {0, 255, 255}}, // yellow     
+        {SpaceLabel::TrafficCone, {255, 0, 255}}, // magenta
+        {SpaceLabel::Other, {255, 0, 127}}, // purple
+      };
       std::array<uint8_t, 3> color;
       auto iter = color_map.find(label);
       if (iter != color_map.end()) {
@@ -947,6 +948,43 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
       }
       return color;
     };
+
+    inline std::string get_obs_label(int label){
+      switch (label){
+        case -1:
+          return "OBJECT_ALL";
+          break;
+        case 0:
+          return "UNKNOWN";
+          break;
+        case 1:
+          return "VEHICLE";
+          break;
+        case 2:
+          return "PEDESTRIAN";
+          break;
+        case 3:
+          return "TRAFFICBARREL";
+          break;
+        case 4:
+          return "CART";
+          break;
+        case 5:
+          return "COLUMN";
+          break;
+        case 6:
+          return "WHEELSTOP";
+          break;
+        case 7:
+          return "NOPARKINGSIGN";
+          break;
+        case 8:"LIMITLOCK";
+          break;
+        case 9:
+          return "BIKE";
+          break;
+      }
+    }
 
     int save_pred_img_OD(FSLine fs,Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
     {
@@ -971,6 +1009,19 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               cv::line(predright_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
               cv::line(predright_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
               cv::line(predright_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+              
+              cv::circle(predright_mat, cv::Point(output_result.landmark4[0].x, output_result.landmark4[0].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
+              cv::circle(predright_mat, cv::Point(output_result.landmark4[1].x, output_result.landmark4[1].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
+              cv::circle(predright_mat, cv::Point(output_result.landmark4[2].x, output_result.landmark4[2].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
+              cv::circle(predright_mat, cv::Point(output_result.landmark4[3].x, output_result.landmark4[3].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
+             
+
+              std::string text = get_obs_label(output_result.label) + " " + std::to_string(output_result.typeConfidence);
+              int baseLine;
+              cv::Size textSize = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
+              cv::Point textOrg(output_result.box.topLeftX, output_result.box.topLeftY - 5);
+              cv::rectangle(predright_mat, textOrg + cv::Point(0, baseLine), textOrg + cv::Point(textSize.width, -textSize.height), cv::Scalar(0,255,0), cv::FILLED);
+              cv::putText(predright_mat, text, textOrg, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0,0,0),1);
             }
             else if (output_result.camera == "left_camera_fov195")
             {
@@ -980,6 +1031,18 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               cv::line(predleft_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
               cv::line(predleft_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
               cv::line(predleft_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+            
+              cv::circle(predleft_mat, cv::Point(output_result.landmark4[0].x, output_result.landmark4[0].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
+              cv::circle(predleft_mat, cv::Point(output_result.landmark4[1].x, output_result.landmark4[1].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
+              cv::circle(predleft_mat, cv::Point(output_result.landmark4[2].x, output_result.landmark4[2].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
+              cv::circle(predleft_mat, cv::Point(output_result.landmark4[3].x, output_result.landmark4[3].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
+
+              std::string text = get_obs_label(output_result.label) + " " + std::to_string(output_result.typeConfidence);
+              int baseLine;
+              cv::Size textSize = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
+              cv::Point textOrg(output_result.box.topLeftX, output_result.box.topLeftY - 5);
+              cv::rectangle(predleft_mat, textOrg + cv::Point(0, baseLine), textOrg + cv::Point(textSize.width, -textSize.height), cv::Scalar(0,255,0), cv::FILLED);
+              cv::putText(predleft_mat, text, textOrg, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0,0,0),1);
             }
             else if (output_result.camera == "rear_camera_fov195")
             {
@@ -989,6 +1052,18 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               cv::line(predrear_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
               cv::line(predrear_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
               cv::line(predrear_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+            
+              cv::circle(predrear_mat, cv::Point(output_result.landmark4[0].x, output_result.landmark4[0].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
+              cv::circle(predrear_mat, cv::Point(output_result.landmark4[1].x, output_result.landmark4[1].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
+              cv::circle(predrear_mat, cv::Point(output_result.landmark4[2].x, output_result.landmark4[2].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
+              cv::circle(predrear_mat, cv::Point(output_result.landmark4[3].x, output_result.landmark4[3].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
+
+              std::string text = get_obs_label(output_result.label) + " " + std::to_string(output_result.typeConfidence);
+              int baseLine;
+              cv::Size textSize = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
+              cv::Point textOrg(output_result.box.topLeftX, output_result.box.topLeftY - 5);
+              cv::rectangle(predrear_mat, textOrg + cv::Point(0, baseLine), textOrg + cv::Point(textSize.width, -textSize.height), cv::Scalar(0,255,0), cv::FILLED);
+              cv::putText(predrear_mat, text, textOrg, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0,0,0),1);
             }
             else if (output_result.camera == "front_camera_fov195")
             {
@@ -998,6 +1073,18 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               cv::line(predfront_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
               cv::line(predfront_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
               cv::line(predfront_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+            
+              cv::circle(predfront_mat, cv::Point(output_result.landmark4[0].x, output_result.landmark4[0].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
+              cv::circle(predfront_mat, cv::Point(output_result.landmark4[1].x, output_result.landmark4[1].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
+              cv::circle(predfront_mat, cv::Point(output_result.landmark4[2].x, output_result.landmark4[2].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
+              cv::circle(predfront_mat, cv::Point(output_result.landmark4[3].x, output_result.landmark4[3].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
+
+              std::string text = get_obs_label(output_result.label) + " " + std::to_string(output_result.typeConfidence);
+              int baseLine;
+              cv::Size textSize = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
+              cv::Point textOrg(output_result.box.topLeftX, output_result.box.topLeftY - 5);
+              cv::rectangle(predfront_mat, textOrg + cv::Point(0, baseLine), textOrg + cv::Point(textSize.width, -textSize.height), cv::Scalar(0,255,0), cv::FILLED);
+              cv::putText(predfront_mat, text, textOrg, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0,0,0),1);
             }
           }
         }
@@ -1058,81 +1145,82 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
       cv::hconcat(predleft_mat, predright_mat, bottom_row);
       cv::vconcat(top_row, bottom_row, combined);
 
-      // cv::imwrite("./combined_image_" + std::to_string(cnt) + ".jpg", combined);
-      // cnt++;
+      cv::imwrite("./combined_image_" + std::to_string(cnt) + ".jpg", combined);
+      cnt++;
       cv::imencode(".jpg", combined, buffer);
       return 0;
     }
 
-    // int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
-    // {
-    //   std::cout << "hello in save_pred_img_FSLine" << std::endl;
+    int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
+    {
+      std::cout << "hello in save_pred_img_FSLine" << std::endl;
 
-    //   cv::Mat predfront_mat = rgb_mat_front.clone(),
-    //           predleft_mat = rgb_mat_left.clone(),
-    //           predrear_mat = rgb_mat_rear.clone(),
-    //           predright_mat = rgb_mat_right.clone();
-    //   if (fs.fsline.size() != 0)
-    //   {
-    //     for (int i = 0; i < fs.fsline.size(); i++)
-    //     {
-    //       auto output_result = fs.fsline[i];
-    //       std::vector<std::vector<cv::Point>> pls_fsline;
-    //       if (true)
-    //       {
-    //         if (i == 0)
-    //         {
-    //           std::vector<cv::Point> fsline;
-    //           for (int j = 0; j < output_result.fsLinepoints.size(); j++)
-    //           {
-    //             fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
-    //           }
-    //           pls_fsline.push_back(fsline);
-    //           cv::polylines(predfront_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
-    //         }
-    //         else if (i == 1)
-    //         {
-    //           std::vector<cv::Point> fsline;
-    //           for (int j = 0; j < output_result.fsLinepoints.size(); j++)
-    //           {
-    //             fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
-    //           }
-    //           pls_fsline.push_back(fsline);
-    //           cv::polylines(predrear_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
-    //         }
-    //         else if (i == 3)
-    //         {
-    //           std::vector<cv::Point> fsline;
-    //           for (int j = 0; j < output_result.fsLinepoints.size(); j++)
-    //           {
-    //             fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
-    //           }
-    //           pls_fsline.push_back(fsline);
-    //           cv::polylines(predleft_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
-    //         }
-    //         else if (i == 2)
-    //         {
-    //           std::vector<cv::Point> fsline;
-    //           for (int j = 0; j < output_result.fsLinepoints.size(); j++)
-    //           {
-    //             fsline.push_back(cv::Point(output_result.fsLinepoints[j].coordinate.x, output_result.fsLinepoints[j].coordinate.y));
-    //           }
-    //           pls_fsline.push_back(fsline);
-    //           cv::polylines(predright_mat, pls_fsline, false, cv::Scalar(0, 255, 0), 2);
-    //         }
-    //       }
-    //     }
-    //   }
-    //   cv::Mat combined, top_row, bottom_row;
-    //   cv::hconcat(predfront_mat, predrear_mat, top_row);
-    //   cv::hconcat(predleft_mat, predright_mat, bottom_row);
-    //   cv::vconcat(top_row, bottom_row, combined);
-    //   // static int cnt = 0;
-    //   // cv::imwrite("./test_image_" + std::to_string(cnt) + ".jpg", combined);
-    //   // cnt++;
-    //   cv::imencode(".jpg", combined, buffer);
-    //   return 0;
-    // }
+      cv::Mat predfront_mat = rgb_mat_front.clone(),
+              predleft_mat = rgb_mat_left.clone(),
+              predrear_mat = rgb_mat_rear.clone(),
+              predright_mat = rgb_mat_right.clone();
+      if (fs.fsline.size()!=0){
+        for(int i = 0 ;i< fs.fsline.size();i++)
+        {
+          auto output_result_FS = fs.fsline[i];
+          std::vector<std::vector<cv::Point>> pls_fsline;
+          if (true)
+          {
+            if (i == 0)
+            {
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+              {
+                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+                cv::circle(predfront_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
+              }
+              
+            }
+            else if(i == 1)
+            {
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+              {
+                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+                cv::circle(predrear_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
+              }
+            }
+            else if(i == 3)
+            {
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+              {
+                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+                cv::circle(predleft_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
+              }
+              
+            }
+            else if(i == 2)
+            {
+              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+              {
+                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+                cv::circle(predright_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
+              }
+              
+            }
+          }
+          
+        }  
+      }
+      cv::Mat combined, top_row, bottom_row;
+      cv::hconcat(predfront_mat, predrear_mat, top_row);
+      cv::hconcat(predleft_mat, predright_mat, bottom_row);
+      cv::vconcat(top_row, bottom_row, combined);
+      static int cnt = 0;
+      if (cnt > 0 && cnt < 10){
+        cv::imwrite("./fsline_only_image_" + std::to_string(cnt) + ".jpg", combined);
+      }
+      cnt++;
+      cv::imencode(".jpg", combined, buffer);
+      return 0;
+    }
     DATAFLOW_REGISTER_MODULE(PerceptionOdMoudle)
 
   } // namespace parking
