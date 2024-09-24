@@ -4,8 +4,8 @@
  */
 #pragma once
 
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Geometry>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <fstream>
 #include <iostream>
 #include <string>

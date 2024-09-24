@@ -15,6 +15,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <cmath>
 
 #include "common/proto_msg_all.h"
 #include "common/timestamp.h"
@@ -25,6 +26,7 @@
 
 #include "common/utils.h"
 #include "perception_od/dependencies/j5/j5dvb_system/include/vio/hb_vpm_data_info.h"
+#include "perception_od/dependencies/j5/rscl/include/utils/CameraModel.hpp"
 #include "dataflow/module/port.h"
 #include "dataflow/module_loader/register_module_macro.h"
 #include "ad_msg_bridge/manager/inner_process_communication_pipe.h"
@@ -49,6 +51,8 @@ namespace fanya
   {
     int save_pred_img_OD(FSLine fs,Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right);
     int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right);
+    std::string camera_model_path = "/app/parking/output/parking/lib/perception_alg/opt/senseauto/senseauto-vehicle-config/vehicle/GL8-001/";
+    std::map<std::string, CameraModelBasePtr> camera_models;
     using hobot::communication::COMM_CODE_OK;
     using hobot::communication::CommAttr;
     using hobot::communication::CompositeOption;
@@ -155,6 +159,9 @@ namespace fanya
           obstacles.obstaclesraw[icnt].box.bottomRightX = raw_obstacle_msg->proto.rawobjects(icnt).box2d().bottomrightx();
           obstacles.obstaclesraw[icnt].box.bottomRightY = raw_obstacle_msg->proto.rawobjects(icnt).box2d().bottomrighty();
           obstacles.obstaclesraw[icnt].box.confidence = raw_obstacle_msg->proto.rawobjects(icnt).box2d().confidence();
+          obstacles.obstaclesraw[icnt].position << raw_obstacle_msg->proto.rawobjects(icnt).positioninfo().position().x(),
+                                                   raw_obstacle_msg->proto.rawobjects(icnt).positioninfo().position().y(),
+                                                   raw_obstacle_msg->proto.rawobjects(icnt).positioninfo().position().z();
           std::cout << "[OD] topLeftX: " << obstacles.obstaclesraw[icnt].box.topLeftX << " topLeftY: " << obstacles.obstaclesraw[icnt].box.topLeftY << " bottomRightX: " << obstacles.obstaclesraw[icnt].box.bottomRightX << " bottomRightX: " << obstacles.obstaclesraw[icnt].box.bottomRightY << std::endl;
           std::cout << "[OD] confidence: " << obstacles.obstaclesraw[icnt].box.confidence << std::endl;
           std::cout << "[OD] label: " << obstacles.obstaclesraw[icnt].label << " typeConfidence: " << obstacles.obstaclesraw[icnt].typeConfidence << " existenceConfidence: " << obstacles.obstaclesraw[icnt].existenceConfidence << std::endl;
@@ -178,7 +185,7 @@ namespace fanya
           if (raw_obstacle_msg->proto.rawobjects(icnt).box3d_size() != 0)
           {
             obstacles.obstaclesraw[icnt].box3d.resize(raw_obstacle_msg->proto.rawobjects(icnt).box3d_size());
-            for(int jcnt = 0; jcnt < raw_obstacle_msg->proto.rawobject(icnt).box3d_size();jcnt++)
+            for(int jcnt = 0; jcnt < raw_obstacle_msg->proto.rawobjects(icnt).box3d_size();jcnt++)
             {
               obstacles.obstaclesraw[icnt].box3d[jcnt] = raw_obstacle_msg->proto.rawobjects(icnt).box3d(jcnt);
               std::cout << "[OD] box3d[" << icnt << "][" << jcnt << "] : " << obstacles.obstaclesraw[icnt].box3d[jcnt] << std::endl;
@@ -713,7 +720,10 @@ namespace fanya
                     {
                       od_obstacleRaw.add_landmark4scores(obstacles.obstaclesraw[icnt].landmark4Scores[jcnt]);
                     }
-                    
+                    for (int jcnt = 0; jcnt < obstacles.obstaclesraw[icnt].box3d.size(); jcnt++)
+                    {
+                      od_obstacleRaw.add_box3d(obstacles.obstaclesraw[icnt].box3d[jcnt]);
+                    }
                     obstacles_msg->proto.add_rawobjects()->CopyFrom(od_obstacleRaw);
 
                    
@@ -845,8 +855,128 @@ namespace fanya
       }
     }
 
+    void DrawBev3DBox(const ObstacleRaw &obj, cv::Mat &img, std::string camera_name,const std::shared_ptr<CameraModelBase> camera_model)
+    {
+      static std::map<std::string, std::function<bool(ObstacleRaw)>>
+        obj_map_filter{
+            {"front_camera_fov195",
+             [](ObstacleRaw obj) -> bool {
+                 if (obj.position(0) > 0) return true;
+                 return false;
+             }},
+            {"rear_camera_fov195",
+             [](ObstacleRaw obj) -> bool {
+                 if (obj.position(0) < 0) return true;
+                 return false;
+             }},
+            {"left_camera_fov195",
+             [](ObstacleRaw obj) -> bool {
+                 if (obj.position(1) > 0) return true;
+                 return false;
+             }},
+            {"right_camera_fov195",
+             [](ObstacleRaw obj) -> bool {
+                 if (obj.position(1) < 0) return true;
+                 return false;
+             }},
+        };
+        auto world = camera_model->getTransformation();
+        Eigen::Matrix4d world2cam = world.inverse();//
+        if (obj_map_filter.count(camera_name) == 0) {
+          std::cout <<"[DrawBev3DBbox] "
+            << "obj_map_filter.count(camera_name), camera_name = "
+            << camera_name << std::endl;
+            return;
+        }
+        if (camera_model == nullptr) {
+            AD_LWARN(DrawBev3DBbox) << "camera_model == nullptr";
+            return;
+        }
+         Eigen::Vector3f p, s;
+         p << obj.box3d[0], obj.box3d[1], obj.box3d[2];
+         p << obj.box3d[3], obj.box3d[5], obj.box3d[4];
+         float32_t obj_yaw_to_car = obj.box3d[6];
+         if (p(0) == 0 && p(1) == 0 && p(2) == 0) return;
+         if (!obj_map_filter[camera_name](obj)) {
+            std::cout << "obj_map_filter.count(camera_name), camera_name = "
+                << camera_name << std::endl;
+            return;
+        }
+        std::vector<Eigen::Vector3f> box_corners_selfcar;
+        Eigen::Vector4d point_camera_4d = {p(0), p(1), p(2), 1.0};
+        Eigen::Vector3f center_selfcar(p(0), p(1), p(2));
+        Eigen::Vector3f dir_len(cos(obj_yaw_to_car), sin(obj_yaw_to_car),
+                                0);  // len direction
+        Eigen::Vector3f dir_width(-dir_len.y(), dir_len.x(), 0);
+        const Eigen::Vector3f object_shape = {s(1), s(0), s(2)};
+        box_corners_selfcar.push_back(center_selfcar +
+                                      dir_len * object_shape(0) / 2 +
+                                      dir_width * object_shape(1) / 2);
+        box_corners_selfcar.push_back(center_selfcar +
+                                      dir_len * object_shape(0) / 2 -
+                                      dir_width * object_shape(1) / 2);
+        box_corners_selfcar.push_back(center_selfcar -
+                                      dir_len * object_shape(0) / 2 -
+                                      dir_width * object_shape(1) / 2);
+        box_corners_selfcar.push_back(center_selfcar -
+                                      dir_len * object_shape(0) / 2 +
+                                      dir_width * object_shape(1) / 2);
+        for (size_t i = 0; i < 4; ++i) {
+            box_corners_selfcar.push_back(box_corners_selfcar[i]);
+            box_corners_selfcar[i](2) = 0;
+            box_corners_selfcar.back()(2) = object_shape(2);
+        }
+
+        box_corners_selfcar.push_back(center_selfcar);
+        box_corners_selfcar.back()(2) = object_shape(2) / 2.0;
+        std::vector<Eigen::Vector2d> pixel_corners(box_corners_selfcar.size());
+        for (size_t i = 0; i < box_corners_selfcar.size(); ++i) {
+            Eigen::Vector4d point3d_pad = {box_corners_selfcar[i](0),
+                                           box_corners_selfcar[i](1),
+                                           box_corners_selfcar[i](2), 1.0};
+
+            auto point_unit = world2cam * point3d_pad;//
+            Eigen::Vector3d point3d{point_unit(0), point_unit(1),
+                                    point_unit(2)};
+            camera_model->unit2image(point3d, pixel_corners[i]);
+        }
+      
+      static const std::array<std::pair<int, int>, 12> lines = {
+          std::make_pair(0, 1), std::make_pair(1, 2), std::make_pair(2, 3),
+          std::make_pair(3, 0), std::make_pair(0, 4), std::make_pair(1, 5),
+          std::make_pair(2, 6), std::make_pair(3, 7), std::make_pair(4, 5),
+          std::make_pair(5, 6), std::make_pair(6, 7), std::make_pair(7, 4)};
+
+      for (const auto &pair : lines) {
+            cv::line(img,
+                     cv::Point(pixel_corners[pair.first](0),
+                               pixel_corners[pair.first](1)),
+                     cv::Point(pixel_corners[pair.second](0),
+                               pixel_corners[pair.second](1)),
+                     cv::Scalar(127, 201, 127), 2);
+        }
+   }
+
     int save_pred_img_OD(FSLine fs,Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
     {
+      if(camera_models.empty()){
+        camera_models.emplace(
+            "front_camera_fov195",
+            std::make_shared<FisheyeCameraModel>(
+                FisheyeCameraModel(camera_model_path, "front_camera_fov195")));
+        camera_models.emplace(
+            "left_camera_fov195",
+            std::make_shared<FisheyeCameraModel>(
+                FisheyeCameraModel(camera_model_path, "left_camera_fov195")));
+        camera_models.emplace(
+            "right_camera_fov195",
+            std::make_shared<FisheyeCameraModel>(
+                FisheyeCameraModel(camera_model_path, "right_camera_fov195")));
+        camera_models.emplace(
+            "rear_camera_fov195",
+            std::make_shared<FisheyeCameraModel>(
+                FisheyeCameraModel(camera_model_path, "rear_camera_fov195")));
+      }
       std::cout << "hello in save_pred_img_OD" << std::endl;
       static int cnt = 0;
       cv::Mat predfront_mat = rgb_mat_front.clone(),
@@ -868,6 +998,7 @@ namespace fanya
               cv::line(predright_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
               cv::line(predright_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
               cv::line(predright_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+              //DrawBev3DBox(output_result, predright_mat, output_result.camera, camera_models["right_camera_fov195"]);
             }
             else if (output_result.camera == "left_camera_fov195")
             {
@@ -877,6 +1008,7 @@ namespace fanya
               cv::line(predleft_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
               cv::line(predleft_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
               cv::line(predleft_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+              //DrawBev3DBox(output_result, predleft_mat, output_result.camera, camera_models["left_camera_fov195"]);
             }
             else if (output_result.camera == "rear_camera_fov195")
             {
@@ -886,6 +1018,7 @@ namespace fanya
               cv::line(predrear_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
               cv::line(predrear_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
               cv::line(predrear_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+              //DrawBev3DBox(output_result, predrear_mat, output_result.camera, camera_models["rear_camera_fov195"]);
             }
             else if (output_result.camera == "front_camera_fov195")
             {
@@ -895,6 +1028,7 @@ namespace fanya
               cv::line(predfront_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.topLeftX, output_result.box.bottomRightY), cv::Scalar(0, 255, 0), 1);
               cv::line(predfront_mat, cv::Point(output_result.box.bottomRightX, output_result.box.bottomRightY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
               cv::line(predfront_mat, cv::Point(output_result.box.topLeftX, output_result.box.topLeftY), cv::Point(output_result.box.bottomRightX, output_result.box.topLeftY), cv::Scalar(0, 255, 0), 1);
+              //DrawBev3DBox(output_result, predfront_mat, output_result.camera, camera_models["front_camera_fov195"]);
             }
           }
         }
