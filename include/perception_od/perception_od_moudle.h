@@ -13,6 +13,9 @@
 
 
 #pragma once
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
 #include "dataflow/callback/callback.h"
 #include "dataflow/module/module.h"
 #include "dataflow/module/module_option.h"
@@ -71,6 +74,8 @@ struct ObstacleRaw
   Box2D box;
   std::vector<Point2f> landmark4;
   std::vector<float32_t> landmark4Scores;
+  Eigen::Vector3f position = Eigen::Vector3f(0, 0, 0);
+  std::vector<float32_t> box3d;
 };
 
 struct Obstacles{

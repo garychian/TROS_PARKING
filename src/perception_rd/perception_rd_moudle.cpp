@@ -522,19 +522,16 @@ void PerceptionRdMoudle::MsgCenterProc(
     if (nullptr == msg) {
       continue;
     }
-    DFHLOG_I("sub_pad_vehicle_pose msg timestamp: {}", msg->GetGenTimestamp());
+    
     auto location_msg = std::dynamic_pointer_cast<PadVehiclePoseMsg>(msg);
     if (!location_msg) {
       DFHLOG_C("DetectionProc Empty location msg");
       return;
     } else {
       DFHLOG_W("DetectionProc get location_msg OK.");
-
-      std::cout << "x_position: " << location_msg->proto.coord().x()
-                << std::endl;
-      std::cout << "y_position: " << location_msg->proto.coord().y()
-                << std::endl;
-      std::cout << "yaw_position: " << location_msg->proto.yaw() << std::endl;
+      DFHLOG_I("sub_pad_vehicle_pose msg timestamp: {}", location_msg->proto.timestamp());
+      DFHLOG_I("x_position: x={},y={},z={} ", location_msg->proto.coord().x(), location_msg->proto.coord().y(),location_msg->proto.yaw()); 
+     
       // location_msg->proto.status();
       // LOGC("SLOT TYPE: {}, ts = {}",
       // location_msg->proto.slottype(),msg->GetGenTimestamp());
@@ -609,7 +606,10 @@ void PerceptionRdMoudle::MsgCenterProc(
       
       // cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGRA_I420);
       // cv::imwrite("./rgb_mat_image_" + std::to_string(cnt)+"_" + ".jpg", rgb_mat);
-      // cv::imwrite("./image_nv12_image_" + std::to_string(cnt)+"_" + ".jpg", image_nv12);
+      // if (cnt >0 && cnt < 10){
+      //   cv::imwrite("./origin_nv12_image_" + std::to_string(cnt)+"_" + ".jpg", image_nv12);
+      // }
+      // cnt++;
       // cv::resize(rgb_mat, resizedMat, cv::Size(704, 704));
       // cv::Rect roi(176,176,352,352);
       // cropedMat = resizedMat(roi);

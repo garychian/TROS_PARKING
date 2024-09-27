@@ -15,6 +15,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <cmath>
 
 #include "common/proto_msg_all.h"
 #include "common/timestamp.h"
@@ -25,6 +26,7 @@
 
 #include "common/utils.h"
 #include "perception_od/dependencies/j5/j5dvb_system/include/vio/hb_vpm_data_info.h"
+#include "perception_od/dependencies/j5/rscl/include/utils/CameraModel.hpp"
 #include "dataflow/module/port.h"
 #include "dataflow/module_loader/register_module_macro.h"
 #include "ad_msg_bridge/manager/inner_process_communication_pipe.h"
@@ -48,7 +50,10 @@ namespace fanya
   namespace parking
   {
     int save_pred_img_OD(FSLine fs,Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right);
-    int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right);
+    // int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right);
+    std::string camera_model_path = "/app/parking/output/parking/lib/perception_alg/opt/senseauto/senseauto-vehicle-config/vehicle/GL8-001/";
+    std::map<std::string, CameraModelBasePtr> camera_models;
+
     using hobot::communication::COMM_CODE_OK;
     using hobot::communication::CommAttr;
     using hobot::communication::CompositeOption;
@@ -155,6 +160,9 @@ namespace fanya
           obstacles.obstaclesraw[icnt].box.bottomRightX = raw_obstacle_msg->proto.rawobjects(icnt).box2d().bottomrightx();
           obstacles.obstaclesraw[icnt].box.bottomRightY = raw_obstacle_msg->proto.rawobjects(icnt).box2d().bottomrighty();
           obstacles.obstaclesraw[icnt].box.confidence = raw_obstacle_msg->proto.rawobjects(icnt).box2d().confidence();
+          obstacles.obstaclesraw[icnt].position << raw_obstacle_msg->proto.rawobjects(icnt).positioninfo().position().x(),
+                                                   raw_obstacle_msg->proto.rawobjects(icnt).positioninfo().position().y(),
+                                                   raw_obstacle_msg->proto.rawobjects(icnt).positioninfo().position().z();
           std::cout << "[OD] topLeftX: " << obstacles.obstaclesraw[icnt].box.topLeftX << " topLeftY: " << obstacles.obstaclesraw[icnt].box.topLeftY << " bottomRightX: " << obstacles.obstaclesraw[icnt].box.bottomRightX << " bottomRightX: " << obstacles.obstaclesraw[icnt].box.bottomRightY << std::endl;
           std::cout << "[OD] confidence: " << obstacles.obstaclesraw[icnt].box.confidence << std::endl;
           std::cout << "[OD] label: " << obstacles.obstaclesraw[icnt].label << " typeConfidence: " << obstacles.obstaclesraw[icnt].typeConfidence << " existenceConfidence: " << obstacles.obstaclesraw[icnt].existenceConfidence << std::endl;
@@ -173,6 +181,15 @@ namespace fanya
             {
               obstacles.obstaclesraw[icnt].landmark4Scores[jcnt] = raw_obstacle_msg->proto.rawobjects(icnt).landmark4scores(jcnt);
               std::cout << "[OD] landmark4Scores[" << icnt << "][" << jcnt << "] : " << obstacles.obstaclesraw[icnt].landmark4Scores[jcnt] << std::endl;
+            }
+          }
+          if (raw_obstacle_msg->proto.rawobjects(icnt).box3d_size() != 0)
+          {
+            obstacles.obstaclesraw[icnt].box3d.resize(raw_obstacle_msg->proto.rawobjects(icnt).box3d_size());
+            for(int jcnt = 0; jcnt < raw_obstacle_msg->proto.rawobjects(icnt).box3d_size();jcnt++)
+            {
+              obstacles.obstaclesraw[icnt].box3d[jcnt] = raw_obstacle_msg->proto.rawobjects(icnt).box3d(jcnt);
+              std::cout << "[OD] box3d[" << icnt << "][" << jcnt << "] : " << obstacles.obstaclesraw[icnt].box3d[jcnt] << std::endl;
             }
           }
         }
@@ -601,13 +618,15 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
       // GET FRONT/REAR/LEFT/RIGHT CAMERA IMAGE
       std::cout << "[OD]ImageReceiveProc start" << std::endl;
       auto msg_list = msgs[proc->GetResultIndex("sub_camera_frame_array")];
-      auto gen_image_ts = GetTimeStamp();
+      // auto gen_image_ts = GetTimeStamp();
       std::cout << "[OD]msg_list size: " << msg_list->size() << std::endl;
       if (!msg_list->empty())
       {
         std::shared_ptr<CameraFrameArrayProtoMsg> camera_group_msg =
             std::dynamic_pointer_cast<CameraFrameArrayProtoMsg>(msg_list->front());
         auto len = camera_group_msg->proto.camera_frame_size();
+        auto gen_image_ts = camera_group_msg->proto.gdc_vio_ts();
+        DFHLOG_W("OD income frame rate: {}", gen_image_ts);
         std::cout << "[OD] camera_frame_size: " << len << std::endl;
         for (auto i = 0; i < len; i++)
         {
@@ -698,7 +717,8 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
                 // std::cout << "[OD] VADDR " << addr_value <<std::endl;
                 std::cout << "[OD] STEP " << camera_proto_msg->proto.pym_img_info().down_scale(0).step() << std::endl;
 
-                rear_camera_publisher_->Pub(image);
+                // rear_camera_publisher_->Pub(image);
+                left_camera_publisher_->Pub(image);
               }
               else if (cam_id_str == "camera_2")
               {
@@ -716,7 +736,8 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
                 // std::cout << "[OD] VADDR " << addr_value <<std::endl;
                 std::cout << "[OD] STEP " << camera_proto_msg->proto.pym_img_info().down_scale(0).step() << std::endl;
 
-                left_camera_publisher_->Pub(image);
+                // left_camera_publisher_->Pub(image);
+                rear_camera_publisher_->Pub(image);
               }
               else if (cam_id_str == "camera_3")
               {
@@ -791,6 +812,11 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
                     for (int jcnt = 0; jcnt < obstacles.obstaclesraw[icnt].landmark4Scores.size(); jcnt++)
                     {
                       od_obstacleRaw.add_landmark4scores(obstacles.obstaclesraw[icnt].landmark4Scores[jcnt]);
+                    }
+
+                    for (int jcnt = 0; jcnt < obstacles.obstaclesraw[icnt].box3d.size(); jcnt++)
+                    {
+                      od_obstacleRaw.add_box3d(obstacles.obstaclesraw[icnt].box3d[jcnt]);
                     }
                     
                     obstacles_msg->proto.add_rawobjects()->CopyFrom(od_obstacleRaw);
@@ -910,8 +936,8 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
         // cv::copyMakeBorder(NV12ResizedMat_left, padding_mat_left, 0, 24, 0,0, cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0,0,0));
         // cv::copyMakeBorder(NV12ResizedMat_right, padding_mat_right, 0, 24, 0,0, cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0,0,0));
         
-        // save_pred_img_OD(fs, obstacles, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
-        save_pred_img_FSLine(fs, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
+        save_pred_img_OD(fs, obstacles, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
+        // save_pred_img_FSLine(fs, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
         {
           uint64_t send_start = GetTimeStamp();
           auto out = std::make_shared<WrapImageProtoMsg>();
@@ -986,10 +1012,125 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
       }
     }
 
+     void DrawBev3DBox(const ObstacleRaw &obj, cv::Mat &img, std::string camera_name,const std::shared_ptr<CameraModelBase> camera_model)
+    {
+      static std::map<std::string, std::function<bool(ObstacleRaw)>>
+        obj_map_filter{
+            {"front_camera_fov195",
+             [](ObstacleRaw obj) -> bool {
+                 if (obj.position(0) > 0) return true;
+                 return false;
+             }},
+            {"rear_camera_fov195",
+             [](ObstacleRaw obj) -> bool {
+                 if (obj.position(0) < 0) return true;
+                 return false;
+             }},
+            {"left_camera_fov195",
+             [](ObstacleRaw obj) -> bool {
+                 if (obj.position(1) > 0) return true;
+                 return false;
+             }},
+            {"right_camera_fov195",
+             [](ObstacleRaw obj) -> bool {
+                 if (obj.position(1) < 0) return true;
+                 return false;
+             }},
+        };
+        auto world = camera_model->getTransformation();
+        Eigen::Matrix4d world2cam = world.inverse();//
+        if (obj_map_filter.count(camera_name) == 0) {
+          std::cout <<"[DrawBev3DBbox] "
+            << "obj_map_filter.count(camera_name), camera_name = "
+            << camera_name << std::endl;
+            return;
+        }
+        if (camera_model == nullptr) {
+            AD_LWARN(DrawBev3DBbox) << "camera_model == nullptr";
+            return;
+        }
+         Eigen::Vector3f p, s;
+         p << obj.box3d[0], obj.box3d[1], obj.box3d[2];
+         p << obj.box3d[3], obj.box3d[5], obj.box3d[4];
+         float32_t obj_yaw_to_car = obj.box3d[6];
+         if (p(0) == 0 && p(1) == 0 && p(2) == 0) return;
+         if (!obj_map_filter[camera_name](obj)) {
+            std::cout << "obj_map_filter.count(camera_name), camera_name = "
+                << camera_name << std::endl;
+            return;
+        }
+        std::vector<Eigen::Vector3f> box_corners_selfcar;
+        Eigen::Vector4d point_camera_4d = {p(0), p(1), p(2), 1.0};
+        Eigen::Vector3f center_selfcar(p(0), p(1), p(2));
+        Eigen::Vector3f dir_len(cos(obj_yaw_to_car), sin(obj_yaw_to_car),
+                                0);  // len direction
+        Eigen::Vector3f dir_width(-dir_len.y(), dir_len.x(), 0);
+        const Eigen::Vector3f object_shape = {s(1), s(0), s(2)};
+        box_corners_selfcar.push_back(center_selfcar +
+                                      dir_len * object_shape(0) / 2 +
+                                      dir_width * object_shape(1) / 2);
+        box_corners_selfcar.push_back(center_selfcar +
+                                      dir_len * object_shape(0) / 2 -
+                                      dir_width * object_shape(1) / 2);
+        box_corners_selfcar.push_back(center_selfcar -
+                                      dir_len * object_shape(0) / 2 -
+                                      dir_width * object_shape(1) / 2);
+        box_corners_selfcar.push_back(center_selfcar -
+                                      dir_len * object_shape(0) / 2 +
+                                      dir_width * object_shape(1) / 2);
+        for (size_t i = 0; i < 4; ++i) {
+            box_corners_selfcar.push_back(box_corners_selfcar[i]);
+            box_corners_selfcar[i](2) = 0;
+            box_corners_selfcar.back()(2) = object_shape(2);
+        }
+        box_corners_selfcar.push_back(center_selfcar);
+        box_corners_selfcar.back()(2) = object_shape(2) / 2.0;
+        std::vector<Eigen::Vector2d> pixel_corners(box_corners_selfcar.size());
+        for (size_t i = 0; i < box_corners_selfcar.size(); ++i) {
+            Eigen::Vector4d point3d_pad = {box_corners_selfcar[i](0),
+                                           box_corners_selfcar[i](1),
+                                           box_corners_selfcar[i](2), 1.0};
+            auto point_unit = world2cam * point3d_pad;//
+            Eigen::Vector3d point3d{point_unit(0), point_unit(1),
+                                    point_unit(2)};
+            camera_model->unit2image(point3d, pixel_corners[i]);
+        }
+      
+      static const std::array<std::pair<int, int>, 12> lines = {
+          std::make_pair(0, 1), std::make_pair(1, 2), std::make_pair(2, 3),
+          std::make_pair(3, 0), std::make_pair(0, 4), std::make_pair(1, 5),
+          std::make_pair(2, 6), std::make_pair(3, 7), std::make_pair(4, 5),
+          std::make_pair(5, 6), std::make_pair(6, 7), std::make_pair(7, 4)};
+      for (const auto &pair : lines) {
+            cv::line(img,
+                     cv::Point(pixel_corners[pair.first](0),
+                               pixel_corners[pair.first](1)),
+                     cv::Point(pixel_corners[pair.second](0),
+                               pixel_corners[pair.second](1)),
+                     cv::Scalar(127, 201, 127), 2);
+        }
+   }
+
     int save_pred_img_OD(FSLine fs,Obstacles obstaclesOD, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
     {
-      std::cout << "hello in save_pred_img_OD" << std::endl;
-      static int cnt = 0;
+      if(camera_models.empty()){
+        camera_models.emplace(
+            "front_camera_fov195",
+            std::make_shared<FisheyeCameraModel>(
+                FisheyeCameraModel(camera_model_path, "front_camera_fov195")));
+        camera_models.emplace(
+            "left_camera_fov195",
+            std::make_shared<FisheyeCameraModel>(
+                FisheyeCameraModel(camera_model_path, "left_camera_fov195")));
+        camera_models.emplace(
+            "right_camera_fov195",
+            std::make_shared<FisheyeCameraModel>(
+                FisheyeCameraModel(camera_model_path, "right_camera_fov195")));
+        camera_models.emplace(
+            "rear_camera_fov195",
+            std::make_shared<FisheyeCameraModel>(
+                FisheyeCameraModel(camera_model_path, "rear_camera_fov195")));
+      }
       cv::Mat predfront_mat = rgb_mat_front.clone(),
               predleft_mat = rgb_mat_left.clone(),
               predrear_mat = rgb_mat_rear.clone(),
@@ -1014,7 +1155,7 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               cv::circle(predright_mat, cv::Point(output_result.landmark4[1].x, output_result.landmark4[1].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
               cv::circle(predright_mat, cv::Point(output_result.landmark4[2].x, output_result.landmark4[2].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
               cv::circle(predright_mat, cv::Point(output_result.landmark4[3].x, output_result.landmark4[3].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
-             
+              // DrawBev3DBox(output_result, predright_mat, output_result.camera, camera_models["right_camera_fov195"]);
 
               std::string text = get_obs_label(output_result.label) + " " + std::to_string(output_result.typeConfidence);
               int baseLine;
@@ -1037,6 +1178,8 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               cv::circle(predleft_mat, cv::Point(output_result.landmark4[2].x, output_result.landmark4[2].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
               cv::circle(predleft_mat, cv::Point(output_result.landmark4[3].x, output_result.landmark4[3].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
 
+              // DrawBev3DBox(output_result, predright_mat, output_result.camera, camera_models["right_camera_fov195"]);
+
               std::string text = get_obs_label(output_result.label) + " " + std::to_string(output_result.typeConfidence);
               int baseLine;
               cv::Size textSize = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
@@ -1058,6 +1201,8 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               cv::circle(predrear_mat, cv::Point(output_result.landmark4[2].x, output_result.landmark4[2].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
               cv::circle(predrear_mat, cv::Point(output_result.landmark4[3].x, output_result.landmark4[3].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
 
+              // DrawBev3DBox(output_result, predright_mat, output_result.camera, camera_models["right_camera_fov195"]);
+
               std::string text = get_obs_label(output_result.label) + " " + std::to_string(output_result.typeConfidence);
               int baseLine;
               cv::Size textSize = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
@@ -1078,6 +1223,8 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               cv::circle(predfront_mat, cv::Point(output_result.landmark4[1].x, output_result.landmark4[1].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
               cv::circle(predfront_mat, cv::Point(output_result.landmark4[2].x, output_result.landmark4[2].y), 6, cv::Scalar(0,255,0), -2, 8, 0);
               cv::circle(predfront_mat, cv::Point(output_result.landmark4[3].x, output_result.landmark4[3].y), 6, cv::Scalar(0,255,0),-2, 8, 0);
+
+              // DrawBev3DBox(output_result, predright_mat, output_result.camera, camera_models["right_camera_fov195"]);
 
               std::string text = get_obs_label(output_result.label) + " " + std::to_string(output_result.typeConfidence);
               int baseLine;
@@ -1145,82 +1292,83 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
       cv::hconcat(predleft_mat, predright_mat, bottom_row);
       cv::vconcat(top_row, bottom_row, combined);
 
-      cv::imwrite("./combined_image_" + std::to_string(cnt) + ".jpg", combined);
-      cnt++;
+      // static int cnt = 0;
+      // cv::imwrite("./combined_image_" + std::to_string(cnt) + ".jpg", combined);
+      // cnt++;
       cv::imencode(".jpg", combined, buffer);
       return 0;
     }
 
-    int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
-    {
-      std::cout << "hello in save_pred_img_FSLine" << std::endl;
+    // int save_pred_img_FSLine(FSLine fs, std::vector<uchar> &buffer, cv::Mat rgb_mat_front, cv::Mat rgb_mat_left, cv::Mat rgb_mat_rear, cv::Mat rgb_mat_right)
+    // {
+    //   std::cout << "hello in save_pred_img_FSLine" << std::endl;
 
-      cv::Mat predfront_mat = rgb_mat_front.clone(),
-              predleft_mat = rgb_mat_left.clone(),
-              predrear_mat = rgb_mat_rear.clone(),
-              predright_mat = rgb_mat_right.clone();
-      if (fs.fsline.size()!=0){
-        for(int i = 0 ;i< fs.fsline.size();i++)
-        {
-          auto output_result_FS = fs.fsline[i];
-          std::vector<std::vector<cv::Point>> pls_fsline;
-          if (true)
-          {
-            if (i == 0)
-            {
-              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
-              {
-                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
-                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
-                cv::circle(predfront_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
-              }
+    //   cv::Mat predfront_mat = rgb_mat_front.clone(),
+    //           predleft_mat = rgb_mat_left.clone(),
+    //           predrear_mat = rgb_mat_rear.clone(),
+    //           predright_mat = rgb_mat_right.clone();
+    //   if (fs.fsline.size()!=0){
+    //     for(int i = 0 ;i< fs.fsline.size();i++)
+    //     {
+    //       auto output_result_FS = fs.fsline[i];
+    //       std::vector<std::vector<cv::Point>> pls_fsline;
+    //       if (true)
+    //       {
+    //         if (i == 0)
+    //         {
+    //           for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+    //           {
+    //             cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+    //             auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+    //             cv::circle(predfront_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
+    //           }
               
-            }
-            else if(i == 1)
-            {
-              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
-              {
-                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
-                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
-                cv::circle(predrear_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
-              }
-            }
-            else if(i == 3)
-            {
-              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
-              {
-                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
-                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
-                cv::circle(predleft_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
-              }
+    //         }
+    //         else if(i == 1)
+    //         {
+    //           for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+    //           {
+    //             cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+    //             auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+    //             cv::circle(predrear_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
+    //           }
+    //         }
+    //         else if(i == 3)
+    //         {
+    //           for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+    //           {
+    //             cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+    //             auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+    //             cv::circle(predleft_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
+    //           }
               
-            }
-            else if(i == 2)
-            {
-              for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
-              {
-                cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
-                auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
-                cv::circle(predright_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
-              }
+    //         }
+    //         else if(i == 2)
+    //         {
+    //           for (int j = 0; j < output_result_FS.fsLinepoints.size(); j++)
+    //           {
+    //             cv::Point pt{output_result_FS.fsLinepoints[j].coordinate.x, output_result_FS.fsLinepoints[j].coordinate.y};
+    //             auto color_bgr = get_space_label_color_bgr(output_result_FS.fsLinepoints[j].pointLabel);
+    //             cv::circle(predright_mat, pt, 2, cv::Scalar(color_bgr[0], color_bgr[1], color_bgr[2]), -1);
+    //           }
               
-            }
-          }
+    //         }
+    //       }
           
-        }  
-      }
-      cv::Mat combined, top_row, bottom_row;
-      cv::hconcat(predfront_mat, predrear_mat, top_row);
-      cv::hconcat(predleft_mat, predright_mat, bottom_row);
-      cv::vconcat(top_row, bottom_row, combined);
-      static int cnt = 0;
-      if (cnt > 0 && cnt < 10){
-        cv::imwrite("./fsline_only_image_" + std::to_string(cnt) + ".jpg", combined);
-      }
-      cnt++;
-      cv::imencode(".jpg", combined, buffer);
-      return 0;
-    }
+    //     }  
+    //   }
+    //   cv::Mat combined, top_row, bottom_row;
+    //   cv::hconcat(predfront_mat, predrear_mat, top_row);
+    //   cv::hconcat(predleft_mat, predright_mat, bottom_row);
+    //   cv::vconcat(top_row, bottom_row, combined);
+    //   static int cnt = 0;
+    //   if (cnt > 0 && cnt < 10){
+    //     cv::imwrite("./fsline_only_image_" + std::to_string(cnt) + ".jpg", combined);
+    //   }
+    //   cnt++;
+    //   cv::imencode(".jpg", combined, buffer);
+    //   return 0;
+    // }
     DATAFLOW_REGISTER_MODULE(PerceptionOdMoudle)
 
   } // namespace parking
