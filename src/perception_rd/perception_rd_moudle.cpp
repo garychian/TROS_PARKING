@@ -211,11 +211,11 @@ void PerceptionRdMoudle::InitPortsAndProcs() {
       hobot::dataflow::ProcType::DF_MSG_COND_PROC,
       DF_VECTOR("sub_apa_status", "sub_pad_point", "sub_pad_vehicle_pose",
                 "sub_camera_frame_array"),
-      DF_VECTOR("pub_quad_parking_slots_s32g"));
+      DF_VECTOR("pub_quad_parking_slots_s32g", "pub_psd_image_s32g"));
   DF_MODULE_REGISTER_HANDLE_MSGS_PROC(
       "TimerProc", PerceptionRdMoudle, TimerProc,
       hobot::dataflow::ProcType::DF_MSG_TIMER_PROC, DF_VECTOR(),
-      DF_VECTOR("percept_debug_slot", "percept_debug_roadmark", "pub_psd_image", "pub_psd_image_s32g"));
+      DF_VECTOR("percept_debug_slot", "percept_debug_roadmark", "pub_psd_image"));
 }
 
 EventType g_pub_event = EventType(2);
@@ -665,7 +665,6 @@ void PerceptionRdMoudle::MsgCenterProc(
         apa_ps_info->proto.set_frametimestampns(saved_parking_slots_info.frameTimeStampNs);
         apa_ps_info->proto.set_sensorid(saved_parking_slots_info.sensorId);
         DFHLOG_W("pub_quad_parking_slots_s32g info, timestamp = {},seq = {}",saved_parking_slots_info.frameTimeStampNs, saved_parking_slots_info.header.seq);
-        // DFHLOG_W("pub_quad_parking_slots_s32g info, seq = {}",saved_parking_slots_info.header.seq);
         std::cout << "*********fusion_out size**********" << saved_parking_slots_info.quadParkingSlotList.size() << std::endl;
         // 一级子结构体 repeated为 数组形式
         if (saved_parking_slots_info.quadParkingSlotList.size() != 0)
@@ -728,46 +727,44 @@ void PerceptionRdMoudle::MsgCenterProc(
     }
   }
 
-  
+    {// Pub SegImage to S32G
+      auto seg_info = std::make_shared<ImageMsg>();
 
-    // {// Pub SegImage to S32G
-    //   auto seg_info = std::make_shared<ImageMsg>();
+      rd::Time timestamp;
+      timestamp.set_nanosec(seg_image.proto.header().timestampns().nanosec());
+      rd::Header seg_header;
+      seg_header.mutable_timestampns()->CopyFrom(timestamp);
+      seg_image.proto.mutable_header()->CopyFrom(seg_header);
 
-    //   rd::Time timestamp;
-    //   timestamp.set_nanosec(seg_image.proto.header().timestampns().nanosec());
-    //   rd::Header seg_header;
-    //   seg_header.mutable_timestampns()->CopyFrom(timestamp);
-    //   seg_image.proto.mutable_header()->CopyFrom(seg_header);
+      seg_info->proto.set_height(seg_image.proto.height());
+      seg_info->proto.set_width(seg_image.proto.width());
+      seg_info->proto.set_encoding(seg_image.proto.encoding());
+      seg_info->proto.set_phyaddr(seg_image.proto.phyaddr());
+      seg_info->proto.set_viraddr(seg_image.proto.viraddr());
+      std::cout << "[SEG TO S32G] seg_info height:" << seg_info->proto.height() << std::endl;
+      std::cout << "[SEG TO S32G]] seg_info width:" << seg_info->proto.width() << std::endl;
+      std::cout << "[SEG TO S32G]] seg_info encoding:" << seg_info->proto.encoding() << std::endl;
+      std::cout << "[SEG TO S32G]] seg_info phyaddr:" << seg_info->proto.phyaddr() << std::endl;
+      std::cout << "[SEG TO S32G]] seg_info viraddr:" << seg_info->proto.viraddr() << std::endl;
+      auto data_ptr = seg_image.proto.data();
+      unsigned char* target_buffer = new unsigned char[seg_image.proto.data().size()];
+      memcpy(target_buffer, &data_ptr[0], seg_image.proto.data().size());
+      seg_info->proto.set_data(target_buffer, seg_image.proto.data().size());
+      delete[] target_buffer;
+      std::cout << "[SEG TO S32G]] data size:" << seg_info->proto.data().size() << std::endl;
+      std::cout << "[SEG TO S32G]] data phyaddr:" << (void*)&seg_info->proto.data()[0] << std::endl;
 
-    //   seg_info->proto.set_height(seg_image.proto.height());
-    //   seg_info->proto.set_width(seg_image.proto.width());
-    //   seg_info->proto.set_encoding(seg_image.proto.encoding());
-    //   seg_info->proto.set_phyaddr(seg_image.proto.phyaddr());
-    //   seg_info->proto.set_viraddr(seg_image.proto.viraddr());
-    //   std::cout << "[SEG TO S32G] seg_info height:" << seg_info->proto.height() << std::endl;
-    //   std::cout << "[SEG TO S32G]] seg_info width:" << seg_info->proto.width() << std::endl;
-    //   std::cout << "[SEG TO S32G]] seg_info encoding:" << seg_info->proto.encoding() << std::endl;
-    //   std::cout << "[SEG TO S32G]] seg_info phyaddr:" << seg_info->proto.phyaddr() << std::endl;
-    //   std::cout << "[SEG TO S32G]] seg_info viraddr:" << seg_info->proto.viraddr() << std::endl;
-    //   auto data_ptr = seg_image.proto.data();
-    //   unsigned char* target_buffer = new unsigned char[seg_image.proto.data().size()];
-    //   memcpy(target_buffer, &data_ptr[0], seg_image.proto.data().size());
-    //   seg_info->proto.set_data(target_buffer, seg_image.proto.data().size());
-    //   delete[] target_buffer;
-    //   std::cout << "[SEG TO S32G]] data size:" << seg_info->proto.data().size() << std::endl;
-    //   std::cout << "[SEG TO S32G]] data phyaddr:" << (void*)&seg_info->proto.data()[0] << std::endl;
+       auto pub_seg_port_s32g = proc->GetOutputPort("pub_psd_image_s32g");
+        if (!pub_seg_port_s32g)
+        {
+          DFHLOG_E("pub_seg_port_s32g failed to get output port of {}", "pub_apa_ps_rect");
+          return;
+        }
 
-    //    auto pub_seg_port_s32g = proc->GetOutputPort("pub_psd_image_s32g");
-    //     if (!pub_seg_port_s32g)
-    //     {
-    //       DFHLOG_E("pub_seg_port_s32g failed to get output port of {}", "pub_apa_ps_rect");
-    //       return;
-    //     }
+        pub_seg_port_s32g->Send(seg_info);
+        DFHLOG_W("pub_seg_port_s32g info, timestamp = {}", seg_info->proto.header().timestampns().nanosec());
 
-    //     pub_seg_port_s32g->Send(seg_info);
-    //     DFHLOG_W("pub_seg_port_s32g info, timestamp = {}", seg_info->proto.header().timestampns().nanosec());
-
-    // }
+    }
 
 }
 

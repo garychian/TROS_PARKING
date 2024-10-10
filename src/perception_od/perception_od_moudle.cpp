@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <yaml-cpp/yaml.h>
 
 #include "common/proto_msg_all.h"
 #include "common/timestamp.h"
@@ -631,8 +632,26 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
         for (auto i = 0; i < len; i++)
         {
           auto cam_id_str = camera_group_msg->proto.camera_frame(i).cam_id();
+          std::string cam_name;
+          std::cout << "[OD] cam_id_str: " << cam_id_str << std::endl;
+          std::map<std::string, std::string> camera_map;
           auto camera_proto_msg = camera_arry_msg_convert(camera_group_msg, cam_id_str);
 
+          YAML::Node cam_config = YAML::LoadFile("/app/parking/fisheye_dataflow/config/camera/camera.yaml");
+          for (const auto& camera : cam_config["camera_id_mapping"]) {
+            std::string camera_id = camera["adapter_id"].as<std::string>();
+            std::string camera_name = camera["camera_name"].as<std::string>();
+
+            camera_map[camera_id] = camera_name;
+            // std::cout << "cam id:" << camera_id << std::endl;
+            // std::cout << "cam_id_str:" << cam_id_str << std::endl;
+          }
+
+          for(const auto& pair : camera_map){
+            std::cout<<"Adapter ID:"<<pair.first<<"->Camera Name:"<<pair.second<<std::endl;
+          }
+          cam_name = camera_map[cam_id_str];
+          std::cout<<"OD cam_name:"<<cam_name<<std::endl;
           if (camera_proto_msg != nullptr)
           {
             camera_msg_convert(camera_proto_msg);
@@ -684,7 +703,7 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               od_header.mutable_timestampns()->CopyFrom(image_time);
               image->proto.mutable_header()->CopyFrom(od_header);
 
-              if (cam_id_str == "camera_0")
+              if (cam_name == "FRONT_FISHEYE")
               {
                 NV12ResizedMat_front = resizedMat.clone();
                 image->proto.set_height(new_height);
@@ -701,7 +720,7 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
                 std::cout << "[OD] STEP " << camera_proto_msg->proto.pym_img_info().down_scale(0).step() << std::endl;
                 front_camera_publisher_->Pub(image);
               }
-              else if (cam_id_str == "camera_1")
+              else if (cam_name == "LEFT_FISHEYE")
               {
                 NV12ResizedMat_rear = resizedMat.clone();
                 image->proto.set_height(new_height);
@@ -720,7 +739,7 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
                 // rear_camera_publisher_->Pub(image);
                 left_camera_publisher_->Pub(image);
               }
-              else if (cam_id_str == "camera_2")
+              else if (cam_name == "REAR_FISHEYE")
               {
                 NV12ResizedMat_left = resizedMat.clone();
                 image->proto.set_height(new_height);
@@ -739,7 +758,7 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
                 // left_camera_publisher_->Pub(image);
                 rear_camera_publisher_->Pub(image);
               }
-              else if (cam_id_str == "camera_3")
+              else if (cam_name == "RIGHT_FISHEYE")
               {
                 NV12ResizedMat_right = resizedMat.clone();
                 image->proto.set_height(new_height);
