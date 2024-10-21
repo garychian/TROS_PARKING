@@ -137,3 +137,4 @@ if [[ ${ALL} == "proto" ]]; then
     exit 0
 fi
 build_project
+

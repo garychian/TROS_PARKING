@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <ctime>
 #include <yaml-cpp/yaml.h>
 
 #include "common/proto_msg_all.h"
@@ -722,7 +723,7 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               }
               else if (cam_name == "LEFT_FISHEYE")
               {
-                NV12ResizedMat_rear = resizedMat.clone();
+                NV12ResizedMat_left = resizedMat.clone();
                 image->proto.set_height(new_height);
                 image->proto.set_width(new_width);
                 image->proto.set_phyaddr(addr_value);
@@ -741,7 +742,7 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
               }
               else if (cam_name == "REAR_FISHEYE")
               {
-                NV12ResizedMat_left = resizedMat.clone();
+                NV12ResizedMat_rear = resizedMat.clone();
                 image->proto.set_height(new_height);
                 image->proto.set_width(new_width);
                 image->proto.set_phyaddr(addr_value);
@@ -943,6 +944,105 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
       
     }
 
+  void saveFSLineToFile(const FSLine& fslineData, std::time_t t) {
+    
+    char filename[100];
+    std::strftime(filename, sizeof(filename), "%Y%m%d%H%M%S.bin", std::localtime(&t));
+
+    // Open binary file for writing
+    std::ofstream outFile(filename, std::ios::binary);
+    if (!outFile) {
+        std::cerr << "Failed to open file for writing: " << filename << std::endl;
+        return;
+    }
+
+    // Write the number of FSLinesimple elements
+    uint64_t fslineCount = fslineData.fsline.size();
+    outFile.write(reinterpret_cast<const char*>(&fslineCount), sizeof(fslineCount));
+
+    // Iterate over each FSLinesimple and serialize it
+    for (const auto& fslineSimple : fslineData.fsline) {
+        // Serialize Header
+        const Header& header = fslineSimple.header;
+
+        // Write seq
+        outFile.write(reinterpret_cast<const char*>(&header.seq), sizeof(header.seq));
+
+        // Write stamp
+        outFile.write(reinterpret_cast<const char*>(&header.timestamp), sizeof(header.timestamp));
+
+        // Write frame_id length and data
+        uint64_t frameIdLength = header.frame_id.size();
+        outFile.write(reinterpret_cast<const char*>(&frameIdLength), sizeof(frameIdLength));
+        outFile.write(header.frame_id.data(), frameIdLength);
+
+        // Write frameTimestampNs
+        outFile.write(reinterpret_cast<const char*>(&fslineSimple.frameTimestampNs), sizeof(fslineSimple.frameTimestampNs));
+
+        // Write the number of FSLinePoint elements
+        uint64_t fsLinePointCount = fslineSimple.fsLinepoints.size();
+        outFile.write(reinterpret_cast<const char*>(&fsLinePointCount), sizeof(fsLinePointCount));
+
+        // Iterate over each FSLinePoint and serialize it
+        for (const auto& fsLinePoint : fslineSimple.fsLinepoints) {
+            // Serialize coordinate (cv::Point2f)
+            outFile.write(reinterpret_cast<const char*>(&fsLinePoint.coordinate.x), sizeof(fsLinePoint.coordinate.x));
+            outFile.write(reinterpret_cast<const char*>(&fsLinePoint.coordinate.y), sizeof(fsLinePoint.coordinate.y));
+
+            // Serialize pointLabel
+            uint32_t pointLabel = static_cast<uint32_t>(fsLinePoint.pointLabel);
+            outFile.write(reinterpret_cast<const char*>(&pointLabel), sizeof(pointLabel));
+        }
+    }
+
+    outFile.close();
+    std::cout << "Data saved to file: " << filename << std::endl;
+}
+
+void saveNV12imageTOFile(cv::Mat front, cv::Mat left, cv::Mat rear, cv::Mat right, std::time_t t)
+{
+   // List of images and their corresponding names
+    std::vector<std::pair<cv::Mat, std::string>> images = {
+        {front, "front"},
+        {left, "left"},
+        {rear, "rear"},
+        {right, "right"}
+    };
+
+     // Convert time_t to tm structure in a thread-safe manner
+    std::tm tm_buf;
+#if defined(_WIN32) || defined(_WIN64)
+    localtime_s(&tm_buf, &t);
+#else
+    localtime_r(&t, &tm_buf);
+#endif
+
+  char timestamp[20];
+  std::strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M%S", &tm_buf);
+
+   for (const auto& img_pair : images) {
+        const cv::Mat& img = img_pair.first;
+        const std::string& name = img_pair.second;
+
+        // Construct the filename: timestamp + name + ".nv12"
+        std::string filename = std::string(timestamp) + "_" + name + ".nv12";
+
+        // Open file for binary writing
+        std::ofstream file(filename, std::ios::binary);
+        if (!file.is_open()) {
+            std::cerr << "Failed to open file for writing: " << filename << std::endl;
+            continue;
+        }
+
+        // Write the NV12 image data directly
+        file.write(reinterpret_cast<const char*>(img.data), img.total() * img.elemSize());
+
+        file.close();
+
+        std::cout << "Saved image to file: " << filename << std::endl;
+    }
+}
+
     void PerceptionOdMoudle::TimerProc(hobot::dataflow::spMsgResourceProc proc,
                                        const hobot::dataflow::MessageLists &msgs)
     {
@@ -954,7 +1054,10 @@ int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
         // cv::copyMakeBorder(NV12ResizedMat_rear, padding_mat_rear, 0, 24, 0,0, cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0,0,0));
         // cv::copyMakeBorder(NV12ResizedMat_left, padding_mat_left, 0, 24, 0,0, cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0,0,0));
         // cv::copyMakeBorder(NV12ResizedMat_right, padding_mat_right, 0, 24, 0,0, cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0,0,0));
-        
+        // Get current timestamp for filename
+        std::time_t now = std::time(nullptr);
+        saveFSLineToFile(fs,now);
+        saveNV12imageTOFile(NV12ResizedMat_front,NV12ResizedMat_left,NV12ResizedMat_right,NV12ResizedMat_rear,now);
         save_pred_img_OD(fs, obstacles, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
         // save_pred_img_FSLine(fs, buffer, NV12ResizedMat_front, NV12ResizedMat_left, NV12ResizedMat_rear, NV12ResizedMat_right);
         {
