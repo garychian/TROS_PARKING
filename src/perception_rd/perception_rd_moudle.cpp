@@ -474,8 +474,69 @@ static int __nv12Merge352( uint8_t* pu8Dest352, const uint8_t* pu8SrdY, const ui
 		*pu8Dest352++ = *pu8SrcV++;
 	}
     #endif
+    std::cout<<"Successful finish __nv12Merge352"<<std::endl;
 	return 0;
  } 
+
+ static int __nv12CropSplit896( uint8_t* pu8DestY, uint8_t* pu8DestU, uint8_t* pu8DestV, const uint8_t* pu8Src)
+{
+  std::cout<<"Start __nv12CropSplit896"<<std::endl;
+	if((!pu8DestY) || (!pu8DestU)|| (!pu8DestV)|| (!pu8Src))
+    return -1;
+  std::cout<<"Start __nv12CropSplit896 test"<<std::endl;
+	for (int i = 224; i < 224+448; i++)
+  {
+    const uint8_t* pu8CurSrc = pu8Src+i*896+224;
+    memcpy(pu8DestY,pu8CurSrc,448);
+    pu8DestY += 448;
+  }
+  std::cout<<"Start __nv12CropSplit896 1"<<std::endl;
+	pu8Src += 896*896;
+	for (int i = 112; i < 112+224; i++)
+	{
+		const uint8_t* pu8CurSrc = pu8Src+i*896+224;
+		#ifdef __ARM_NEON
+		for (int j = 0; j < 224; j+=16)
+		{
+			uint8x16x2_t vu8_16_2_Src = vld2q_u8(pu8CurSrc);
+      vst1q_u8(pu8DestU, vu8_16_2_Src.val[0]);
+      vst1q_u8(pu8DestV, vu8_16_2_Src.val[1]);
+      pu8CurSrc+=32;
+      pu8DestU+=16;
+      pu8DestV+=16;
+		}
+		#else
+    std::cout<<"Start __nv12CropSplit896 2"<<std::endl;
+		for (int j = 0; j < 224; j++)
+		{
+			*pu8DestU++ = *pu8CurSrc++;
+      *pu8DestV++ = *pu8CurSrc++;
+		}
+		#endif
+	}
+  std::cout<<"Successful finish __nv12CropSplit896"<<std::endl;
+	return 0;
+}
+
+ // 896 nv12 crop to 448Y + 224U + 224V, then risize to 352 Y+U+V, then merge to nv12
+int nv12CropResize896to352(uint8_t* pu8Dest, const uint8_t* pu8Src)
+{
+    cv::Mat image_y(448, 448, CV_8UC1);
+    cv::Mat image_u(224, 224, CV_8UC1);
+    cv::Mat image_v(224, 224, CV_8UC1);
+	__nv12CropSplit896((uint8_t*)image_y.data, (uint8_t*)image_u.data, (uint8_t*)image_v.data, pu8Src);
+	#if 1 // mabey more clarity and faster.
+	cv::resize(image_y, image_y, cv::Size(352, 352), cv::INTER_NEAREST);
+	cv::resize(image_u, image_u, cv::Size(176, 176), cv::INTER_NEAREST);
+	cv::resize(image_v, image_v, cv::Size(176, 176), cv::INTER_NEAREST);
+	#else // more smoother.
+	cv::resize(image_y, image_y, cv::Size(352, 352), cv::INTER_LINEAR);
+	cv::resize(image_u, image_u, cv::Size(176, 176), cv::INTER_LINEAR);
+	cv::resize(image_v, image_v, cv::Size(176, 176), cv::INTER_LINEAR);
+	#endif
+	__nv12Merge352(pu8Dest, (uint8_t*)image_y.data, (uint8_t*)image_u.data, (uint8_t*)image_v.data);
+    return 0;
+}
 
 int nv12CropResize(uint8_t* pu8Dest, const uint8_t* pu8Src)
  {
@@ -581,44 +642,30 @@ void PerceptionRdMoudle::MsgCenterProc(
       
       int32_t new_width = 352;
       int32_t new_height = 352;
-      
+      uint64_t addr_value = 0;
+
       uint8_t pu8Dest[ static_cast<int32_t>(new_height * new_width * 1.5) ]={0};
-      nv12CropResize(pu8Dest, (uint8_t*)(addr_info.addr[0]));
+      if (width != height){
+        DFHLOG_E("The image size is wrong");
+      }else if(width == 448 && height == 448){
+        std::cout<<"The image is 448*448"<<std::endl;
+        nv12CropResize(pu8Dest, (uint8_t*)(addr_info.addr[0]));
+        addr_value = reinterpret_cast<uint64_t>(pu8Dest);
+      }else if(width == 896 && height == 896){
+        std::cout<<"The image is 896*896"<<std::endl;
+        // nv12CropResize896to352(pu8Dest, (uint8_t*)(addr_info.addr[0]));
+        addr_value = reinterpret_cast<uint64_t>(image_nv12.data);
+      }
+      
       // FILE *nv12 = fopen("nv12.bin","wb");
       // fwrite(pu8Dest, new_height * new_width * 1.5, 1, nv12);
       // fclose(nv12);
-      // cv::Mat rgb_mat;
-      // int32_t size;
-      // size = width * height;
-
-      // auto y_addr = image_nv12.data;
-      // auto u_addr = y_addr + size;
-      // auto v_addr = u_addr + size / 4;
-      // auto srcBuf = addr_info.addr[0];
-      // auto srcBuf1 = addr_info.addr[1];
-      // std::memcpy(y_addr, srcBuf, size);
-      // for (int i = 0; i < size / 4; ++i)
-      // {
-      //   *u_addr++ = *srcBuf1++;
-      //   *v_addr++ = *srcBuf1++;
-      // }
-      // static int cnt = 0;
+      cv::Mat resizedMat(new_height*1.5, new_width, CV_8UC1, pu8Dest);
+      cv::cvtColor(resizedMat, NV12ResizedMat, cv::COLOR_YUV2BGRA_I420);
       
-      // cv::cvtColor(image_nv12, rgb_mat, cv::COLOR_YUV2BGRA_I420);
-      // cv::imwrite("./rgb_mat_image_" + std::to_string(cnt)+"_" + ".jpg", rgb_mat);
-      // if (cnt >0 && cnt < 10){
-      //   cv::imwrite("./origin_nv12_image_" + std::to_string(cnt)+"_" + ".jpg", image_nv12);
-      // }
-      // cnt++;
-      // cv::resize(rgb_mat, resizedMat, cv::Size(704, 704));
-      // cv::Rect roi(176,176,352,352);
-      // cropedMat = resizedMat(roi);
-      // cv::imwrite("./rgb_mat_resized_image_" + std::to_string(cnt)+"_"+ ".jpg", resizedMat);
-      // cv::imwrite("./cropedMat_resized_image_" + std::to_string(cnt)+"_"+ ".jpg", cropedMat);
-      // cv::cvtColor(cropedMat, NV12ResizedMat, cv::COLOR_BGR2YUV_I420);
       // cv::imwrite("./NV12ResizedMat_image_" + std::to_string(cnt)+"_"+ ".jpg", NV12ResizedMat);
       // uint64_t addr_value = reinterpret_cast<uint64_t>(NV12ResizedMat.data);
-      uint64_t addr_value = reinterpret_cast<uint64_t>(pu8Dest);
+      
       /**************************PUB******************************/
       auto image = std::make_shared<ImageMsg>();
       
@@ -792,7 +839,7 @@ void PerceptionRdMoudle::TimerProc(
           out->proto.set_format(2);
           out->SetData(std::make_shared<hobot::message::DataRef>(buffer.data(), buffer.size()));
 
-          // DFHLOG_W("percept_debug size: {}, ts = {}.", buffer.size(), GetTimeStamp());
+          DFHLOG_W("percept_debug size: {}, ts = {}.", buffer.size(), GetTimeStamp());
           auto pub_image_port = proc->GetOutputPort("percept_debug_slot");
           pub_image_port->Send(out);
           // std::cout<<"Detect_Cornerpoint_gpsd"<<__LINE__<<std::endl;
